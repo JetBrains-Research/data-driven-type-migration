@@ -4,10 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class DataDrivenTypeMigrationRule {
     @SerializedName("Before")
-    private String expressionBefore;
+    private final String expressionBefore;
 
     @SerializedName("After")
-    private String expressionAfter;
+    private final String expressionAfter;
 
     public DataDrivenTypeMigrationRule(String expressionBefore, String expressionAfter) {
         this.expressionBefore = expressionBefore;

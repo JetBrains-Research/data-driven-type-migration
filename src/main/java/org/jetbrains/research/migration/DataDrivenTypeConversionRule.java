@@ -1,6 +1,7 @@
 package org.jetbrains.research.migration;
 
 import com.intellij.ide.highlighter.JavaFileType;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiMember;
@@ -13,54 +14,64 @@ import com.intellij.structuralsearch.MatchOptions;
 import com.intellij.structuralsearch.MatchResult;
 import com.intellij.structuralsearch.Matcher;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.Utils;
 import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRule;
-import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
 
 import java.util.List;
 
 public class DataDrivenTypeConversionRule extends TypeConversionRule {
     private static final int MAX_PARENTS_TO_LIFT_UP = 2;
-
-    private List<MatchResult> findMatches(PsiElement sourceElement, String pattern) {
-        final MatchOptions options = new MatchOptions();
-        options.setSearchPattern(pattern);
-        options.setFileType(JavaFileType.INSTANCE);
-        final Matcher matcher = new Matcher(sourceElement.getProject(), options);
-        return matcher.testFindMatches(sourceElement.getText(), false, JavaFileType.INSTANCE, false);
-    }
+    private Project project;
 
     @Override
     public @Nullable TypeConversionDescriptorBase findConversion(
             PsiType from, PsiType to, PsiMember member, PsiExpression context, TypeMigrationLabeler labeler
     ) {
-        PsiElement current = context;
         if (context == null) {
             return null;
         }
+
+        this.project = context.getProject();
+        PsiElement currentContext = context;
+
         int parentsPassed = 0;
-        DataDrivenTypeMigrationRule bestRule = null;
+        DataDrivenTypeMigrationRule bestMatchedRule = null;
         while (parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
-            DataDrivenTypeMigrationRulesDescriptor descriptor =
-                    DataDrivenRulesStorage.findDescriptor(from.getCanonicalText(), to.getCanonicalText());
+            final var descriptor = DataDrivenRulesStorage.findDescriptor(from.getCanonicalText(), to.getCanonicalText());
             if (descriptor != null) {
-                List<DataDrivenTypeMigrationRule> rules = descriptor.getRules();
+                final List<DataDrivenTypeMigrationRule> rules = descriptor.getRules();
                 for (var rule : rules) {
-                    List<MatchResult> matches = findMatches(current, rule.getExpressionBefore());
+                    List<MatchResult> matches = findMatches(currentContext.getText(), rule.getExpressionBefore());
                     if (!matches.isEmpty()) {
-                        if (bestRule == null
-                                || bestRule.getExpressionBefore().length() < rule.getExpressionBefore().length()) {
-                            // TODO: number of psi nodes
-                            bestRule = rule;
+                        if (bestMatchedRule == null) {
+                            bestMatchedRule = rule;
+                            continue;
+                        }
+                        final var ruleTokens = Utils.splitByTokens(rule.getExpressionBefore());
+                        final var bestMatchedRuleTokens = Utils.splitByTokens(bestMatchedRule.getExpressionBefore());
+                        if (bestMatchedRuleTokens.length < ruleTokens.length) {
+                            bestMatchedRule = rule;
                         }
                     }
                 }
             }
-            current = current.getParent();
+            currentContext = currentContext.getParent();
             parentsPassed++;
         }
-        if (bestRule != null) {
-            return new TypeConversionDescriptor(bestRule.getExpressionBefore(), bestRule.getExpressionAfter());
+        if (bestMatchedRule != null) {
+            return new TypeConversionDescriptor(
+                    bestMatchedRule.getExpressionBefore(),
+                    bestMatchedRule.getExpressionAfter()
+            );
         }
         return null;
+    }
+
+    private List<MatchResult> findMatches(String source, String pattern) {
+        final MatchOptions options = new MatchOptions();
+        options.setSearchPattern(pattern);
+        options.setFileType(JavaFileType.INSTANCE);
+        final Matcher matcher = new Matcher(project, options);
+        return matcher.testFindMatches(source, false, JavaFileType.INSTANCE, false);
     }
 }
