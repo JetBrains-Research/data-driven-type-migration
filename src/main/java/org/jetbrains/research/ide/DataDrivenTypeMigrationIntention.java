@@ -30,7 +30,6 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-        // TODO: check for appropriate rule
         PsiTypeElement parentType = Utils.getHighestParentOfType(element, PsiTypeElement.class);
         if (parentType != null) {
             String parentTypeQualifiedName = parentType.getType().getCanonicalText();

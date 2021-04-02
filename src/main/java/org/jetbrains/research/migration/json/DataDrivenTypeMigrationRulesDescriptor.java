@@ -6,20 +6,20 @@ import java.util.List;
 
 public class DataDrivenTypeMigrationRulesDescriptor {
     @SerializedName("From")
-    private String fromType;
+    private String sourceType;
 
     @SerializedName("To")
-    private String toType;
+    private String targetType;
 
     @SerializedName("Rules")
     private List<DataDrivenTypeMigrationRule> rules;
 
-    public String getToType() {
-        return toType;
+    public String getTargetType() {
+        return targetType;
     }
 
-    public String getFromType() {
-        return fromType;
+    public String getSourceType() {
+        return sourceType;
     }
 
     public List<DataDrivenTypeMigrationRule> getRules() {

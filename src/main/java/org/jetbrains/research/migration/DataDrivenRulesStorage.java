@@ -49,21 +49,27 @@ public class DataDrivenRulesStorage {
     public static List<DataDrivenTypeMigrationRulesDescriptor> getRulesDescriptorsBySourceType(String sourceType) {
         return rulesDescriptors.stream()
                 .filter(descriptor -> {
-                    if (descriptor.getFromType().equals(sourceType)) {
+                    if (descriptor.getSourceType().equals(sourceType)) {
                         return true;
                     }
-                    if (sourceType.contains(descriptor.getFromType())) {
+                    if (sourceType.contains(descriptor.getSourceType())) {
                         return false;
                     }
-                    return !Utils.findMatches(sourceType, descriptor.getFromType()).isEmpty();
+                    return !Utils.findMatches(sourceType, descriptor.getSourceType()).isEmpty();
                 })
                 .collect(Collectors.toList());
     }
 
     @Nullable
-    public static DataDrivenTypeMigrationRulesDescriptor findDescriptor(String fromType, String toType) {
+    public static DataDrivenTypeMigrationRulesDescriptor findDescriptor(String sourceType, String targetType) {
         for (var descriptor : rulesDescriptors) {
-            if (descriptor.getFromType().equals(fromType) && descriptor.getToType().equals(toType)) {
+            if (descriptor.getSourceType().equals(sourceType) && descriptor.getTargetType().equals(targetType)) {
+                return descriptor;
+            }
+            if (sourceType.contains(descriptor.getSourceType())) {
+                continue;
+            }
+            if (!Utils.findMatches(sourceType, descriptor.getSourceType()).isEmpty()) {
                 return descriptor;
             }
         }
