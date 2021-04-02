@@ -1,6 +1,5 @@
 package org.jetbrains.research.migration;
 
-import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiExpression;
@@ -10,11 +9,9 @@ import com.intellij.refactoring.typeMigration.TypeConversionDescriptor;
 import com.intellij.refactoring.typeMigration.TypeConversionDescriptorBase;
 import com.intellij.refactoring.typeMigration.TypeMigrationLabeler;
 import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
-import com.intellij.structuralsearch.MatchOptions;
 import com.intellij.structuralsearch.MatchResult;
-import com.intellij.structuralsearch.Matcher;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.Utils;
+import org.jetbrains.research.utils.StringUtils;
 import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRule;
 
 import java.util.List;
@@ -41,14 +38,14 @@ public class DataDrivenTypeConversionRule extends TypeConversionRule {
             if (descriptor != null) {
                 final List<DataDrivenTypeMigrationRule> rules = descriptor.getRules();
                 for (var rule : rules) {
-                    List<MatchResult> matches = Utils.findMatches(currentContext.getText(), rule.getExpressionBefore());
+                    List<MatchResult> matches = StringUtils.findMatches(currentContext.getText(), rule.getExpressionBefore());
                     if (!matches.isEmpty()) {
                         if (bestMatchedRule == null) {
                             bestMatchedRule = rule;
                             continue;
                         }
-                        final var ruleTokens = Utils.splitByTokens(rule.getExpressionBefore());
-                        final var bestMatchedRuleTokens = Utils.splitByTokens(bestMatchedRule.getExpressionBefore());
+                        final var ruleTokens = StringUtils.splitByTokens(rule.getExpressionBefore());
+                        final var bestMatchedRuleTokens = StringUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
                         if (bestMatchedRuleTokens.length < ruleTokens.length) {
                             bestMatchedRule = rule;
                         }

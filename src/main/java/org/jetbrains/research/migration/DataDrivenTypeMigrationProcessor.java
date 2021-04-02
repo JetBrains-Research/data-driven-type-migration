@@ -1,17 +1,18 @@
 package org.jetbrains.research.migration;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.SearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.typeMigration.TypeMigrationProcessor;
 import com.intellij.refactoring.typeMigration.TypeMigrationRules;
 import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.util.Functions;
-import org.jetbrains.research.Utils;
+import org.jetbrains.research.utils.PsiUtils;
+import org.jetbrains.research.utils.StringUtils;
 import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
 
 import java.util.HashSet;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class DataDrivenTypeMigrationProcessor {
+    private static final Logger LOG = Logger.getInstance(DataDrivenRulesStorage.class);
 
     private final Project project;
     private final PsiElement element;
@@ -29,10 +31,17 @@ public class DataDrivenTypeMigrationProcessor {
     }
 
     public void migrate(DataDrivenTypeMigrationRulesDescriptor descriptor) {
-        PsiLocalVariable root = PsiTreeUtil.getParentOfType(element, PsiLocalVariable.class);
+        PsiTypeElement rootType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
+        PsiElement root;
+        if (rootType != null) {
+            root = rootType.getParent();
+        } else {
+            LOG.error("Type of migration root is null");
+            return;
+        }
 
-        String targetType = Utils.substituteTypeByPattern(
-                Objects.requireNonNull(root).getType(),
+        String targetType = StringUtils.substituteTypeByPattern(
+                Objects.requireNonNull(PsiUtils.getExpectedType(root)),
                 descriptor.getSourceType(),
                 descriptor.getTargetType()
         );
@@ -49,7 +58,7 @@ public class DataDrivenTypeMigrationProcessor {
         TypeMigrationProcessor migrationProcessor = new TypeMigrationProcessor(
                 project,
                 new PsiElement[]{root},
-                Functions.constant(Utils.getType(myTypeCodeFragment)),
+                Functions.constant(PsiUtils.getTypeOfCodeFragment(myTypeCodeFragment)),
                 rules,
                 true
         );

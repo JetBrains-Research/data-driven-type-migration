@@ -12,7 +12,7 @@ import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.Utils;
+import org.jetbrains.research.utils.PsiUtils;
 import org.jetbrains.research.migration.DataDrivenRulesStorage;
 
 import java.util.Objects;
@@ -30,7 +30,7 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-        PsiTypeElement parentType = Utils.getHighestParentOfType(element, PsiTypeElement.class);
+        PsiTypeElement parentType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
         if (parentType != null) {
             String parentTypeQualifiedName = parentType.getType().getCanonicalText();
             return !DataDrivenRulesStorage.getRulesDescriptorsBySourceType(parentTypeQualifiedName).isEmpty();
@@ -41,7 +41,7 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
-        PsiType rootType = Objects.requireNonNull(Utils.getHighestParentOfType(element, PsiTypeElement.class)).getType();
+        PsiType rootType = Objects.requireNonNull(PsiUtils.getHighestParentOfType(element, PsiTypeElement.class)).getType();
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeMigrationsListPopupStep(
                         "Type Migration Rules",
