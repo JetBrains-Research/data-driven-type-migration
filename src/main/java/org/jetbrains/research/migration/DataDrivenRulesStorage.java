@@ -45,9 +45,9 @@ public class DataDrivenRulesStorage {
         return rulesDescriptors;
     }
 
-    public static List<DataDrivenTypeMigrationRulesDescriptor> getAndFilterDescriptors(String typeFilter) {
+    public static List<DataDrivenTypeMigrationRulesDescriptor> getRulesDescriptorsByTypeFrom(String typeFrom) {
         return rulesDescriptors.stream()
-                .filter(it -> it.getFromType().equals(typeFilter))
+                .filter(it -> it.getFromType().equals(typeFrom))
                 .collect(Collectors.toList());
     }
 

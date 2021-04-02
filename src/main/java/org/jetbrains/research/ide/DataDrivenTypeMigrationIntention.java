@@ -3,7 +3,6 @@ package org.jetbrains.research.ide;
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -32,7 +31,12 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
         // TODO: check for appropriate rule
-        return PsiTreeUtil.getParentOfType(element, PsiTypeElement.class) != null;
+        PsiTypeElement parentType = PsiTreeUtil.getParentOfType(element, PsiTypeElement.class);
+        if (parentType != null) {
+            String parentTypeQualifiedName = parentType.getType().getCanonicalText();
+            return !DataDrivenRulesStorage.getRulesDescriptorsByTypeFrom(parentTypeQualifiedName).isEmpty();
+        }
+        return false;
     }
 
     @Override
@@ -42,7 +46,7 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeMigrationsListPopupStep(
                         "Type Migration Rules",
-                        DataDrivenRulesStorage.getAndFilterDescriptors(rootType.getCanonicalText()),
+                        DataDrivenRulesStorage.getRulesDescriptorsByTypeFrom(rootType.getCanonicalText()),
                         element, project
                 )
         );
