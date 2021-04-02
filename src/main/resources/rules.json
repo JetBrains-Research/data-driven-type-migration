@@ -5,15 +5,15 @@
     "Rules": [
       {
         "Before": "new File($1$, $2$)",
-        "After": "Paths.get($1$, $2$)"
+        "After": "java.nio.file.Paths.get($1$, $2$)"
       },
       {
         "Before": "new File($1$)",
-        "After": "Paths.get($1$)"
+        "After": "java.nio.file.Paths.get($1$)"
       },
       {
         "Before": "$1$.exists()",
-        "After": "Files.exists($1$)"
+        "After": "java.nio.file.Files.exists($1$)"
       },
       {
         "Before": "$1$.getName()",
@@ -21,11 +21,11 @@
       },
       {
         "Before": "$1$.isFile()",
-        "After": "Files.isRegularFile($1$)"
+        "After": "java.nio.file.Files.isRegularFile($1$)"
       },
       {
         "Before": "$1$.mkdir()",
-        "After": "Files.createDirectory($1$)"
+        "After": "java.nio.file.Files.createDirectory($1$)"
       },
       {
         "Before": "$1$.getAbsolutePath()",
@@ -33,15 +33,15 @@
       },
       {
         "Before": "$1$.canWrite()",
-        "After": "Files.isWritable($1$)"
+        "After": "java.nio.file.Files.isWritable($1$)"
       },
       {
         "Before": "$1$.delete()",
-        "After": "Files.delete($1$)"
+        "After": "java.nio.file.Files.delete($1$)"
       },
       {
         "Before": "$1$.canRead()",
-        "After": "Files.isReadable($1$)"
+        "After": "java.nio.file.Files.isReadable($1$)"
       },
       {
         "Before": "$1$",
@@ -63,7 +63,7 @@
       },
       {
         "Before": "$1$",
-        "After": "Patterns.compile($1$)"
+        "After": "java.util.regex.Pattern.compile($1$)"
       },
       {
         "Before": "$1$",
@@ -72,8 +72,8 @@
     ]
   },
   {
-    "From": "java.util.List",
-    "To": "java.util.Set",
+    "From": "java.util.List<$1$>",
+    "To": "java.util.Set<$2$>",
     "Rules": [
       {
         "Before": "Lists.newArrayList()",
