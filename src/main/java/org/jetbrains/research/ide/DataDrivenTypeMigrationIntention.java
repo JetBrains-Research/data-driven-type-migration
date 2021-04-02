@@ -10,7 +10,6 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.Utils;
@@ -35,7 +34,7 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
         PsiTypeElement parentType = Utils.getHighestParentOfType(element, PsiTypeElement.class);
         if (parentType != null) {
             String parentTypeQualifiedName = parentType.getType().getCanonicalText();
-            return !DataDrivenRulesStorage.getRulesDescriptorsByTypeFrom(parentTypeQualifiedName).isEmpty();
+            return !DataDrivenRulesStorage.getRulesDescriptorsBySourceType(parentTypeQualifiedName).isEmpty();
         }
         return false;
     }
@@ -47,7 +46,7 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeMigrationsListPopupStep(
                         "Type Migration Rules",
-                        DataDrivenRulesStorage.getRulesDescriptorsByTypeFrom(rootType.getCanonicalText()),
+                        DataDrivenRulesStorage.getRulesDescriptorsBySourceType(rootType.getCanonicalText()),
                         element, project
                 )
         );

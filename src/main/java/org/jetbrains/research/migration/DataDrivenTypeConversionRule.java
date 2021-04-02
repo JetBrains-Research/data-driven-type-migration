@@ -41,7 +41,7 @@ public class DataDrivenTypeConversionRule extends TypeConversionRule {
             if (descriptor != null) {
                 final List<DataDrivenTypeMigrationRule> rules = descriptor.getRules();
                 for (var rule : rules) {
-                    List<MatchResult> matches = findMatches(currentContext.getText(), rule.getExpressionBefore());
+                    List<MatchResult> matches = Utils.findMatches(currentContext.getText(), rule.getExpressionBefore());
                     if (!matches.isEmpty()) {
                         if (bestMatchedRule == null) {
                             bestMatchedRule = rule;
@@ -65,13 +65,5 @@ public class DataDrivenTypeConversionRule extends TypeConversionRule {
             );
         }
         return null;
-    }
-
-    private List<MatchResult> findMatches(String source, String pattern) {
-        final MatchOptions options = new MatchOptions();
-        options.setSearchPattern(pattern);
-        options.setFileType(JavaFileType.INSTANCE);
-        final Matcher matcher = new Matcher(project, options);
-        return matcher.testFindMatches(source, false, JavaFileType.INSTANCE, false);
     }
 }

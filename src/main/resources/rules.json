@@ -73,7 +73,7 @@
   },
   {
     "From": "java.util.List<$1$>",
-    "To": "java.util.Set<$2$>",
+    "To": "java.util.Set<$1$>",
     "Rules": [
       {
         "Before": "Lists.newArrayList()",

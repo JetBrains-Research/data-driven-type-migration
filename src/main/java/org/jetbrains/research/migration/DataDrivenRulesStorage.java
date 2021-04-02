@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.Utils;
 import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
 
 import java.io.BufferedReader;
@@ -45,9 +46,17 @@ public class DataDrivenRulesStorage {
         return rulesDescriptors;
     }
 
-    public static List<DataDrivenTypeMigrationRulesDescriptor> getRulesDescriptorsByTypeFrom(String typeFrom) {
+    public static List<DataDrivenTypeMigrationRulesDescriptor> getRulesDescriptorsBySourceType(String sourceType) {
         return rulesDescriptors.stream()
-                .filter(it -> it.getFromType().equals(typeFrom))
+                .filter(descriptor -> {
+                    if (descriptor.getFromType().equals(sourceType)) {
+                        return true;
+                    }
+                    if (sourceType.contains(descriptor.getFromType())) {
+                        return false;
+                    }
+                    return !Utils.findMatches(sourceType, descriptor.getFromType()).isEmpty();
+                })
                 .collect(Collectors.toList());
     }
 
