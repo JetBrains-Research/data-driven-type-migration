@@ -79,26 +79,7 @@ public class DataDrivenTypeMigrationProcessor {
                     migrationProcessor.getLabeler().getFailedConversionsReport(),
                     project
             );
-            if (!dialog.showAndGet()) {
-                final int exitCode = dialog.getExitCode();
-                if (exitCode == FailedConversionsDialog.VIEW_USAGES_EXIT_CODE) {
-                    MigrationPanel panel = new MigrationPanel(
-                            new PsiElement[]{root},
-                            migrationProcessor.getLabeler(),
-                            project,
-                            true
-                    );
-                    String rootDescription = RefactoringUIUtil.getDescription(root, false);
-                    String name = JavaBundle.message(
-                            "type.migration.single.root.toolwindow.title", rootDescription, rootType.getText(), targetType
-                    );
-                    Content content = UsageViewContentManager
-                            .getInstance(project)
-                            .addContent(XmlStringUtil.wrapInHtml(name), false, panel, true, true);
-                    panel.setContent(content);
-                    ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND).activate(null);
-                }
-            }
+            dialog.showAndGet();
         }
 
         migrationProcessor.performRefactoring(usages);
