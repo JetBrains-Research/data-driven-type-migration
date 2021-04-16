@@ -1,5 +1,6 @@
 package org.jetbrains.research.migration;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiMember;
@@ -17,6 +18,7 @@ import java.util.List;
 
 public class DataDrivenTypeConversionRule extends TypeConversionRule {
     private static final int MAX_PARENTS_TO_LIFT_UP = 2;
+    private static final Logger LOG = Logger.getInstance(DataDrivenRulesStorage.class);
 
     @Override
     public @Nullable TypeConversionDescriptorBase findConversion(
@@ -60,12 +62,14 @@ public class DataDrivenTypeConversionRule extends TypeConversionRule {
             currentContext = currentContext.getParent();
             parentsPassed++;
         }
+
         if (bestMatchedRule != null) {
             return new TypeConversionDescriptor(
                     bestMatchedRule.getExpressionBefore(),
                     bestMatchedRule.getExpressionAfter()
             );
         }
+
         return null;
     }
 }

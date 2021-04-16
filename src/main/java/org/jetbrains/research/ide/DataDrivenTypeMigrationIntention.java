@@ -1,5 +1,6 @@
 package org.jetbrains.research.ide;
 
+import com.intellij.codeInsight.intention.PriorityAction;
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
@@ -12,12 +13,12 @@ import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.utils.PsiUtils;
 import org.jetbrains.research.migration.DataDrivenRulesStorage;
+import org.jetbrains.research.utils.PsiUtils;
 
 import java.util.Objects;
 
-public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAction {
+public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAction implements PriorityAction {
     @Override
     public @NotNull @IntentionFamilyName String getFamilyName() {
         return "Data-driven type migration";
@@ -50,5 +51,10 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
                 )
         );
         suggestionsPopup.showInBestPositionFor(editor);
+    }
+
+    @Override
+    public PriorityAction.@NotNull Priority getPriority() {
+        return PriorityAction.Priority.TOP;
     }
 }
