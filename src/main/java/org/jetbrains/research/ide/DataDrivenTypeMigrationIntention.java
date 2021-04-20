@@ -42,7 +42,9 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
-        PsiType rootType = Objects.requireNonNull(PsiUtils.getHighestParentOfType(element, PsiTypeElement.class)).getType();
+        PsiType rootType = Objects.requireNonNull(
+                PsiUtils.getHighestParentOfType(element, PsiTypeElement.class)
+        ).getType();
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeMigrationsListPopupStep(
                         "Type Migration Rules",
@@ -54,7 +56,7 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
     }
 
     @Override
-    public PriorityAction.@NotNull Priority getPriority() {
+    public @NotNull Priority getPriority() {
         return PriorityAction.Priority.TOP;
     }
 }

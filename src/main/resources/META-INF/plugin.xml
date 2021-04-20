@@ -13,14 +13,16 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+
         <postStartupActivity implementation="org.jetbrains.research.ide.TypeMigrationStartupActivity"/>
-        <intentionAction>
-            <className>org.jetbrains.research.ide.DataDrivenTypeMigrationIntention</className>
-            <category>Type migration</category>
-        </intentionAction>
+
+<!--        <intentionAction>-->
+<!--            <className>org.jetbrains.research.ide.DataDrivenTypeMigrationIntention</className>-->
+<!--            <category>Type migration</category>-->
+<!--        </intentionAction>-->
+
+        <intentionMenuContributor implementation="org.jetbrains.research.ide.MySuggestedRefactoringIntentionContributor"/>
+
     </extensions>
 
-    <actions>
-        <!-- Add your actions here -->
-    </actions>
 </idea-plugin>
