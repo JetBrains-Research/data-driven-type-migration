@@ -10,15 +10,18 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-class MySuggestedRefactoringIntentionContributor implements IntentionMenuContributor {
+class TypeMigrationIntentionContributor implements IntentionMenuContributor {
     private final Icon icon = AllIcons.Actions.SuggestedRefactoringBulb;
 
     @Override
     public void collectActions(@NotNull Editor hostEditor,
                                @NotNull PsiFile hostFile,
-                               ShowIntentionsPass.@NotNull IntentionsInfo intentions,
+                               @NotNull ShowIntentionsPass.IntentionsInfo intentions,
                                int passIdToShowIntentionsFor,
                                int offset) {
+        final var state = TypeMigrationRefactoringProviderImpl.getInstance(hostEditor.getProject()).getState();
+        if (!state.shouldProvideRefactoring(offset)) return;
+
         final var intention = new DataDrivenTypeMigrationIntention();
 
         // we add it into 'errorFixesToShow' if it's not empty to always be at the top of the list
@@ -30,6 +33,5 @@ class MySuggestedRefactoringIntentionContributor implements IntentionMenuContrib
         collectionToAdd.add(0, new HighlightInfo.IntentionActionDescriptor(
                 intention, null, null, icon, null, null, null)
         );
-
     }
 }

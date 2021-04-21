@@ -16,12 +16,20 @@
 
         <postStartupActivity implementation="org.jetbrains.research.ide.TypeMigrationStartupActivity"/>
 
-<!--        <intentionAction>-->
-<!--            <className>org.jetbrains.research.ide.DataDrivenTypeMigrationIntention</className>-->
-<!--            <category>Type migration</category>-->
-<!--        </intentionAction>-->
+        <!--        <intentionAction>-->
+        <!--            <className>org.jetbrains.research.ide.DataDrivenTypeMigrationIntention</className>-->
+        <!--            <category>Type migration</category>-->
+        <!--        </intentionAction>-->
 
-        <intentionMenuContributor implementation="org.jetbrains.research.ide.MySuggestedRefactoringIntentionContributor"/>
+        <projectService serviceInterface="org.jetbrains.research.ide.TypeMigrationRefactoringProvider"
+                        serviceImplementation="org.jetbrains.research.ide.TypeMigrationRefactoringProviderImpl"/>
+
+        <postStartupActivity implementation="org.jetbrains.research.ide.TypeMigrationRefactoringProviderImpl$Startup"/>
+
+        <!--suppress PluginXmlValidity -->
+        <intentionMenuContributor
+                implementation="org.jetbrains.research.ide.TypeMigrationIntentionContributor"/>
+
 
     </extensions>
 

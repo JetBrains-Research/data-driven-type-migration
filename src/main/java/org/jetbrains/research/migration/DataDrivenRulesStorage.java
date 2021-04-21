@@ -4,8 +4,8 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.utils.StringUtils;
 import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
+import org.jetbrains.research.utils.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,6 +44,26 @@ public class DataDrivenRulesStorage {
 
     public static List<DataDrivenTypeMigrationRulesDescriptor> getRulesDescriptors() {
         return rulesDescriptors;
+    }
+
+    public static List<DataDrivenTypeMigrationRulesDescriptor> getRulesDescriptorsByTargetType(String targetType) {
+        return rulesDescriptors.stream()
+                .filter(descriptor -> {
+
+                    // Full match
+                    if (descriptor.getTargetType().equals(targetType)) {
+                        return true;
+                    }
+
+                    // Preventing incorrect matches for generic types, such as from List<String> to String
+                    if (targetType.contains(descriptor.getTargetType())) {
+                        return false;
+                    }
+
+                    // Matching complicated cases with substitutions, such as List<String> to List<$1$>
+                    return !StringUtils.findMatches(targetType, descriptor.getTargetType()).isEmpty();
+                })
+                .collect(Collectors.toList());
     }
 
     public static List<DataDrivenTypeMigrationRulesDescriptor> getRulesDescriptorsBySourceType(String sourceType) {

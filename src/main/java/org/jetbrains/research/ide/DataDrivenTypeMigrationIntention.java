@@ -31,12 +31,13 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-        PsiTypeElement parentType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
-        if (parentType != null) {
-            String parentTypeQualifiedName = parentType.getType().getCanonicalText();
-            return !DataDrivenRulesStorage.getRulesDescriptorsBySourceType(parentTypeQualifiedName).isEmpty();
-        }
-        return false;
+//        PsiTypeElement parentType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
+//        if (parentType != null) {
+//            String parentTypeQualifiedName = parentType.getType().getCanonicalText();
+//            return !DataDrivenRulesStorage.getRulesDescriptorsBySourceType(parentTypeQualifiedName).isEmpty();
+//        }
+//        return false;
+        return true;
     }
 
     @Override
