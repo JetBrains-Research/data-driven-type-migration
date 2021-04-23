@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide;
+package org.jetbrains.research.ide.intentions;
 
 import com.intellij.codeInsight.intention.PriorityAction;
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction;

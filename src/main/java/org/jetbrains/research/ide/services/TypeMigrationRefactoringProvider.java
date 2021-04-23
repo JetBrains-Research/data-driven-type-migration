@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide;
+package org.jetbrains.research.ide.services;
 
 import com.intellij.openapi.project.Project;
 

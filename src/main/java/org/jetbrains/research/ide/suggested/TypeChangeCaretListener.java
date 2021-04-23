@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide;
+package org.jetbrains.research.ide.suggested;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.CaretEvent;
@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.ide.services.TypeMigrationRefactoringProviderImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class TypeChangeCaretListener implements CaretListener {
                 HighlighterTargetArea.EXACT_RANGE
         );
 
-        highlighter.setGutterIconRenderer(new MyGutterIconRenderer(offset));
+        highlighter.setGutterIconRenderer(new TypeMigrationGutterIconRenderer(offset));
         editorsAndHighlighters.put(editor, highlighter);
     }
 }

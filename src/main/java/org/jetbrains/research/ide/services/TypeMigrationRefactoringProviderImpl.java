@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide;
+package org.jetbrains.research.ide.services;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.EditorFactory;
@@ -8,6 +8,9 @@ import com.intellij.openapi.editor.event.EditorFactoryListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.ide.suggested.TypeChangeCaretListener;
+import org.jetbrains.research.ide.suggested.TypeChangeDocumentListener;
+import org.jetbrains.research.ide.suggested.TypeMigrationSuggestedRefactoringState;
 
 public class TypeMigrationRefactoringProviderImpl implements TypeMigrationRefactoringProvider {
     private final TypeMigrationSuggestedRefactoringState state = new TypeMigrationSuggestedRefactoringState();

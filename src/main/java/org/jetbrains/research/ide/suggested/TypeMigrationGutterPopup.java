@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide;
+package org.jetbrains.research.ide.suggested;
 
 import com.intellij.util.ui.JBUI;
 
@@ -7,9 +7,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TypeMigrationPopup extends JPanel {
+public class TypeMigrationGutterPopup extends JPanel {
 
-    public TypeMigrationPopup(Runnable onRefactor) {
+    public TypeMigrationGutterPopup(Runnable onRefactor) {
         super.setLayout(new BorderLayout());
 
         final var buttonPanel = new JPanel();

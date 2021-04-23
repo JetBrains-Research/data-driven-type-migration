@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide;
+package org.jetbrains.research.ide.suggested;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -8,10 +8,11 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.ide.services.TypeMigrationRefactoringProviderImpl;
 import org.jetbrains.research.migration.DataDrivenRulesStorage;
 import org.jetbrains.research.utils.PsiUtils;
 
-class TypeChangeDocumentListener implements DocumentListener {
+public class TypeChangeDocumentListener implements DocumentListener {
     private static final Logger LOG = Logger.getInstance(DataDrivenRulesStorage.class);
 
     private final Project project;
