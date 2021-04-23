@@ -9,16 +9,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiType;
-import com.intellij.psi.PsiTypeElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.migration.DataDrivenRulesStorage;
-import org.jetbrains.research.utils.PsiUtils;
-
-import java.util.Objects;
 
 public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAction implements PriorityAction {
+    private final String sourceType;
+
+    public DataDrivenTypeMigrationIntention(String sourceType) {
+        this.sourceType = sourceType;
+    }
+
     @Override
     public @NotNull @IntentionFamilyName String getFamilyName() {
         return "Data-driven type migration";
@@ -31,25 +32,16 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-//        PsiTypeElement parentType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
-//        if (parentType != null) {
-//            String parentTypeQualifiedName = parentType.getType().getCanonicalText();
-//            return !DataDrivenRulesStorage.getRulesDescriptorsBySourceType(parentTypeQualifiedName).isEmpty();
-//        }
-//        return false;
         return true;
     }
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
-        PsiType rootType = Objects.requireNonNull(
-                PsiUtils.getHighestParentOfType(element, PsiTypeElement.class)
-        ).getType();
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeMigrationsListPopupStep(
                         "Type Migration Rules",
-                        DataDrivenRulesStorage.getRulesDescriptorsBySourceType(rootType.getCanonicalText()),
+                        DataDrivenRulesStorage.getRulesDescriptorsBySourceType(sourceType),
                         element, project
                 )
         );

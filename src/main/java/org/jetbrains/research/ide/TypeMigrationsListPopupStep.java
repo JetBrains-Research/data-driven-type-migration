@@ -7,23 +7,22 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
 import org.jetbrains.research.migration.DataDrivenTypeMigrationProcessor;
+import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
 
 import java.util.List;
 
 public class TypeMigrationsListPopupStep extends BaseListPopupStep<DataDrivenTypeMigrationRulesDescriptor> {
-
     private DataDrivenTypeMigrationRulesDescriptor selectedDescriptor = null;
     private final Project project;
-    private final PsiElement element;
+    private final PsiElement context;
 
     public TypeMigrationsListPopupStep(String caption,
                                        List<DataDrivenTypeMigrationRulesDescriptor> rulesDescriptors,
-                                       PsiElement element,
+                                       PsiElement context,
                                        Project project) {
         super(caption, rulesDescriptors);
-        this.element = element;
+        this.context = context;
         this.project = project;
     }
 
@@ -41,7 +40,7 @@ public class TypeMigrationsListPopupStep extends BaseListPopupStep<DataDrivenTyp
     @Override
     public @Nullable Runnable getFinalRunnable() {
         return () -> WriteCommandAction.runWriteCommandAction(project, () -> {
-            final var processor = new DataDrivenTypeMigrationProcessor(element, project);
+            final var processor = new DataDrivenTypeMigrationProcessor(context, project);
             processor.migrate(selectedDescriptor);
         });
     }

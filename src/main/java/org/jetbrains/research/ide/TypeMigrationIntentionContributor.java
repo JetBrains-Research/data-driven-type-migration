@@ -22,7 +22,8 @@ class TypeMigrationIntentionContributor implements IntentionMenuContributor {
         final var state = TypeMigrationRefactoringProviderImpl.getInstance(hostEditor.getProject()).getState();
         if (!state.shouldProvideRefactoring(offset)) return;
 
-        final var intention = new DataDrivenTypeMigrationIntention();
+        final String sourceType = state.getSourceTypeByOffset(offset).get();
+        final var intention = new DataDrivenTypeMigrationIntention(sourceType);
 
         // we add it into 'errorFixesToShow' if it's not empty to always be at the top of the list
         // we don't add into it if it's empty to keep the color of the bulb

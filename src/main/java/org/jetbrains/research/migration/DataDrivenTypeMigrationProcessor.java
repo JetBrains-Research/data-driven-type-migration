@@ -24,15 +24,15 @@ public class DataDrivenTypeMigrationProcessor {
     private static final Logger LOG = Logger.getInstance(DataDrivenRulesStorage.class);
 
     private final Project project;
-    private final PsiElement element;
+    private final PsiElement context;
 
-    public DataDrivenTypeMigrationProcessor(PsiElement element, Project project) {
-        this.element = element;
+    public DataDrivenTypeMigrationProcessor(PsiElement context, Project project) {
+        this.context = context;
         this.project = project;
     }
 
     public void migrate(DataDrivenTypeMigrationRulesDescriptor descriptor) {
-        PsiTypeElement rootType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
+        PsiTypeElement rootType = PsiUtils.getHighestParentOfType(context, PsiTypeElement.class);
         PsiElement root;
         if (rootType != null) {
             root = rootType.getParent();
@@ -49,7 +49,7 @@ public class DataDrivenTypeMigrationProcessor {
         PsiTypeCodeFragment myTypeCodeFragment = JavaCodeFragmentFactory
                 .getInstance(project)
                 .createTypeCodeFragment(targetType, root, true);
-        SearchScope scope = new LocalSearchScope(element.getContainingFile());
+        SearchScope scope = new LocalSearchScope(context.getContainingFile());
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
         rules.setBoundScope(scope);
