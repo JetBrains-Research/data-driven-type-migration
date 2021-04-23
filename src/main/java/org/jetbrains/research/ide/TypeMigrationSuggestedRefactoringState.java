@@ -4,6 +4,7 @@ import com.intellij.openapi.util.TextRange;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class TypeMigrationSuggestedRefactoringState {
     public final Map<TextRange, String> affectedTextRangeToSourceTypeName;
@@ -14,6 +15,13 @@ public class TypeMigrationSuggestedRefactoringState {
         this.showRefactoringOpportunity = false;
         this.affectedTextRangeToSourceTypeName = new HashMap<>();
         this.affectedTextRangeToTargetTypeName = new HashMap<>();
+    }
+
+    public Optional<String> getSourceTypeByOffset(int offset) {
+        return affectedTextRangeToSourceTypeName.keySet().stream()
+                .filter(it -> it.contains(offset))
+                .findFirst()
+                .map(affectedTextRangeToSourceTypeName::get);
     }
 
     public boolean shouldProvideRefactoring(int offset) {
