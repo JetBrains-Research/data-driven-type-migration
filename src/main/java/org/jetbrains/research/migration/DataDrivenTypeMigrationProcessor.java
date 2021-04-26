@@ -2,6 +2,9 @@ package org.jetbrains.research.migration;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowId;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.psi.search.LocalSearchScope;
@@ -10,8 +13,11 @@ import com.intellij.refactoring.typeMigration.TypeMigrationProcessor;
 import com.intellij.refactoring.typeMigration.TypeMigrationRules;
 import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
 import com.intellij.refactoring.typeMigration.ui.FailedConversionsDialog;
+import com.intellij.ui.content.Content;
 import com.intellij.usageView.UsageInfo;
+import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
+import org.jetbrains.research.ide.DataDrivenTypeMigrationPanel;
 import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
 import org.jetbrains.research.utils.PsiUtils;
 import org.jetbrains.research.utils.StringUtils;
@@ -71,7 +77,24 @@ public class DataDrivenTypeMigrationProcessor {
                     migrationProcessor.getLabeler().getFailedConversionsReport(),
                     project
             );
-            dialog.showAndGet();
+            if (!dialog.showAndGet()) {
+                final int exitCode = dialog.getExitCode();
+                if (exitCode == FailedConversionsDialog.VIEW_USAGES_EXIT_CODE) {
+                    final var panel = new DataDrivenTypeMigrationPanel(usages);
+                    Content content = UsageViewContentManager.getInstance(project).addContent(
+                            "Failed Type Conversions",
+                            false,
+                            panel,
+                            true,
+                            true
+                    );
+                    panel.setContent(content);
+                    ToolWindow toolWindow = Objects.requireNonNull(
+                            ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND)
+                    );
+                    toolWindow.activate(null);
+                }
+            }
         }
 
         migrationProcessor.performRefactoring(usages);
