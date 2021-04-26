@@ -17,7 +17,7 @@
       },
       {
         "Before": "$1$.getName()",
-        "After": "$1$.getFileName()"
+        "After": "$1$.getFileName().toString()"
       },
       {
         "Before": "$1$.isFile()",
@@ -44,6 +44,10 @@
         "After": "java.nio.file.Files.isReadable($1$)"
       },
       {
+        "Before": "$1$.isDirectory()",
+        "After": "java.nio.file.Files.isDirectory($1$)"
+      },
+      {
         "Before": "$1$",
         "After": "$1$.toFile()"
       },
@@ -62,8 +66,8 @@
         "After": "$2$.matcher($1$).matches()"
       },
       {
-        "Before": "$1$",
-        "After": "java.util.regex.Pattern.compile($1$)"
+        "Before": "String $1$ = $2$;",
+        "After": "java.util.regex.Pattern $1$ = java.util.regex.Pattern.compile($2$);"
       },
       {
         "Before": "$1$",
