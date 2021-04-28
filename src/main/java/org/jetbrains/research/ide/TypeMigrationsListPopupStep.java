@@ -8,7 +8,6 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
-import org.jetbrains.research.migration.DataDrivenTypeMigrationProcessor;
 
 import java.util.List;
 

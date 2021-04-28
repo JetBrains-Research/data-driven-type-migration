@@ -1,4 +1,4 @@
-package org.jetbrains.research.migration;
+package org.jetbrains.research.ide;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -17,7 +17,8 @@ import com.intellij.ui.content.Content;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
-import org.jetbrains.research.ide.DataDrivenTypeMigrationPanel;
+import org.jetbrains.research.migration.DataDrivenRulesStorage;
+import org.jetbrains.research.migration.DataDrivenTypeConversionRule;
 import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
 import org.jetbrains.research.utils.PsiUtils;
 import org.jetbrains.research.utils.StringUtils;
