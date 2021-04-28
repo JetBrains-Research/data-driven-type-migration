@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.suggested;
+package org.jetbrains.research.ide.refactoring;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.CaretEvent;
@@ -8,7 +8,7 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ide.services.TypeMigrationRefactoringProviderImpl;
+import org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class TypeChangeCaretListener implements CaretListener {
         final var project = editor.getProject();
         final int offset = Objects.requireNonNull(event.getCaret()).getOffset();
 
-        final var state = TypeMigrationRefactoringProviderImpl.getInstance(project).getState();
+        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
         if (!state.shouldProvideRefactoring(offset)) return;
 
         final var prevHighlighter = editorsAndHighlighters.get(editor);
@@ -53,7 +53,7 @@ public class TypeChangeCaretListener implements CaretListener {
                 HighlighterTargetArea.EXACT_RANGE
         );
 
-        highlighter.setGutterIconRenderer(new TypeMigrationGutterIconRenderer(offset));
+        highlighter.setGutterIconRenderer(new TypeChangeGutterIconRenderer(offset));
         editorsAndHighlighters.put(editor, highlighter);
     }
 }

@@ -14,22 +14,22 @@
 
     <extensions defaultExtensionNs="com.intellij">
 
-        <postStartupActivity implementation="org.jetbrains.research.ide.services.TypeMigrationStartupActivity"/>
+        <postStartupActivity implementation="org.jetbrains.research.ide.services.MyStartupActivity"/>
 
         <!--        <intentionAction>-->
-        <!--            <className>org.jetbrains.research.ide.intentions.DataDrivenTypeMigrationIntention</className>-->
+        <!--            <className>org.jetbrains.research.ide.intentions.TypeChangeIntention->
         <!--            <category>Type migration</category>-->
         <!--        </intentionAction>-->
 
-        <projectService serviceInterface="org.jetbrains.research.ide.services.TypeMigrationRefactoringProvider"
-                        serviceImplementation="org.jetbrains.research.ide.services.TypeMigrationRefactoringProviderImpl"/>
+        <projectService serviceInterface="org.jetbrains.research.ide.services.TypeChangeRefactoringProvider"
+                        serviceImplementation="org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl"/>
 
         <postStartupActivity
-                implementation="org.jetbrains.research.ide.services.TypeMigrationRefactoringProviderImpl$Startup"/>
+                implementation="org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl$Startup"/>
 
         <!--suppress PluginXmlValidity -->
         <intentionMenuContributor
-                implementation="org.jetbrains.research.ide.intentions.TypeMigrationIntentionContributor"/>
+                implementation="org.jetbrains.research.ide.intentions.TypeChangeIntentionContributor"/>
 
 
     </extensions>

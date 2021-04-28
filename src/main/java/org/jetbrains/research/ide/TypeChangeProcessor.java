@@ -1,4 +1,4 @@
-package org.jetbrains.research.migration;
+package org.jetbrains.research.ide;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -12,7 +12,9 @@ import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
 import com.intellij.refactoring.typeMigration.ui.FailedConversionsDialog;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.util.Functions;
-import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
+import org.jetbrains.research.migration.HeuristicTypeConversionRule;
+import org.jetbrains.research.migration.TypeChangeRulesStorage;
+import org.jetbrains.research.migration.json.TypeChangeRulesDescriptor;
 import org.jetbrains.research.utils.PsiUtils;
 import org.jetbrains.research.utils.StringUtils;
 
@@ -20,18 +22,18 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class DataDrivenTypeMigrationProcessor {
-    private static final Logger LOG = Logger.getInstance(DataDrivenRulesStorage.class);
+public class TypeChangeProcessor {
+    private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     private final Project project;
     private final PsiElement context;
 
-    public DataDrivenTypeMigrationProcessor(PsiElement context, Project project) {
+    public TypeChangeProcessor(PsiElement context, Project project) {
         this.context = context;
         this.project = project;
     }
 
-    public void migrate(DataDrivenTypeMigrationRulesDescriptor descriptor) {
+    public void migrate(TypeChangeRulesDescriptor descriptor) {
         PsiTypeElement rootType = PsiUtils.getHighestParentOfType(context, PsiTypeElement.class);
         PsiElement root;
         if (rootType != null) {
@@ -53,7 +55,7 @@ public class DataDrivenTypeMigrationProcessor {
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
         rules.setBoundScope(scope);
-        TypeConversionRule dataDrivenRule = new DataDrivenTypeConversionRule();
+        TypeConversionRule dataDrivenRule = new HeuristicTypeConversionRule();
         rules.addConversionDescriptor(dataDrivenRule);
 
         TypeMigrationProcessor migrationProcessor = new TypeMigrationProcessor(

@@ -6,9 +6,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.GlobalState;
-import org.jetbrains.research.ide.suggested.TypeChangeCaretListener;
+import org.jetbrains.research.ide.refactoring.TypeChangeCaretListener;
 
-public class TypeMigrationStartupActivity implements StartupActivity {
+public class MyStartupActivity implements StartupActivity {
     @Override
     public void runActivity(@NotNull Project project) {
         GlobalState.project = project;

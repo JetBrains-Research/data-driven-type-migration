@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.suggested;
+package org.jetbrains.research.ide.refactoring;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -8,12 +8,12 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.ide.services.TypeMigrationRefactoringProviderImpl;
-import org.jetbrains.research.migration.DataDrivenRulesStorage;
+import org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl;
+import org.jetbrains.research.migration.TypeChangeRulesStorage;
 import org.jetbrains.research.utils.PsiUtils;
 
 public class TypeChangeDocumentListener implements DocumentListener {
-    private static final Logger LOG = Logger.getInstance(DataDrivenRulesStorage.class);
+    private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     private final Project project;
     private final PsiDocumentManager psiDocumentManager;
@@ -26,7 +26,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
     @Override
     public void beforeDocumentChange(@NotNull DocumentEvent event) {
         try {
-            final var state = TypeMigrationRefactoringProviderImpl.getInstance(project).getState();
+            final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
             final var document = event.getDocument();
             var psiFile = psiDocumentManager.getCachedPsiFile(document);
 
@@ -40,7 +40,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
                 final var oldElementQualifiedName = getQualifiedName(oldElement);
 
                 if (oldElementQualifiedName != null) {
-                    if (!DataDrivenRulesStorage.getRulesDescriptorsBySourceType(oldElementQualifiedName).isEmpty()) {
+                    if (!TypeChangeRulesStorage.getRulesDescriptorsBySourceType(oldElementQualifiedName).isEmpty()) {
                         final var range = TextRange.from(
                                 oldElement.getTextOffset(),
                                 oldElement.getTextLength()
@@ -60,7 +60,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
         try {
             if (event.getOldLength() == 0 && event.getNewLength() == 0) return;
 
-            final var state = TypeMigrationRefactoringProviderImpl.getInstance(project).getState();
+            final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
             final var document = event.getDocument();
             var psiFile = psiDocumentManager.getCachedPsiFile(document);
             if (psiFile == null) return;
@@ -78,7 +78,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
             final var newElementQualifiedName = getQualifiedName(newElement);
 
             if (newElementQualifiedName != null) {
-                if (!DataDrivenRulesStorage.getRulesDescriptorsByTargetType(newElementQualifiedName).isEmpty()) {
+                if (!TypeChangeRulesStorage.getRulesDescriptorsByTargetType(newElementQualifiedName).isEmpty()) {
                     final var newRange = TextRange.from(
                             newElement.getTextOffset(),
                             newElement.getTextLength()

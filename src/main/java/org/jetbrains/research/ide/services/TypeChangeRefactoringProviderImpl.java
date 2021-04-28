@@ -8,23 +8,23 @@ import com.intellij.openapi.editor.event.EditorFactoryListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ide.suggested.TypeChangeCaretListener;
-import org.jetbrains.research.ide.suggested.TypeChangeDocumentListener;
-import org.jetbrains.research.ide.suggested.TypeMigrationSuggestedRefactoringState;
+import org.jetbrains.research.ide.refactoring.TypeChangeCaretListener;
+import org.jetbrains.research.ide.refactoring.TypeChangeDocumentListener;
+import org.jetbrains.research.ide.refactoring.TypeChangeSuggestedRefactoringState;
 
-public class TypeMigrationRefactoringProviderImpl implements TypeMigrationRefactoringProvider {
-    private final TypeMigrationSuggestedRefactoringState state = new TypeMigrationSuggestedRefactoringState();
+public class TypeChangeRefactoringProviderImpl implements TypeChangeRefactoringProvider {
+    private final TypeChangeSuggestedRefactoringState state = new TypeChangeSuggestedRefactoringState();
     public Project project;
 
-    public TypeMigrationRefactoringProviderImpl(Project project) {
+    public TypeChangeRefactoringProviderImpl(Project project) {
         this.project = project;
     }
 
-    public static TypeMigrationRefactoringProviderImpl getInstance(Project project) {
-        return (TypeMigrationRefactoringProviderImpl) TypeMigrationRefactoringProvider.getInstance(project);
+    public static TypeChangeRefactoringProviderImpl getInstance(Project project) {
+        return (TypeChangeRefactoringProviderImpl) TypeChangeRefactoringProvider.getInstance(project);
     }
 
-    public TypeMigrationSuggestedRefactoringState getState() {
+    public TypeChangeSuggestedRefactoringState getState() {
         return state;
     }
 

@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.suggested;
+package org.jetbrains.research.ide.refactoring;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -21,10 +21,10 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 
-public class TypeMigrationGutterIconRenderer extends GutterIconRenderer {
+public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
     private final int offset;
 
-    public TypeMigrationGutterIconRenderer(int offset) {
+    public TypeChangeGutterIconRenderer(int offset) {
         this.offset = offset;
     }
 
@@ -55,7 +55,7 @@ public class TypeMigrationGutterIconRenderer extends GutterIconRenderer {
             public void actionPerformed(@NotNull AnActionEvent e) {
                 final var project = e.getDataContext().getData(CommonDataKeys.PROJECT);
                 final var editor = e.getDataContext().getData(CommonDataKeys.EDITOR);
-                final var popup = new TypeMigrationGutterPopup(() -> {
+                final var popup = new TypeChangeGutterPopupPanel(() -> {
                 });
                 createAndShowBalloon(popup, editor);
             }

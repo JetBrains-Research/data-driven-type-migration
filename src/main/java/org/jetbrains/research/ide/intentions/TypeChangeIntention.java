@@ -11,12 +11,12 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.migration.DataDrivenRulesStorage;
+import org.jetbrains.research.migration.TypeChangeRulesStorage;
 
-public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAction implements PriorityAction {
+public class TypeChangeIntention extends PsiElementBaseIntentionAction implements PriorityAction {
     private final String sourceType;
 
-    public DataDrivenTypeMigrationIntention(String sourceType) {
+    public TypeChangeIntention(String sourceType) {
         this.sourceType = sourceType;
     }
 
@@ -39,9 +39,9 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
-                new TypeMigrationsListPopupStep(
+                new TypeChangesListPopupStep(
                         "Type Migration Rules",
-                        DataDrivenRulesStorage.getRulesDescriptorsBySourceType(sourceType),
+                        TypeChangeRulesStorage.getRulesDescriptorsBySourceType(sourceType),
                         element, project
                 )
         );

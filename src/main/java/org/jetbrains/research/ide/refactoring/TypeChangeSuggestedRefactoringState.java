@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.suggested;
+package org.jetbrains.research.ide.refactoring;
 
 import com.intellij.openapi.util.TextRange;
 
@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class TypeMigrationSuggestedRefactoringState {
+public class TypeChangeSuggestedRefactoringState {
     public final Map<TextRange, String> affectedTextRangeToSourceTypeName;
     public final Map<TextRange, String> affectedTextRangeToTargetTypeName;
     public volatile boolean showRefactoringOpportunity;
 
-    public TypeMigrationSuggestedRefactoringState() {
+    public TypeChangeSuggestedRefactoringState() {
         this.showRefactoringOpportunity = false;
         this.affectedTextRangeToSourceTypeName = new HashMap<>();
         this.affectedTextRangeToTargetTypeName = new HashMap<>();
