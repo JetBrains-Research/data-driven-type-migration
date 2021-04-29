@@ -14,9 +14,9 @@
     <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="org.jetbrains.research.ide.TypeMigrationStartupActivity"/>
+        <postStartupActivity implementation="org.jetbrains.research.ide.MyStartupActivity"/>
         <intentionAction>
-            <className>org.jetbrains.research.ide.DataDrivenTypeMigrationIntention</className>
+            <className>org.jetbrains.research.ide.TypeChangeIntention</className>
             <category>Type migration</category>
         </intentionAction>
     </extensions>

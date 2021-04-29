@@ -16,10 +16,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ex.ProgressIndicatorEx;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.migration.DataDrivenRulesStorage;
+import org.jetbrains.research.migration.TypeChangeRulesStorage;
 
 public class Utils {
-    private static final Logger LOG = Logger.getInstance(DataDrivenRulesStorage.class);
+    private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     public static void checkForCompilationErrors(PsiFile file, Document document, Project project) {
 

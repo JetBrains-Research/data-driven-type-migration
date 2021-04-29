@@ -5,7 +5,7 @@ import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.GlobalState;
 
-public class TypeMigrationStartupActivity implements StartupActivity {
+public class MyStartupActivity implements StartupActivity {
     @Override
     public void runActivity(@NotNull Project project) {
         GlobalState.project = project;

@@ -10,8 +10,8 @@ import com.intellij.util.ui.JBUI;
 import javax.swing.*;
 import java.awt.*;
 
-public class DataDrivenTypeMigrationPanel extends JPanel implements Disposable {
-    public DataDrivenTypeMigrationPanel(UsageInfo[] usages) {
+public class TypeChangePanel extends JPanel implements Disposable {
+    public TypeChangePanel(UsageInfo[] usages) {
         super(new BorderLayout());
         add(createToolbar(), BorderLayout.SOUTH);
     }

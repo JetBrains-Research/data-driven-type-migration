@@ -13,12 +13,12 @@ import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.migration.DataDrivenRulesStorage;
+import org.jetbrains.research.migration.TypeChangeRulesStorage;
 import org.jetbrains.research.utils.PsiUtils;
 
 import java.util.Objects;
 
-public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAction implements PriorityAction {
+public class TypeChangeIntention extends PsiElementBaseIntentionAction implements PriorityAction {
     @Override
     public @NotNull @IntentionFamilyName String getFamilyName() {
         return "Data-driven type migration";
@@ -34,7 +34,7 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
         PsiTypeElement parentType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
         if (parentType != null) {
             String parentTypeQualifiedName = parentType.getType().getCanonicalText();
-            return !DataDrivenRulesStorage.getRulesDescriptorsBySourceType(parentTypeQualifiedName).isEmpty();
+            return !TypeChangeRulesStorage.getRulesDescriptorsBySourceType(parentTypeQualifiedName).isEmpty();
         }
         return false;
     }
@@ -44,9 +44,9 @@ public class DataDrivenTypeMigrationIntention extends PsiElementBaseIntentionAct
             throws IncorrectOperationException {
         PsiType rootType = Objects.requireNonNull(PsiUtils.getHighestParentOfType(element, PsiTypeElement.class)).getType();
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
-                new TypeMigrationsListPopupStep(
+                new TypeChangesListPopupStep(
                         "Type Migration Rules",
-                        DataDrivenRulesStorage.getRulesDescriptorsBySourceType(rootType.getCanonicalText()),
+                        TypeChangeRulesStorage.getRulesDescriptorsBySourceType(rootType.getCanonicalText()),
                         element, project
                 )
         );

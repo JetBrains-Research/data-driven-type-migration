@@ -11,14 +11,14 @@ import com.intellij.refactoring.typeMigration.TypeMigrationLabeler;
 import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
 import com.intellij.structuralsearch.MatchResult;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRule;
+import org.jetbrains.research.migration.json.TypeChangeRule;
 import org.jetbrains.research.utils.StringUtils;
 
 import java.util.List;
 
-public class DataDrivenTypeConversionRule extends TypeConversionRule {
+public class HeuristicTypeConversionRule extends TypeConversionRule {
     private static final int MAX_PARENTS_TO_LIFT_UP = 2;
-    private static final Logger LOG = Logger.getInstance(DataDrivenRulesStorage.class);
+    private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     @Override
     public @Nullable TypeConversionDescriptorBase findConversion(
@@ -30,15 +30,15 @@ public class DataDrivenTypeConversionRule extends TypeConversionRule {
 
         PsiElement currentContext = context;
         int parentsPassed = 0;
-        DataDrivenTypeMigrationRule bestMatchedRule = null;
+        TypeChangeRule bestMatchedRule = null;
 
         while (parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
-            final var descriptor = DataDrivenRulesStorage.findDescriptor(
+            final var descriptor = TypeChangeRulesStorage.findDescriptor(
                     from.getCanonicalText(),
                     to.getCanonicalText()
             );
             if (descriptor != null) {
-                final List<DataDrivenTypeMigrationRule> rules = descriptor.getRules();
+                final List<TypeChangeRule> rules = descriptor.getRules();
                 for (var rule : rules) {
                     List<MatchResult> matches = StringUtils.findMatches(
                             currentContext.getText(),

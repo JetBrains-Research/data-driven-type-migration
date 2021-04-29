@@ -17,9 +17,9 @@ import com.intellij.ui.content.Content;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
-import org.jetbrains.research.migration.DataDrivenRulesStorage;
-import org.jetbrains.research.migration.DataDrivenTypeConversionRule;
-import org.jetbrains.research.migration.json.DataDrivenTypeMigrationRulesDescriptor;
+import org.jetbrains.research.migration.HeuristicTypeConversionRule;
+import org.jetbrains.research.migration.TypeChangeRulesStorage;
+import org.jetbrains.research.migration.json.TypeChangeRulesDescriptor;
 import org.jetbrains.research.utils.PsiUtils;
 import org.jetbrains.research.utils.StringUtils;
 
@@ -27,18 +27,18 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class DataDrivenTypeMigrationProcessor {
-    private static final Logger LOG = Logger.getInstance(DataDrivenRulesStorage.class);
+public class TypeChangeProcessor {
+    private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     private final Project project;
     private final PsiElement element;
 
-    public DataDrivenTypeMigrationProcessor(PsiElement element, Project project) {
+    public TypeChangeProcessor(PsiElement element, Project project) {
         this.element = element;
         this.project = project;
     }
 
-    public void migrate(DataDrivenTypeMigrationRulesDescriptor descriptor) {
+    public void migrate(TypeChangeRulesDescriptor descriptor) {
         PsiTypeElement rootType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
         PsiElement root;
         if (rootType != null) {
@@ -60,7 +60,7 @@ public class DataDrivenTypeMigrationProcessor {
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
         rules.setBoundScope(scope);
-        TypeConversionRule dataDrivenRule = new DataDrivenTypeConversionRule();
+        TypeConversionRule dataDrivenRule = new HeuristicTypeConversionRule();
         rules.addConversionDescriptor(dataDrivenRule);
 
         TypeMigrationProcessor migrationProcessor = new TypeMigrationProcessor(
@@ -81,7 +81,7 @@ public class DataDrivenTypeMigrationProcessor {
             if (!dialog.showAndGet()) {
                 final int exitCode = dialog.getExitCode();
                 if (exitCode == FailedConversionsDialog.VIEW_USAGES_EXIT_CODE) {
-                    final var panel = new DataDrivenTypeMigrationPanel(usages);
+                    final var panel = new TypeChangePanel(usages);
                     Content content = UsageViewContentManager.getInstance(project).addContent(
                             "Failed Type Conversions",
                             false,

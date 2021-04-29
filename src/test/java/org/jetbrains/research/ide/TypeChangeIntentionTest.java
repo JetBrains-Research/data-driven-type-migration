@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 
-public class DataDrivenTypeMigrationIntentionTest extends HeavyPlatformTestCase {
+public class TypeChangeIntentionTest extends HeavyPlatformTestCase {
     final String url = "https://github.com/JetBrains-Research/data-driven-type-migration.git";
     final String commitHashToCheckout = "9eaa67bb";
 

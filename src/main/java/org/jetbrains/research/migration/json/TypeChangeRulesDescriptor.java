@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class DataDrivenTypeMigrationRulesDescriptor {
+public class TypeChangeRulesDescriptor {
     @SerializedName("From")
     private String sourceType;
 
@@ -12,7 +12,7 @@ public class DataDrivenTypeMigrationRulesDescriptor {
     private String targetType;
 
     @SerializedName("Rules")
-    private List<DataDrivenTypeMigrationRule> rules;
+    private List<TypeChangeRule> rules;
 
     public String getTargetType() {
         return targetType;
@@ -22,7 +22,7 @@ public class DataDrivenTypeMigrationRulesDescriptor {
         return sourceType;
     }
 
-    public List<DataDrivenTypeMigrationRule> getRules() {
+    public List<TypeChangeRule> getRules() {
         return rules;
     }
 }
