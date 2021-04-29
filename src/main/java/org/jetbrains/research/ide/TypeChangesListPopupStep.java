@@ -40,8 +40,8 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangeRulesD
     @Override
     public @Nullable Runnable getFinalRunnable() {
         return () -> WriteCommandAction.runWriteCommandAction(project, () -> {
-            final var processor = new TypeChangeProcessor(element, project);
-            processor.migrate(selectedDescriptor);
+            final var processor = new TypeChangeProcessor(project);
+            processor.run(element, selectedDescriptor);
         });
     }
 }

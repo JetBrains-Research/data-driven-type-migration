@@ -12,11 +12,11 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.refactoring.typeMigration.TypeMigrationProcessor;
 import com.intellij.refactoring.typeMigration.TypeMigrationRules;
 import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
-import com.intellij.refactoring.typeMigration.ui.FailedConversionsDialog;
 import com.intellij.ui.content.Content;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.migration.HeuristicTypeConversionRule;
 import org.jetbrains.research.migration.TypeChangeRulesStorage;
 import org.jetbrains.research.migration.json.TypeChangeRulesDescriptor;
@@ -31,21 +31,47 @@ public class TypeChangeProcessor {
     private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     private final Project project;
-    private final PsiElement element;
 
-    public TypeChangeProcessor(PsiElement element, Project project) {
-        this.element = element;
+    public TypeChangeProcessor(Project project) {
         this.project = project;
     }
 
-    public void migrate(TypeChangeRulesDescriptor descriptor) {
+    public void run(PsiElement element, TypeChangeRulesDescriptor descriptor) {
+        final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
+        if (builtInProcessor == null) return;
+        final UsageInfo[] usages = builtInProcessor.findUsages();
+
+        if (builtInProcessor.hasFailedConversions()) {
+            final var panel = new FailedTypeChangesPanel(usages);
+            Content content = UsageViewContentManager.getInstance(project).addContent(
+                    "Failed Type Conversions",
+                    false,
+                    panel,
+                    true,
+                    true
+            );
+            panel.setContent(content);
+            ToolWindow toolWindow = Objects.requireNonNull(
+                    ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND)
+            );
+            toolWindow.activate(null);
+        }
+
+        builtInProcessor.performRefactoring(usages);
+        addAndOptimizeImports(project, usages);
+    }
+
+    private @Nullable TypeMigrationProcessor createBuiltInTypeMigrationProcessor(
+            PsiElement element,
+            TypeChangeRulesDescriptor descriptor
+    ) {
         PsiTypeElement rootType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
         PsiElement root;
         if (rootType != null) {
             root = rootType.getParent();
         } else {
             LOG.error("Type of migration root is null");
-            return;
+            return null;
         }
 
         String targetType = StringUtils.substituteTypeByPattern(
@@ -53,7 +79,8 @@ public class TypeChangeProcessor {
                 descriptor.getSourceType(),
                 descriptor.getTargetType()
         );
-        PsiTypeCodeFragment myTypeCodeFragment = JavaCodeFragmentFactory
+
+        PsiTypeCodeFragment typeCodeFragment = JavaCodeFragmentFactory
                 .getInstance(project)
                 .createTypeCodeFragment(targetType, root, true);
         SearchScope scope = new LocalSearchScope(element.getContainingFile());
@@ -63,43 +90,13 @@ public class TypeChangeProcessor {
         TypeConversionRule dataDrivenRule = new HeuristicTypeConversionRule();
         rules.addConversionDescriptor(dataDrivenRule);
 
-        TypeMigrationProcessor migrationProcessor = new TypeMigrationProcessor(
+        return new TypeMigrationProcessor(
                 project,
                 new PsiElement[]{root},
-                Functions.constant(PsiUtils.getTypeOfCodeFragment(myTypeCodeFragment)),
+                Functions.constant(PsiUtils.getTypeOfCodeFragment(typeCodeFragment)),
                 rules,
                 true
         );
-
-        final UsageInfo[] usages = migrationProcessor.findUsages();
-
-        if (migrationProcessor.hasFailedConversions()) {
-            FailedConversionsDialog dialog = new FailedConversionsDialog(
-                    migrationProcessor.getLabeler().getFailedConversionsReport(),
-                    project
-            );
-            if (!dialog.showAndGet()) {
-                final int exitCode = dialog.getExitCode();
-                if (exitCode == FailedConversionsDialog.VIEW_USAGES_EXIT_CODE) {
-                    final var panel = new TypeChangePanel(usages);
-                    Content content = UsageViewContentManager.getInstance(project).addContent(
-                            "Failed Type Conversions",
-                            false,
-                            panel,
-                            true,
-                            true
-                    );
-                    panel.setContent(content);
-                    ToolWindow toolWindow = Objects.requireNonNull(
-                            ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND)
-                    );
-                    toolWindow.activate(null);
-                }
-            }
-        }
-
-        migrationProcessor.performRefactoring(usages);
-        addAndOptimizeImports(project, usages);
     }
 
     private void addAndOptimizeImports(Project project, UsageInfo[] usages) {
