@@ -13,22 +13,25 @@ import org.jetbrains.research.migration.models.TypeChangePatternDescriptor;
 import java.util.List;
 
 public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatternDescriptor> {
-    private TypeChangePatternDescriptor selectedDescriptor = null;
+    private final Boolean isRootTypeAlreadyChanged;
     private final Project project;
     private final PsiElement context;
+    private TypeChangePatternDescriptor selectedPatternDescriptor = null;
 
     public TypeChangesListPopupStep(String caption,
                                     List<TypeChangePatternDescriptor> rulesDescriptors,
                                     PsiElement context,
-                                    Project project) {
+                                    Project project,
+                                    Boolean isRootTypeAlreadyChanged) {
         super(caption, rulesDescriptors);
         this.context = context;
         this.project = project;
+        this.isRootTypeAlreadyChanged = isRootTypeAlreadyChanged;
     }
 
     @Override
     public @Nullable PopupStep<?> onChosen(TypeChangePatternDescriptor selectedValue, boolean finalChoice) {
-        selectedDescriptor = selectedValue;
+        selectedPatternDescriptor = selectedValue;
         return super.onChosen(selectedValue, finalChoice);
     }
 
@@ -40,8 +43,8 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
     @Override
     public @Nullable Runnable getFinalRunnable() {
         return () -> WriteCommandAction.runWriteCommandAction(project, () -> {
-            final var processor = new TypeChangeProcessor(project);
-            processor.run(context, selectedDescriptor);
+            final var processor = new TypeChangeProcessor(project, isRootTypeAlreadyChanged);
+            processor.run(context, selectedPatternDescriptor);
         });
     }
 }

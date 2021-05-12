@@ -11,7 +11,6 @@ import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.refactoring.typeMigration.TypeMigrationProcessor;
 import com.intellij.refactoring.typeMigration.TypeMigrationRules;
-import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
 import com.intellij.ui.content.Content;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
@@ -23,7 +22,6 @@ import org.jetbrains.research.migration.HeuristicTypeConversionRule;
 import org.jetbrains.research.migration.TypeChangeRulesStorage;
 import org.jetbrains.research.migration.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.utils.PsiUtils;
-import org.jetbrains.research.utils.StringUtils;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -33,9 +31,11 @@ public class TypeChangeProcessor {
     private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     private final Project project;
+    private final Boolean isRootTypeAlreadyChanged;
 
-    public TypeChangeProcessor(Project project) {
+    public TypeChangeProcessor(Project project, Boolean isRootTypeAlreadyChanged) {
         this.project = project;
+        this.isRootTypeAlreadyChanged = isRootTypeAlreadyChanged;
     }
 
     public void run(PsiElement element, TypeChangePatternDescriptor descriptor) {
@@ -70,35 +70,38 @@ public class TypeChangeProcessor {
             PsiElement element,
             TypeChangePatternDescriptor descriptor
     ) {
-        PsiTypeElement rootType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
+        PsiTypeElement rootTypeElement = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
         PsiElement root;
-        if (rootType != null) {
-            root = rootType.getParent();
+        if (rootTypeElement != null) {
+            root = rootTypeElement.getParent();
         } else {
             LOG.error("Type of migration root is null");
             return null;
         }
 
-        String targetType = StringUtils.substituteTypeByPattern(
-                Objects.requireNonNull(PsiUtils.getExpectedType(root)),
-                descriptor.getSourceType(),
-                descriptor.getTargetType()
-        );
+        // In case of suggested refactoring intention
+        if (isRootTypeAlreadyChanged) {
+            final PsiType currentRootType = Objects.requireNonNull(PsiUtils.getExpectedType(root));
+            final String recoveredRootType = descriptor.resolveSourceType(currentRootType);
+            final PsiTypeElement recoveredRootTypeElement = PsiElementFactory.getInstance(project)
+                    .createTypeElementFromText(recoveredRootType, root);
+            rootTypeElement.replace(recoveredRootTypeElement);
+        }
 
-        PsiTypeCodeFragment typeCodeFragment = JavaCodeFragmentFactory
-                .getInstance(project)
+        final PsiType expectedRootType = Objects.requireNonNull(PsiUtils.getExpectedType(root));
+        String targetType = descriptor.resolveTargetType(expectedRootType);
+        PsiTypeCodeFragment targetTypeCodeFragment = JavaCodeFragmentFactory.getInstance(project)
                 .createTypeCodeFragment(targetType, root, true);
-        SearchScope scope = new LocalSearchScope(element.getContainingFile());
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
+        SearchScope scope = new LocalSearchScope(root.getContainingFile());
         rules.setBoundScope(scope);
-        TypeConversionRule dataDrivenRule = new HeuristicTypeConversionRule();
-        rules.addConversionDescriptor(dataDrivenRule);
+        rules.addConversionDescriptor(new HeuristicTypeConversionRule());
 
         return new TypeMigrationProcessor(
                 project,
                 new PsiElement[]{root},
-                Functions.constant(PsiUtils.getTypeOfCodeFragment(typeCodeFragment)),
+                Functions.constant(PsiUtils.getTypeOfCodeFragment(targetTypeCodeFragment)),
                 rules,
                 true
         );

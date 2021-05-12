@@ -42,7 +42,9 @@ public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction 
                 new TypeChangesListPopupStep(
                         "Type Migration Rules",
                         TypeChangeRulesStorage.getPatternsBySourceType(sourceType),
-                        element, project
+                        element,
+                        project,
+                        true
                 )
         );
         suggestionsPopup.showInBestPositionFor(editor);

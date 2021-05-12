@@ -47,7 +47,9 @@ public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction 
                 new TypeChangesListPopupStep(
                         "Type Migration Rules",
                         TypeChangeRulesStorage.getPatternsBySourceType(rootType.getCanonicalText()),
-                        element, project
+                        element,
+                        project,
+                        false
                 )
         );
         suggestionsPopup.showInBestPositionFor(editor);
