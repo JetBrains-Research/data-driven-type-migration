@@ -7,18 +7,18 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.migration.json.TypeChangeRulesDescriptor;
+import org.jetbrains.research.migration.json.TypeChangePatternDescriptor;
 
 import java.util.List;
 
-public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangeRulesDescriptor> {
+public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatternDescriptor> {
 
-    private TypeChangeRulesDescriptor selectedDescriptor = null;
+    private TypeChangePatternDescriptor selectedDescriptor = null;
     private final Project project;
     private final PsiElement element;
 
     public TypeChangesListPopupStep(String caption,
-                                    List<TypeChangeRulesDescriptor> rulesDescriptors,
+                                    List<TypeChangePatternDescriptor> rulesDescriptors,
                                     PsiElement element,
                                     Project project) {
         super(caption, rulesDescriptors);
@@ -27,13 +27,13 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangeRulesD
     }
 
     @Override
-    public @Nullable PopupStep<?> onChosen(TypeChangeRulesDescriptor selectedValue, boolean finalChoice) {
+    public @Nullable PopupStep<?> onChosen(TypeChangePatternDescriptor selectedValue, boolean finalChoice) {
         selectedDescriptor = selectedValue;
         return super.onChosen(selectedValue, finalChoice);
     }
 
     @Override
-    public @NotNull String getTextFor(TypeChangeRulesDescriptor value) {
+    public @NotNull String getTextFor(TypeChangePatternDescriptor value) {
         return value.getSourceType() + " to " + value.getTargetType();
     }
 

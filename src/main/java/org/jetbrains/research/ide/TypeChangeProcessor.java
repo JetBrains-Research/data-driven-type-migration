@@ -17,9 +17,11 @@ import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.ide.ui.FailedTypeChangesPanel;
+import org.jetbrains.research.migration.FailedTypeChangesCollector;
 import org.jetbrains.research.migration.HeuristicTypeConversionRule;
 import org.jetbrains.research.migration.TypeChangeRulesStorage;
-import org.jetbrains.research.migration.json.TypeChangeRulesDescriptor;
+import org.jetbrains.research.migration.json.TypeChangePatternDescriptor;
 import org.jetbrains.research.utils.PsiUtils;
 import org.jetbrains.research.utils.StringUtils;
 
@@ -36,15 +38,18 @@ public class TypeChangeProcessor {
         this.project = project;
     }
 
-    public void run(PsiElement element, TypeChangeRulesDescriptor descriptor) {
+    public void run(PsiElement element, TypeChangePatternDescriptor descriptor) {
         final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
         if (builtInProcessor == null) return;
+
+        final var failedUsagesCollector = FailedTypeChangesCollector.getInstance();
+        failedUsagesCollector.clear();
         final UsageInfo[] usages = builtInProcessor.findUsages();
 
-        if (builtInProcessor.hasFailedConversions()) {
-            final var panel = new FailedTypeChangesPanel(usages);
+        if (failedUsagesCollector.hasFailedTypeChanges()) {
+            final var panel = new FailedTypeChangesPanel(failedUsagesCollector.getFailedUsages(), project);
             Content content = UsageViewContentManager.getInstance(project).addContent(
-                    "Failed Type Conversions",
+                    "Failed Usages",
                     false,
                     panel,
                     true,
@@ -55,15 +60,15 @@ public class TypeChangeProcessor {
                     ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND)
             );
             toolWindow.activate(null);
+        } else {
+            builtInProcessor.performRefactoring(usages);
+            addAndOptimizeImports(project, usages);
         }
-
-        builtInProcessor.performRefactoring(usages);
-        addAndOptimizeImports(project, usages);
     }
 
     private @Nullable TypeMigrationProcessor createBuiltInTypeMigrationProcessor(
             PsiElement element,
-            TypeChangeRulesDescriptor descriptor
+            TypeChangePatternDescriptor descriptor
     ) {
         PsiTypeElement rootType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
         PsiElement root;

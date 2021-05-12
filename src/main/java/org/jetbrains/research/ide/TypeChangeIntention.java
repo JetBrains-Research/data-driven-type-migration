@@ -34,7 +34,7 @@ public class TypeChangeIntention extends PsiElementBaseIntentionAction implement
         PsiTypeElement parentType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
         if (parentType != null) {
             String parentTypeQualifiedName = parentType.getType().getCanonicalText();
-            return !TypeChangeRulesStorage.getRulesDescriptorsBySourceType(parentTypeQualifiedName).isEmpty();
+            return !TypeChangeRulesStorage.getPatternsBySourceType(parentTypeQualifiedName).isEmpty();
         }
         return false;
     }
@@ -46,7 +46,7 @@ public class TypeChangeIntention extends PsiElementBaseIntentionAction implement
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeChangesListPopupStep(
                         "Type Migration Rules",
-                        TypeChangeRulesStorage.getRulesDescriptorsBySourceType(rootType.getCanonicalText()),
+                        TypeChangeRulesStorage.getPatternsBySourceType(rootType.getCanonicalText()),
                         element, project
                 )
         );

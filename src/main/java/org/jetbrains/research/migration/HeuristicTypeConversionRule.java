@@ -11,7 +11,7 @@ import com.intellij.refactoring.typeMigration.TypeMigrationLabeler;
 import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
 import com.intellij.structuralsearch.MatchResult;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.migration.json.TypeChangeRule;
+import org.jetbrains.research.migration.json.TypeChangeRuleDescriptor;
 import org.jetbrains.research.utils.StringUtils;
 
 import java.util.List;
@@ -24,38 +24,34 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
     public @Nullable TypeConversionDescriptorBase findConversion(
             PsiType from, PsiType to, PsiMember member, PsiExpression context, TypeMigrationLabeler labeler
     ) {
-        if (context == null) {
-            return null;
-        }
+        final var pattern = TypeChangeRulesStorage.findPattern(
+                from.getCanonicalText(),
+                to.getCanonicalText()
+        );
+        if (pattern == null || context == null) return null;
 
         PsiElement currentContext = context;
         int parentsPassed = 0;
-        TypeChangeRule bestMatchedRule = null;
+        TypeChangeRuleDescriptor bestMatchedRule = null;
 
         while (parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
-            final var descriptor = TypeChangeRulesStorage.findDescriptor(
-                    from.getCanonicalText(),
-                    to.getCanonicalText()
-            );
-            if (descriptor != null) {
-                final List<TypeChangeRule> rules = descriptor.getRules();
-                for (var rule : rules) {
-                    List<MatchResult> matches = StringUtils.findMatches(
-                            currentContext.getText(),
-                            rule.getExpressionBefore()
-                    );
-                    if (!matches.isEmpty()) {
-                        if (bestMatchedRule == null) {
-                            bestMatchedRule = rule;
-                            continue;
-                        }
+            final List<TypeChangeRuleDescriptor> rules = pattern.getRules();
+            for (var rule : rules) {
+                List<MatchResult> matches = StringUtils.findMatches(
+                        currentContext.getText(),
+                        rule.getExpressionBefore()
+                );
+                if (!matches.isEmpty()) {
+                    if (bestMatchedRule == null) {
+                        bestMatchedRule = rule;
+                        continue;
+                    }
 
-                        // Update bestMatchedRule iff it matches a larger number of tokens
-                        final var ruleTokens = StringUtils.splitByTokens(rule.getExpressionBefore());
-                        final var bestMatchedRuleTokens = StringUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
-                        if (bestMatchedRuleTokens.length < ruleTokens.length) {
-                            bestMatchedRule = rule;
-                        }
+                    // Update bestMatchedRule iff it matches a larger number of tokens
+                    final var ruleTokens = StringUtils.splitByTokens(rule.getExpressionBefore());
+                    final var bestMatchedRuleTokens = StringUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
+                    if (bestMatchedRuleTokens.length < ruleTokens.length) {
+                        bestMatchedRule = rule;
                     }
                 }
             }
@@ -69,7 +65,7 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
                     bestMatchedRule.getExpressionAfter()
             );
         }
-
+        FailedTypeChangesCollector.getInstance().addFailedTypeChange(context);
         return null;
     }
 }
