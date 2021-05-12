@@ -40,7 +40,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
                 final var oldElementQualifiedName = getQualifiedName(oldElement);
 
                 if (oldElementQualifiedName != null) {
-                    if (!TypeChangeRulesStorage.getRulesDescriptorsBySourceType(oldElementQualifiedName).isEmpty()) {
+                    if (!TypeChangeRulesStorage.getPatternsBySourceType(oldElementQualifiedName).isEmpty()) {
                         final var range = TextRange.from(
                                 oldElement.getTextOffset(),
                                 oldElement.getTextLength()
@@ -78,7 +78,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
             final var newElementQualifiedName = getQualifiedName(newElement);
 
             if (newElementQualifiedName != null) {
-                if (!TypeChangeRulesStorage.getRulesDescriptorsByTargetType(newElementQualifiedName).isEmpty()) {
+                if (!TypeChangeRulesStorage.getPatternsByTargetType(newElementQualifiedName).isEmpty()) {
                     final var newRange = TextRange.from(
                             newElement.getTextOffset(),
                             newElement.getTextLength()

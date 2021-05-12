@@ -1,10 +1,10 @@
-package org.jetbrains.research.migration.json;
+package org.jetbrains.research.migration.models;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class TypeChangeRulesDescriptor {
+public class TypeChangePatternDescriptor {
     @SerializedName("From")
     private String sourceType;
 
@@ -12,7 +12,7 @@ public class TypeChangeRulesDescriptor {
     private String targetType;
 
     @SerializedName("Rules")
-    private List<TypeChangeRule> rules;
+    private List<TypeChangeRuleDescriptor> rules;
 
     public String getTargetType() {
         return targetType;
@@ -22,7 +22,7 @@ public class TypeChangeRulesDescriptor {
         return sourceType;
     }
 
-    public List<TypeChangeRule> getRules() {
+    public List<TypeChangeRuleDescriptor> getRules() {
         return rules;
     }
 }

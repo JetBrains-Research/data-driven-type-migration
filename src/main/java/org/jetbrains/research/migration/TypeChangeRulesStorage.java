@@ -4,7 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.migration.json.TypeChangeRulesDescriptor;
+import org.jetbrains.research.migration.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.utils.StringUtils;
 
 import java.io.BufferedReader;
@@ -17,16 +17,16 @@ import java.util.stream.Collectors;
 
 public class TypeChangeRulesStorage {
     private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
-    private static List<TypeChangeRulesDescriptor> rulesDescriptors;
+    private static List<TypeChangePatternDescriptor> patterns;
 
     static {
-        String json = null;
+        String json;
         try {
             json = getResourceFileAsString("/rules.json");
             Gson gson = new Gson();
-            Type type = new TypeToken<List<TypeChangeRulesDescriptor>>() {
+            Type type = new TypeToken<List<TypeChangePatternDescriptor>>() {
             }.getType();
-            rulesDescriptors = gson.fromJson(json, type);
+            patterns = gson.fromJson(json, type);
         } catch (IOException e) {
             LOG.error(e);
         }
@@ -42,69 +42,69 @@ public class TypeChangeRulesStorage {
         }
     }
 
-    public static List<TypeChangeRulesDescriptor> getRulesDescriptors() {
-        return rulesDescriptors;
+    public static List<TypeChangePatternDescriptor> getPatterns() {
+        return patterns;
     }
 
-    public static List<TypeChangeRulesDescriptor> getRulesDescriptorsByTargetType(String targetType) {
-        return rulesDescriptors.stream()
-                .filter(descriptor -> {
+    public static List<TypeChangePatternDescriptor> getPatternsBySourceType(String sourceType) {
+        return patterns.stream()
+                .filter(pattern -> {
 
                     // Full match
-                    if (descriptor.getTargetType().equals(targetType)) {
+                    if (pattern.getSourceType().equals(sourceType)) {
                         return true;
                     }
 
                     // Preventing incorrect matches for generic types, such as from List<String> to String
-                    if (targetType.contains(descriptor.getTargetType())) {
+                    if (sourceType.contains(pattern.getSourceType())) {
                         return false;
                     }
 
                     // Matching complicated cases with substitutions, such as List<String> to List<$1$>
-                    return !StringUtils.findMatches(targetType, descriptor.getTargetType()).isEmpty();
+                    return !StringUtils.findMatches(sourceType, pattern.getSourceType()).isEmpty();
                 })
                 .collect(Collectors.toList());
     }
 
-    public static List<TypeChangeRulesDescriptor> getRulesDescriptorsBySourceType(String sourceType) {
-        return rulesDescriptors.stream()
-                .filter(descriptor -> {
+    public static List<TypeChangePatternDescriptor> getPatternsByTargetType(String targetType) {
+        return patterns.stream()
+                .filter(pattern -> {
 
                     // Full match
-                    if (descriptor.getSourceType().equals(sourceType)) {
+                    if (pattern.getTargetType().equals(targetType)) {
                         return true;
                     }
 
                     // Preventing incorrect matches for generic types, such as from List<String> to String
-                    if (sourceType.contains(descriptor.getSourceType())) {
+                    if (targetType.contains(pattern.getTargetType())) {
                         return false;
                     }
 
                     // Matching complicated cases with substitutions, such as List<String> to List<$1$>
-                    return !StringUtils.findMatches(sourceType, descriptor.getSourceType()).isEmpty();
+                    return !StringUtils.findMatches(targetType, pattern.getTargetType()).isEmpty();
                 })
                 .collect(Collectors.toList());
     }
 
     @Nullable
-    public static TypeChangeRulesDescriptor findDescriptor(String sourceType, String targetType) {
-        for (var descriptor : rulesDescriptors) {
+    public static TypeChangePatternDescriptor findPattern(String sourceType, String targetType) {
+        for (var pattern : patterns) {
 
             // TODO: eliminate copy-paste
 
             // Full match
-            if (descriptor.getSourceType().equals(sourceType) && descriptor.getTargetType().equals(targetType)) {
-                return descriptor;
+            if (pattern.getSourceType().equals(sourceType) && pattern.getTargetType().equals(targetType)) {
+                return pattern;
             }
 
             // Preventing incorrect matches for generic types, such as from List<String> to String
-            if (sourceType.contains(descriptor.getSourceType())) {
+            if (sourceType.contains(pattern.getSourceType())) {
                 continue;
             }
 
             // Matching complicated cases with substitutions, such as List<String> to List<$1$>
-            if (!StringUtils.findMatches(sourceType, descriptor.getSourceType()).isEmpty()) {
-                return descriptor;
+            if (!StringUtils.findMatches(sourceType, pattern.getSourceType()).isEmpty()) {
+                return pattern;
             }
         }
         return null;

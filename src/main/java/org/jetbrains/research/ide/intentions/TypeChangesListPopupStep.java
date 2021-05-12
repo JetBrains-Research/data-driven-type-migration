@@ -8,17 +8,17 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.ide.TypeChangeProcessor;
-import org.jetbrains.research.migration.json.TypeChangeRulesDescriptor;
+import org.jetbrains.research.migration.models.TypeChangePatternDescriptor;
 
 import java.util.List;
 
-public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangeRulesDescriptor> {
-    private TypeChangeRulesDescriptor selectedDescriptor = null;
+public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatternDescriptor> {
+    private TypeChangePatternDescriptor selectedDescriptor = null;
     private final Project project;
     private final PsiElement context;
 
     public TypeChangesListPopupStep(String caption,
-                                    List<TypeChangeRulesDescriptor> rulesDescriptors,
+                                    List<TypeChangePatternDescriptor> rulesDescriptors,
                                     PsiElement context,
                                     Project project) {
         super(caption, rulesDescriptors);
@@ -27,21 +27,21 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangeRulesD
     }
 
     @Override
-    public @Nullable PopupStep<?> onChosen(TypeChangeRulesDescriptor selectedValue, boolean finalChoice) {
+    public @Nullable PopupStep<?> onChosen(TypeChangePatternDescriptor selectedValue, boolean finalChoice) {
         selectedDescriptor = selectedValue;
         return super.onChosen(selectedValue, finalChoice);
     }
 
     @Override
-    public @NotNull String getTextFor(TypeChangeRulesDescriptor value) {
+    public @NotNull String getTextFor(TypeChangePatternDescriptor value) {
         return value.getSourceType() + " to " + value.getTargetType();
     }
 
     @Override
     public @Nullable Runnable getFinalRunnable() {
         return () -> WriteCommandAction.runWriteCommandAction(project, () -> {
-            final var processor = new TypeChangeProcessor(context, project);
-            processor.migrate(selectedDescriptor);
+            final var processor = new TypeChangeProcessor(project);
+            processor.run(context, selectedDescriptor);
         });
     }
 }

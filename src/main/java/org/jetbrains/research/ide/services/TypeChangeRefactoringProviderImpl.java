@@ -8,16 +8,17 @@ import com.intellij.openapi.editor.event.EditorFactoryListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.GlobalState;
 import org.jetbrains.research.ide.refactoring.TypeChangeCaretListener;
 import org.jetbrains.research.ide.refactoring.TypeChangeDocumentListener;
 import org.jetbrains.research.ide.refactoring.TypeChangeSuggestedRefactoringState;
 
 public class TypeChangeRefactoringProviderImpl implements TypeChangeRefactoringProvider {
     private final TypeChangeSuggestedRefactoringState state = new TypeChangeSuggestedRefactoringState();
-    public Project project;
+    public Project myProject;
 
     public TypeChangeRefactoringProviderImpl(Project project) {
-        this.project = project;
+        this.myProject = project;
     }
 
     public static TypeChangeRefactoringProviderImpl getInstance(Project project) {
@@ -32,8 +33,8 @@ public class TypeChangeRefactoringProviderImpl implements TypeChangeRefactoringP
         @Override
         public void runActivity(@NotNull Project project) {
             if (!ApplicationManager.getApplication().isUnitTestMode()) {
+                GlobalState.project = project;
 
-                // Run listeners
                 EditorFactory.getInstance().getEventMulticaster().addDocumentListener(
                         ProjectDisposeAwareDocumentListener.create(project, new TypeChangeDocumentListener(project)),
                         project

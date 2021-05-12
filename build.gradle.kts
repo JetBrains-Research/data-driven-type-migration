@@ -10,7 +10,7 @@ plugins {
 intellij {
     type = "IC"
     version = "2020.3.2"
-    setPlugins("java")
+    setPlugins("java", "git4idea")
 }
 
 repositories {

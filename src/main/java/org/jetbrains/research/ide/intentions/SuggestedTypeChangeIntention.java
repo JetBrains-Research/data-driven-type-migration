@@ -13,10 +13,10 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.migration.TypeChangeRulesStorage;
 
-public class TypeChangeIntention extends PsiElementBaseIntentionAction implements PriorityAction {
+public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction implements PriorityAction {
     private final String sourceType;
 
-    public TypeChangeIntention(String sourceType) {
+    public SuggestedTypeChangeIntention(String sourceType) {
         this.sourceType = sourceType;
     }
 
@@ -41,7 +41,7 @@ public class TypeChangeIntention extends PsiElementBaseIntentionAction implement
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeChangesListPopupStep(
                         "Type Migration Rules",
-                        TypeChangeRulesStorage.getRulesDescriptorsBySourceType(sourceType),
+                        TypeChangeRulesStorage.getPatternsBySourceType(sourceType),
                         element, project
                 )
         );

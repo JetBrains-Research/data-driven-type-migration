@@ -11,15 +11,14 @@
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
+    <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
 
-        <postStartupActivity implementation="org.jetbrains.research.ide.services.MyStartupActivity"/>
-
-        <!--        <intentionAction>-->
-        <!--            <className>org.jetbrains.research.ide.intentions.TypeChangeIntention->
-        <!--            <category>Type migration</category>-->
-        <!--        </intentionAction>-->
+        <intentionAction>
+            <className>org.jetbrains.research.ide.intentions.ProactiveTypeChangeIntention</className>
+            <category>Type migration</category>
+        </intentionAction>
 
         <projectService serviceInterface="org.jetbrains.research.ide.services.TypeChangeRefactoringProvider"
                         serviceImplementation="org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl"/>
@@ -30,7 +29,6 @@
         <!--suppress PluginXmlValidity -->
         <intentionMenuContributor
                 implementation="org.jetbrains.research.ide.intentions.TypeChangeIntentionContributor"/>
-
 
     </extensions>
 

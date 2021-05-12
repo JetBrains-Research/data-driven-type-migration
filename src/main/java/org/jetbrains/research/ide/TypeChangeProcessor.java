@@ -2,6 +2,9 @@ package org.jetbrains.research.ide;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowId;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.psi.search.LocalSearchScope;
@@ -9,12 +12,16 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.refactoring.typeMigration.TypeMigrationProcessor;
 import com.intellij.refactoring.typeMigration.TypeMigrationRules;
 import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
-import com.intellij.refactoring.typeMigration.ui.FailedConversionsDialog;
+import com.intellij.ui.content.Content;
 import com.intellij.usageView.UsageInfo;
+import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.ide.ui.FailedTypeChangesPanel;
+import org.jetbrains.research.migration.FailedTypeChangesCollector;
 import org.jetbrains.research.migration.HeuristicTypeConversionRule;
 import org.jetbrains.research.migration.TypeChangeRulesStorage;
-import org.jetbrains.research.migration.json.TypeChangeRulesDescriptor;
+import org.jetbrains.research.migration.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.utils.PsiUtils;
 import org.jetbrains.research.utils.StringUtils;
 
@@ -26,21 +33,50 @@ public class TypeChangeProcessor {
     private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     private final Project project;
-    private final PsiElement context;
 
-    public TypeChangeProcessor(PsiElement context, Project project) {
-        this.context = context;
+    public TypeChangeProcessor(Project project) {
         this.project = project;
     }
 
-    public void migrate(TypeChangeRulesDescriptor descriptor) {
-        PsiTypeElement rootType = PsiUtils.getHighestParentOfType(context, PsiTypeElement.class);
+    public void run(PsiElement element, TypeChangePatternDescriptor descriptor) {
+        final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
+        if (builtInProcessor == null) return;
+
+        final var failedUsagesCollector = FailedTypeChangesCollector.getInstance();
+        failedUsagesCollector.clear();
+        final UsageInfo[] usages = builtInProcessor.findUsages();
+
+        if (failedUsagesCollector.hasFailedTypeChanges()) {
+            final var panel = new FailedTypeChangesPanel(failedUsagesCollector.getFailedUsages(), project);
+            Content content = UsageViewContentManager.getInstance(project).addContent(
+                    "Failed Usages",
+                    false,
+                    panel,
+                    true,
+                    true
+            );
+            panel.setContent(content);
+            ToolWindow toolWindow = Objects.requireNonNull(
+                    ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND)
+            );
+            toolWindow.activate(null);
+        } else {
+            builtInProcessor.performRefactoring(usages);
+            addAndOptimizeImports(project, usages);
+        }
+    }
+
+    private @Nullable TypeMigrationProcessor createBuiltInTypeMigrationProcessor(
+            PsiElement element,
+            TypeChangePatternDescriptor descriptor
+    ) {
+        PsiTypeElement rootType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
         PsiElement root;
         if (rootType != null) {
             root = rootType.getParent();
         } else {
             LOG.error("Type of migration root is null");
-            return;
+            return null;
         }
 
         String targetType = StringUtils.substituteTypeByPattern(
@@ -48,36 +84,24 @@ public class TypeChangeProcessor {
                 descriptor.getSourceType(),
                 descriptor.getTargetType()
         );
-        PsiTypeCodeFragment myTypeCodeFragment = JavaCodeFragmentFactory
+
+        PsiTypeCodeFragment typeCodeFragment = JavaCodeFragmentFactory
                 .getInstance(project)
                 .createTypeCodeFragment(targetType, root, true);
-        SearchScope scope = new LocalSearchScope(context.getContainingFile());
+        SearchScope scope = new LocalSearchScope(element.getContainingFile());
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
         rules.setBoundScope(scope);
         TypeConversionRule dataDrivenRule = new HeuristicTypeConversionRule();
         rules.addConversionDescriptor(dataDrivenRule);
 
-        TypeMigrationProcessor migrationProcessor = new TypeMigrationProcessor(
+        return new TypeMigrationProcessor(
                 project,
                 new PsiElement[]{root},
-                Functions.constant(PsiUtils.getTypeOfCodeFragment(myTypeCodeFragment)),
+                Functions.constant(PsiUtils.getTypeOfCodeFragment(typeCodeFragment)),
                 rules,
                 true
         );
-
-        final UsageInfo[] usages = migrationProcessor.findUsages();
-
-        if (migrationProcessor.hasFailedConversions()) {
-            FailedConversionsDialog dialog = new FailedConversionsDialog(
-                    migrationProcessor.getLabeler().getFailedConversionsReport(),
-                    project
-            );
-            dialog.showAndGet();
-        }
-
-        migrationProcessor.performRefactoring(usages);
-        addAndOptimizeImports(project, usages);
     }
 
     private void addAndOptimizeImports(Project project, UsageInfo[] usages) {
