@@ -2,31 +2,32 @@ package org.jetbrains.research.ide.refactoring;
 
 import com.intellij.openapi.util.TextRange;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class TypeChangeSuggestedRefactoringState {
-    public final Map<TextRange, String> affectedTextRangeToSourceTypeName;
-    public final Map<TextRange, String> affectedTextRangeToTargetTypeName;
-    public volatile boolean showRefactoringOpportunity;
+    public final Map<TextRange, String> affectedRangeToSourceTypeMappings;
+    public Set<TypeChangeDescriptor> typeChanges;
+
+    public volatile boolean refactoringEnabled;
 
     public TypeChangeSuggestedRefactoringState() {
-        this.showRefactoringOpportunity = false;
-        this.affectedTextRangeToSourceTypeName = new HashMap<>();
-        this.affectedTextRangeToTargetTypeName = new HashMap<>();
+        this.refactoringEnabled = false;
+        this.affectedRangeToSourceTypeMappings = new HashMap<>();
+        this.typeChanges = new HashSet<>();
     }
 
     public Optional<String> getSourceTypeByOffset(int offset) {
-        return affectedTextRangeToSourceTypeName.keySet().stream()
+        return affectedRangeToSourceTypeMappings.keySet().stream()
                 .filter(it -> it.contains(offset))
                 .findFirst()
-                .map(affectedTextRangeToSourceTypeName::get);
+                .map(affectedRangeToSourceTypeMappings::get);
     }
 
-    public boolean shouldProvideRefactoring(int offset) {
-        return affectedTextRangeToTargetTypeName
-                .keySet().stream()
-                .anyMatch(it -> it.contains(offset));
+    public Optional<TypeChangeDescriptor> getRelevantTypeChangeForOffset(int offset) {
+        return typeChanges.stream().filter(it -> it.newRange.contains(offset)).findFirst();
+    }
+
+    public void addTypeChange(TextRange relevantOldRange, TextRange newRange, String relevantSourceType, String targetType) {
+        typeChanges.add(new TypeChangeDescriptor(relevantOldRange, newRange, relevantSourceType, targetType));
     }
 }

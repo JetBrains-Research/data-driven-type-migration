@@ -48,4 +48,22 @@ public class PsiUtils {
         }
         return null;
     }
+
+    @Nullable
+    public static String getClosestFullyQualifiedName(PsiElement element) {
+        PsiTypeElement correspondingTypeElement = null;
+
+        if (element instanceof PsiWhiteSpace) {
+            if (element.getPrevSibling() instanceof PsiTypeElement) {
+                correspondingTypeElement = (PsiTypeElement) element.getPrevSibling();
+            } else if (element.getNextSibling() instanceof PsiTypeElement) {
+                correspondingTypeElement = (PsiTypeElement) element.getNextSibling();
+            }
+        } else {
+            correspondingTypeElement = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
+        }
+        if (correspondingTypeElement == null) return null;
+
+        return correspondingTypeElement.getType().getCanonicalText();
+    }
 }

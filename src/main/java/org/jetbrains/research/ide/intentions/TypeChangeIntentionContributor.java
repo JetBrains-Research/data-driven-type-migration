@@ -21,10 +21,11 @@ class TypeChangeIntentionContributor implements IntentionMenuContributor {
                                int passIdToShowIntentionsFor,
                                int offset) {
         final var state = TypeChangeRefactoringProviderImpl.getInstance(hostEditor.getProject()).getState();
-        if (!state.shouldProvideRefactoring(offset)) return;
+        if (state.getRelevantTypeChangeForOffset(offset).isEmpty() || !state.refactoringEnabled) return;
 
-        final String sourceType = state.getSourceTypeByOffset(offset).get();
-        final var intention = new SuggestedTypeChangeIntention(sourceType);
+        final var sourceType = state.getSourceTypeByOffset(offset);
+        if (sourceType.isEmpty()) return;
+        final var intention = new SuggestedTypeChangeIntention(sourceType.get());
 
         // we add it into 'errorFixesToShow' if it's not empty to always be at the top of the list
         // we don't add into it if it's empty to keep the color of the bulb

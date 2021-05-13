@@ -13,6 +13,8 @@ import org.jetbrains.research.ide.refactoring.TypeChangeCaretListener;
 import org.jetbrains.research.ide.refactoring.TypeChangeDocumentListener;
 import org.jetbrains.research.ide.refactoring.TypeChangeSuggestedRefactoringState;
 
+import java.util.Arrays;
+
 public class TypeChangeRefactoringProviderImpl implements TypeChangeRefactoringProvider {
     private final TypeChangeSuggestedRefactoringState state = new TypeChangeSuggestedRefactoringState();
     public Project myProject;
@@ -40,15 +42,18 @@ public class TypeChangeRefactoringProviderImpl implements TypeChangeRefactoringP
                         project
                 );
 
+                Arrays.stream(EditorFactory.getInstance().getAllEditors()).forEach(editor ->
+                        editor.getCaretModel().addCaretListener(new TypeChangeCaretListener()));
+
                 EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener() {
                     @Override
                     public void editorCreated(@NotNull EditorFactoryEvent event) {
-                        event.getEditor().getCaretModel().addCaretListener(TypeChangeCaretListener.getInstance());
+                        event.getEditor().getCaretModel().addCaretListener(new TypeChangeCaretListener());
                     }
 
                     @Override
                     public void editorReleased(@NotNull EditorFactoryEvent event) {
-                        event.getEditor().getCaretModel().removeCaretListener(TypeChangeCaretListener.getInstance());
+                        event.getEditor().getCaretModel().removeCaretListener(new TypeChangeCaretListener());
                     }
                 }, project);
 
