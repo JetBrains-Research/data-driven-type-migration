@@ -1,10 +1,10 @@
-package org.jetbrains.research.migration;
+package org.jetbrains.research.data;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.migration.models.TypeChangePatternDescriptor;
+import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.utils.StringUtils;
 
 import java.io.BufferedReader;

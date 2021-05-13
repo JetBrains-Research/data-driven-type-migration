@@ -1,4 +1,4 @@
-package org.jetbrains.research.migration.models;
+package org.jetbrains.research.data.models;
 
 import com.google.gson.annotations.SerializedName;
 

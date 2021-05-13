@@ -13,7 +13,7 @@ import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.migration.TypeChangeRulesStorage;
+import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.utils.PsiUtils;
 
 import java.util.Objects;

@@ -11,7 +11,7 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.migration.TypeChangeRulesStorage;
+import org.jetbrains.research.data.TypeChangeRulesStorage;
 
 public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction implements PriorityAction {
     private final String sourceType;

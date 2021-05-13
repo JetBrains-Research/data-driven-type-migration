@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.refactoring;
+package org.jetbrains.research.ide.ui;
 
 import com.intellij.util.ui.JBUI;
 

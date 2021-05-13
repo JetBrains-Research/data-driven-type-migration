@@ -16,11 +16,9 @@ import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.data.TypeChangeRulesStorage;
+import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.ui.FailedTypeChangesPanel;
-import org.jetbrains.research.migration.FailedTypeChangesCollector;
-import org.jetbrains.research.migration.HeuristicTypeConversionRule;
-import org.jetbrains.research.migration.TypeChangeRulesStorage;
-import org.jetbrains.research.migration.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.utils.PsiUtils;
 
 import java.util.HashSet;

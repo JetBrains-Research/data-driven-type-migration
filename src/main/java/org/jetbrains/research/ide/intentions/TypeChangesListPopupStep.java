@@ -7,8 +7,8 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.TypeChangeProcessor;
-import org.jetbrains.research.migration.models.TypeChangePatternDescriptor;
 
 import java.util.List;
 

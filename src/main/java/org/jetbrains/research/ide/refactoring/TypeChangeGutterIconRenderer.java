@@ -17,6 +17,7 @@ import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.ide.ui.TypeChangeGutterPopupPanel;
 
 import javax.swing.*;
 import java.awt.*;

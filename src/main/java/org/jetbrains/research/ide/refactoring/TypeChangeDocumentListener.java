@@ -8,8 +8,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl;
-import org.jetbrains.research.migration.TypeChangeRulesStorage;
 import org.jetbrains.research.utils.PsiUtils;
 
 public class TypeChangeDocumentListener implements DocumentListener {
