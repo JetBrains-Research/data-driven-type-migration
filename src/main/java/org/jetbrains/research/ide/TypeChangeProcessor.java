@@ -7,8 +7,7 @@ import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
-import com.intellij.psi.search.LocalSearchScope;
-import com.intellij.psi.search.SearchScope;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.refactoring.typeMigration.TypeMigrationProcessor;
 import com.intellij.refactoring.typeMigration.TypeMigrationRules;
 import com.intellij.ui.content.Content;
@@ -18,6 +17,8 @@ import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
+import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
+import org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl;
 import org.jetbrains.research.ide.ui.FailedTypeChangesPanel;
 import org.jetbrains.research.utils.PsiUtils;
 
@@ -58,10 +59,23 @@ public class TypeChangeProcessor {
                     ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND)
             );
             toolWindow.activate(null);
-        } else {
-            builtInProcessor.performRefactoring(usages);
-            addAndOptimizeImports(project, usages);
         }
+
+        builtInProcessor.performRefactoring(usages);
+        addAndOptimizeImports(project, usages);
+        disableRefactoring(element);
+    }
+
+    private void disableRefactoring(PsiElement element) {
+        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        state.refactoringEnabled = false;
+        state.removeAllTypeChangesByRange(element.getTextRange());
+
+        final var document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());
+        if (document == null) return;
+
+        TypeChangeRefactoringAvailabilityUpdater.getInstance(project)
+                .updateAllHighlighters(document, element.getTextOffset());
     }
 
     private @Nullable TypeMigrationProcessor createBuiltInTypeMigrationProcessor(
@@ -92,8 +106,7 @@ public class TypeChangeProcessor {
                 .createTypeCodeFragment(targetType, root, true);
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
-        SearchScope scope = new LocalSearchScope(root.getContainingFile());
-        rules.setBoundScope(scope);
+        rules.setBoundScope(GlobalSearchScope.projectScope(project));
         rules.addConversionDescriptor(new HeuristicTypeConversionRule());
 
         return new TypeMigrationProcessor(

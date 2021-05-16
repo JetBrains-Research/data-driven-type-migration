@@ -1,6 +1,8 @@
 package org.jetbrains.research.ide.refactoring;
 
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
@@ -28,6 +30,22 @@ public class TypeChangeRefactoringAvailabilityUpdater {
         return INSTANCE;
     }
 
+    public void addDisableRefactoringWatcher() {
+        final var watcher = DisableRefactoringWatcher.getInstance(project);
+        EditorFactory.getInstance().getEventMulticaster().addDocumentListener(watcher, project);
+    }
+
+    public void removeDisableRefactoringWatcher() {
+        final var watcher = DisableRefactoringWatcher.getInstance(project);
+        EditorFactory.getInstance().getEventMulticaster().removeDocumentListener(watcher);
+    }
+
+    public void updateAllHighlighters(Document document, int caretOffset) {
+        EditorFactory.getInstance().editors(document, project).forEach(editor ->
+                updateHighlighter(editor, caretOffset)
+        );
+    }
+
     public void updateHighlighter(Editor editor, int caretOffset) {
         final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
         final var relevantTypeChangeForCurrentOffset = state.getRelevantTypeChangeForOffset(caretOffset);
@@ -39,10 +57,10 @@ public class TypeChangeRefactoringAvailabilityUpdater {
         }
 
         if (state.refactoringEnabled && relevantTypeChangeForCurrentOffset.isPresent()) {
-            final var highlighterRange = relevantTypeChangeForCurrentOffset.get().newRange;
+            final var highlighterRangeMarker = relevantTypeChangeForCurrentOffset.get().newRangeMarker;
             final var highlighter = editor.getMarkupModel().addRangeHighlighter(
-                    highlighterRange.getStartOffset(),
-                    highlighterRange.getEndOffset(),
+                    highlighterRangeMarker.getStartOffset(),
+                    highlighterRangeMarker.getEndOffset(),
                     HighlighterLayer.LAST,
                     new TextAttributes(),
                     HighlighterTargetArea.EXACT_RANGE

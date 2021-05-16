@@ -1,7 +1,9 @@
 package org.jetbrains.research.ide.refactoring;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.RangeMarker;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.project.Project;
@@ -39,7 +41,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
         if (oldElementQualifiedName == null) return;
 
         if (TypeChangeRulesStorage.hasSourceType(oldElementQualifiedName)) {
-            processSourceTypeChangeEvent(oldElement, oldElementQualifiedName);
+            processSourceTypeChangeEvent(oldElement, oldElementQualifiedName, document);
         }
     }
 
@@ -59,44 +61,46 @@ public class TypeChangeDocumentListener implements DocumentListener {
         if (newElementQualifiedName == null) return;
 
         if (TypeChangeRulesStorage.hasTargetType(newElementQualifiedName)) {
-            processTargetTypeChangeEvent(newElement, newElementQualifiedName, event);
+            processTargetTypeChangeEvent(newElement, newElementQualifiedName, document);
+
+            final var updater = TypeChangeRefactoringAvailabilityUpdater.getInstance(project);
+            updater.updateAllHighlighters(event.getDocument(), event.getOffset());
+            ApplicationManager.getApplication().invokeLater(updater::addDisableRefactoringWatcher);
         }
     }
 
-    private void processSourceTypeChangeEvent(PsiElement oldElement, String sourceType) {
+    private void processSourceTypeChangeEvent(PsiElement oldElement, String sourceType, Document document) {
         final var range = TextRange.from(
                 oldElement.getTextOffset(),
                 oldElement.getTextLength()
         );
+        final var rangeMarker = document.createRangeMarker(range);
 
         final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
-        state.affectedRangeToSourceTypeMappings.put(range, sourceType);
+        state.initialMarkerToSourceTypeMappings.put(rangeMarker, sourceType);
     }
 
-    private void processTargetTypeChangeEvent(PsiElement newElement, String targetType, DocumentEvent event) {
+    private void processTargetTypeChangeEvent(PsiElement newElement, String targetType, Document document) {
         final var newRange = TextRange.from(newElement.getTextOffset(), newElement.getTextLength());
         final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
 
-        TextRange relevantOldRange = null;
+        RangeMarker relevantOldRangeMarker = null;
         String relevantSourceType = null;
-        for (var entry : state.affectedRangeToSourceTypeMappings.entrySet()) {
-            final var oldRange = entry.getKey();
+        for (var entry : state.initialMarkerToSourceTypeMappings.entrySet()) {
+            final var oldRangeMarker = entry.getKey();
+            final var oldRange = new TextRange(oldRangeMarker.getStartOffset(), oldRangeMarker.getEndOffset());
             final var sourceType = entry.getValue();
             if (oldRange.intersects(newRange)) {
-                relevantOldRange = oldRange;
+                relevantOldRangeMarker = oldRangeMarker;
                 relevantSourceType = sourceType;
                 break;
             }
         }
-        if (relevantOldRange == null || relevantSourceType == null) return;
+        if (relevantOldRangeMarker == null || relevantSourceType == null) return;
 
-        state.addTypeChange(relevantOldRange, newRange, relevantSourceType, targetType);
+        final var newRangeMarker = document.createRangeMarker(newRange);
+        state.addCompleteTypeChange(relevantOldRangeMarker, newRangeMarker, relevantSourceType, targetType);
         state.refactoringEnabled = true;
-
-        EditorFactory.getInstance().editors(event.getDocument(), project).forEach(editor -> {
-            TypeChangeRefactoringAvailabilityUpdater.getInstance(project)
-                    .updateHighlighter(editor, event.getOffset());
-        });
     }
 
     private Boolean shouldIgnoreFile(PsiFile file) {
