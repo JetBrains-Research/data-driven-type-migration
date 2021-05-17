@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
-import org.jetbrains.research.ide.TypeChangeProcessor;
+import org.jetbrains.research.ide.migration.TypeChangeProcessor;
 
 import java.util.List;
 

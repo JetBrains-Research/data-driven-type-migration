@@ -8,7 +8,8 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl;
+import org.jetbrains.research.ide.refactoring.listeners.DisableRefactoringWatcher;
+import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
 
 import java.util.HashMap;
 import java.util.Map;

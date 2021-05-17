@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.services;
+package org.jetbrains.research.ide.refactoring.services;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.EditorFactory;
@@ -9,9 +9,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.GlobalState;
-import org.jetbrains.research.ide.refactoring.TypeChangeCaretListener;
-import org.jetbrains.research.ide.refactoring.TypeChangeDocumentListener;
 import org.jetbrains.research.ide.refactoring.TypeChangeSuggestedRefactoringState;
+import org.jetbrains.research.ide.refactoring.listeners.TypeChangeCaretListener;
+import org.jetbrains.research.ide.refactoring.listeners.TypeChangeDocumentListener;
 
 import java.util.Arrays;
 

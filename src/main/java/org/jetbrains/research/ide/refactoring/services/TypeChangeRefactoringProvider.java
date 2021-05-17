@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.services;
+package org.jetbrains.research.ide.refactoring.services;
 
 import com.intellij.openapi.project.Project;
 

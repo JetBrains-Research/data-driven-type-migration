@@ -20,15 +20,15 @@
             <category>Type migration</category>
         </intentionAction>
 
-        <projectService serviceInterface="org.jetbrains.research.ide.services.TypeChangeRefactoringProvider"
-                        serviceImplementation="org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl"/>
+        <projectService serviceInterface="org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProvider"
+                        serviceImplementation="org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl"/>
 
         <postStartupActivity
-                implementation="org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl$Startup"/>
+                implementation="org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl$Startup"/>
 
         <!--suppress PluginXmlValidity -->
         <intentionMenuContributor
-                implementation="org.jetbrains.research.ide.intentions.TypeChangeIntentionContributor"/>
+                implementation="org.jetbrains.research.ide.refactoring.services.TypeChangeIntentionContributor"/>
 
     </extensions>
 

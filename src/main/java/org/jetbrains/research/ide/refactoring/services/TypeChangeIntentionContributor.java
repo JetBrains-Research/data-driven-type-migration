@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.intentions;
+package org.jetbrains.research.ide.refactoring.services;
 
 import com.intellij.codeInsight.daemon.impl.HighlightInfo;
 import com.intellij.codeInsight.daemon.impl.IntentionMenuContributor;
@@ -7,7 +7,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl;
+import org.jetbrains.research.ide.intentions.SuggestedTypeChangeIntention;
 
 import javax.swing.*;
 

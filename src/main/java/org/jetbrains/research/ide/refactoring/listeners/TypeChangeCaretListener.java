@@ -1,8 +1,9 @@
-package org.jetbrains.research.ide.refactoring;
+package org.jetbrains.research.ide.refactoring.listeners;
 
 import com.intellij.openapi.editor.event.CaretEvent;
 import com.intellij.openapi.editor.event.CaretListener;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
 
 import java.util.Objects;
 

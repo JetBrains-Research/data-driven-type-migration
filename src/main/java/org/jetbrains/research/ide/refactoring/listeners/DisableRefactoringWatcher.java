@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.refactoring;
+package org.jetbrains.research.ide.refactoring.listeners;
 
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
@@ -6,7 +6,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ide.services.TypeChangeRefactoringProviderImpl;
+import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
+import org.jetbrains.research.ide.refactoring.TypeChangeSuggestedRefactoringState;
+import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
 
 public class DisableRefactoringWatcher implements DocumentListener {
     private static DisableRefactoringWatcher INSTANCE = null;

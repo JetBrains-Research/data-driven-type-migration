@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide;
+package org.jetbrains.research.ide.migration;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.refactoring.typeMigration.TypeMigrationProcessor;
