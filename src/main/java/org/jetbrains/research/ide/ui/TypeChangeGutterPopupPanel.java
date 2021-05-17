@@ -14,7 +14,7 @@ public class TypeChangeGutterPopupPanel extends JPanel {
 
         final var buttonPanel = new JPanel();
         buttonPanel.setLayout(new BorderLayout());
-        JButton button = new JButton("Migrate") {
+        JButton button = new JButton("Apply") {
             @Override
             public boolean isDefaultButton() {
                 return true;
@@ -22,7 +22,7 @@ public class TypeChangeGutterPopupPanel extends JPanel {
         };
         buttonPanel.add(button, BorderLayout.EAST);
 
-        final var label = new JLabel("Migrate types of the variable usages");
+        final var label = new JLabel("Data-driven type change");
         label.setBorder(JBUI.Borders.emptyRight(24));
 
         add(label, BorderLayout.NORTH);

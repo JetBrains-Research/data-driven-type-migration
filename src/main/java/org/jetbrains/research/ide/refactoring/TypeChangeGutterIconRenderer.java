@@ -10,14 +10,21 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.project.DumbAwareAction;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.ide.ui.TypeChangeGutterPopupPanel;
+import org.jetbrains.research.data.TypeChangeRulesStorage;
+import org.jetbrains.research.ide.intentions.TypeChangesListPopupStep;
+import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,11 +63,30 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
             public void actionPerformed(@NotNull AnActionEvent e) {
                 final var project = e.getDataContext().getData(CommonDataKeys.PROJECT);
                 final var editor = e.getDataContext().getData(CommonDataKeys.EDITOR);
-                final var popup = new TypeChangeGutterPopupPanel(() -> {
-                });
-                createAndShowBalloon(popup, editor);
+                showRefactoringOpportunity(project, editor);
             }
         };
+    }
+
+    private void showRefactoringOpportunity(Project project, Editor editor) {
+        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        final var sourceType = state.getSourceTypeByOffset(offset);
+        if (sourceType.isEmpty()) return;
+
+        final PsiFile psiFile = PsiDocumentManager.getInstance(project).getCachedPsiFile(editor.getDocument());
+        if (psiFile == null) return;
+        final PsiElement newElement = psiFile.findElementAt(offset);
+
+        ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
+                new TypeChangesListPopupStep(
+                        "Type Migration Rules",
+                        TypeChangeRulesStorage.getPatternsBySourceType(sourceType.get()),
+                        newElement,
+                        project,
+                        true
+                )
+        );
+        suggestionsPopup.showInBestPositionFor(editor);
     }
 
     private void createAndShowBalloon(JComponent content, Editor editor) {
