@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide;
+package org.jetbrains.research.ide.migration;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -7,23 +7,20 @@ import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
-import com.intellij.psi.search.LocalSearchScope;
-import com.intellij.psi.search.SearchScope;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.refactoring.typeMigration.TypeMigrationProcessor;
 import com.intellij.refactoring.typeMigration.TypeMigrationRules;
-import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
 import com.intellij.ui.content.Content;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.data.TypeChangeRulesStorage;
+import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
+import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
+import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
 import org.jetbrains.research.ide.ui.FailedTypeChangesPanel;
-import org.jetbrains.research.migration.FailedTypeChangesCollector;
-import org.jetbrains.research.migration.HeuristicTypeConversionRule;
-import org.jetbrains.research.migration.TypeChangeRulesStorage;
-import org.jetbrains.research.migration.json.TypeChangePatternDescriptor;
 import org.jetbrains.research.utils.PsiUtils;
-import org.jetbrains.research.utils.StringUtils;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -33,9 +30,11 @@ public class TypeChangeProcessor {
     private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     private final Project project;
+    private final Boolean isRootTypeAlreadyChanged;
 
-    public TypeChangeProcessor(Project project) {
+    public TypeChangeProcessor(Project project, Boolean isRootTypeAlreadyChanged) {
         this.project = project;
+        this.isRootTypeAlreadyChanged = isRootTypeAlreadyChanged;
     }
 
     public void run(PsiElement element, TypeChangePatternDescriptor descriptor) {
@@ -60,45 +59,60 @@ public class TypeChangeProcessor {
                     ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND)
             );
             toolWindow.activate(null);
-        } else {
-            builtInProcessor.performRefactoring(usages);
-            addAndOptimizeImports(project, usages);
         }
+
+        builtInProcessor.performRefactoring(usages);
+        addAndOptimizeImports(project, usages);
+        disableRefactoring(element);
+    }
+
+    private void disableRefactoring(PsiElement element) {
+        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        state.refactoringEnabled = false;
+        state.removeAllTypeChangesByRange(element.getTextRange());
+
+        final var document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());
+        if (document == null) return;
+
+        TypeChangeRefactoringAvailabilityUpdater.getInstance(project)
+                .updateAllHighlighters(document, element.getTextOffset());
     }
 
     private @Nullable TypeMigrationProcessor createBuiltInTypeMigrationProcessor(
             PsiElement element,
             TypeChangePatternDescriptor descriptor
     ) {
-        PsiTypeElement rootType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
+        PsiTypeElement rootTypeElement = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
         PsiElement root;
-        if (rootType != null) {
-            root = rootType.getParent();
+        if (rootTypeElement != null) {
+            root = rootTypeElement.getParent();
         } else {
             LOG.error("Type of migration root is null");
             return null;
         }
 
-        String targetType = StringUtils.substituteTypeByPattern(
-                Objects.requireNonNull(PsiUtils.getExpectedType(root)),
-                descriptor.getSourceType(),
-                descriptor.getTargetType()
-        );
+        // In case of suggested refactoring intention
+        if (isRootTypeAlreadyChanged) {
+            final PsiType currentRootType = Objects.requireNonNull(PsiUtils.getExpectedType(root));
+            final String recoveredRootType = descriptor.resolveSourceType(currentRootType);
+            final PsiTypeElement recoveredRootTypeElement = PsiElementFactory.getInstance(project)
+                    .createTypeElementFromText(recoveredRootType, root);
+            rootTypeElement.replace(recoveredRootTypeElement);
+        }
 
-        PsiTypeCodeFragment typeCodeFragment = JavaCodeFragmentFactory
-                .getInstance(project)
+        final PsiType expectedRootType = Objects.requireNonNull(PsiUtils.getExpectedType(root));
+        String targetType = descriptor.resolveTargetType(expectedRootType);
+        PsiTypeCodeFragment targetTypeCodeFragment = JavaCodeFragmentFactory.getInstance(project)
                 .createTypeCodeFragment(targetType, root, true);
-        SearchScope scope = new LocalSearchScope(element.getContainingFile());
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
-        rules.setBoundScope(scope);
-        TypeConversionRule dataDrivenRule = new HeuristicTypeConversionRule();
-        rules.addConversionDescriptor(dataDrivenRule);
+        rules.setBoundScope(GlobalSearchScope.projectScope(project));
+        rules.addConversionDescriptor(new HeuristicTypeConversionRule());
 
         return new TypeMigrationProcessor(
                 project,
                 new PsiElement[]{root},
-                Functions.constant(PsiUtils.getTypeOfCodeFragment(typeCodeFragment)),
+                Functions.constant(PsiUtils.getTypeOfCodeFragment(targetTypeCodeFragment)),
                 rules,
                 true
         );

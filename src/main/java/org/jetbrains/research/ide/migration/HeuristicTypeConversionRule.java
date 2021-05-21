@@ -1,4 +1,4 @@
-package org.jetbrains.research.migration;
+package org.jetbrains.research.ide.migration;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiElement;
@@ -11,7 +11,8 @@ import com.intellij.refactoring.typeMigration.TypeMigrationLabeler;
 import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
 import com.intellij.structuralsearch.MatchResult;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.migration.json.TypeChangeRuleDescriptor;
+import org.jetbrains.research.data.TypeChangeRulesStorage;
+import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.utils.StringUtils;
 
 import java.util.List;

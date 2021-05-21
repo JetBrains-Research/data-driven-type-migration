@@ -14,14 +14,22 @@
     <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <postStartupActivity implementation="org.jetbrains.research.ide.MyStartupActivity"/>
+
         <intentionAction>
-            <className>org.jetbrains.research.ide.TypeChangeIntention</className>
+            <className>org.jetbrains.research.ide.intentions.ProactiveTypeChangeIntention</className>
             <category>Type migration</category>
         </intentionAction>
+
+        <projectService serviceInterface="org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProvider"
+                        serviceImplementation="org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl"/>
+
+        <postStartupActivity
+                implementation="org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl$Startup"/>
+
+        <!--suppress PluginXmlValidity -->
+        <intentionMenuContributor
+                implementation="org.jetbrains.research.ide.refactoring.services.TypeChangeIntentionContributor"/>
+
     </extensions>
 
-    <actions>
-        <!-- Add your actions here -->
-    </actions>
 </idea-plugin>

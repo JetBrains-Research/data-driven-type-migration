@@ -16,7 +16,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ex.ProgressIndicatorEx;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.migration.TypeChangeRulesStorage;
+import org.jetbrains.research.data.TypeChangeRulesStorage;
 
 public class Utils {
     private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
