@@ -63,7 +63,9 @@ public class TypeChangeProcessor {
 
         builtInProcessor.performRefactoring(usages);
         addAndOptimizeImports(project, usages);
-        disableRefactoring(element);
+        if (isRootTypeAlreadyChanged) {
+            disableRefactoring(element);
+        }
     }
 
     private void disableRefactoring(PsiElement element) {
