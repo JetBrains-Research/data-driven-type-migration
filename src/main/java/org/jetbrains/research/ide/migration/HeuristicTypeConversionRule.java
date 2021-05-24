@@ -60,13 +60,22 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
             parentsPassed++;
         }
 
+        final var collector = FailedTypeChangesCollector.getInstance();
         if (bestMatchedRule != null) {
+            if (bestMatchedRule.getReturnType() != null) {
+                if (!bestMatchedRule.getReturnType().getSourceType()
+                        .equals(bestMatchedRule.getReturnType().getTargetType())) {
+                    collector.addFailedUsage(context);
+                    collector.addRuleForFailedUsage(context, bestMatchedRule);
+                    return null;
+                }
+            }
             return new TypeConversionDescriptor(
                     bestMatchedRule.getExpressionBefore(),
                     bestMatchedRule.getExpressionAfter()
             );
         }
-        FailedTypeChangesCollector.getInstance().addFailedTypeChange(context);
+        collector.addFailedUsage(context);
         return null;
     }
 }

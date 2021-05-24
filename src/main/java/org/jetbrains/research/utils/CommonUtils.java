@@ -14,9 +14,4 @@ public class CommonUtils {
         final var rangeFromMarker = new TextRange(marker.getStartOffset(), marker.getEndOffset());
         return rangeFromMarker.intersects(range);
     }
-
-    public static boolean markerContains(RangeMarker marker, int offset) {
-        final var rangeFromMarker = new TextRange(marker.getStartOffset(), marker.getEndOffset());
-        return rangeFromMarker.contains(offset);
-    }
 }

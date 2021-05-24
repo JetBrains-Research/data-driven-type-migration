@@ -37,13 +37,6 @@ public class TypeChangeRulesStorage {
         }
     }
 
-    private static void initCache() {
-        for (var pattern : patterns) {
-            sourceTypesCache.add(pattern.getSourceType());
-            targetTypesCache.add(pattern.getTargetType());
-        }
-    }
-
     public static Boolean hasSourceType(String sourceType) {
         return sourceTypesCache.contains(sourceType);
     }
@@ -52,29 +45,8 @@ public class TypeChangeRulesStorage {
         return targetTypesCache.contains(targetType);
     }
 
-    private static String getResourceFileAsString(String fileName) throws IOException {
-        try (InputStream stream = TypeChangeRulesStorage.class.getResourceAsStream(fileName)) {
-            if (stream == null) return null;
-            try (InputStreamReader isr = new InputStreamReader(stream);
-                 BufferedReader reader = new BufferedReader(isr)) {
-                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-            }
-        }
-    }
-
     public static List<TypeChangePatternDescriptor> getPatterns() {
         return patterns;
-    }
-
-    private static Boolean hasMatch(String source, String pattern) {
-        // Full match
-        if (pattern.equals(source)) return true;
-
-        // Preventing incorrect matches for generic types, such as from List<String> to String
-        if (source.contains(pattern)) return false;
-
-        // Matching complicated cases with substitutions, such as List<String> to List<$1$>
-        return !StringUtils.findMatches(source, pattern).isEmpty();
     }
 
     public static List<TypeChangePatternDescriptor> getPatternsBySourceType(String sourceType) {
@@ -97,5 +69,33 @@ public class TypeChangeRulesStorage {
                                 && hasMatch(targetType, pattern.getTargetType()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private static void initCache() {
+        for (var pattern : patterns) {
+            sourceTypesCache.add(pattern.getSourceType());
+            targetTypesCache.add(pattern.getTargetType());
+        }
+    }
+
+    private static String getResourceFileAsString(String fileName) throws IOException {
+        try (InputStream stream = TypeChangeRulesStorage.class.getResourceAsStream(fileName)) {
+            if (stream == null) return null;
+            try (InputStreamReader isr = new InputStreamReader(stream);
+                 BufferedReader reader = new BufferedReader(isr)) {
+                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+            }
+        }
+    }
+
+    private static Boolean hasMatch(String source, String pattern) {
+        // Full match
+        if (pattern.equals(source)) return true;
+
+        // Preventing incorrect matches for generic types, such as from List<String> to String
+        if (source.contains(pattern)) return false;
+
+        // Matching complicated cases with substitutions, such as List<String> to List<$1$>
+        return !StringUtils.findMatches(source, pattern).isEmpty();
     }
 }

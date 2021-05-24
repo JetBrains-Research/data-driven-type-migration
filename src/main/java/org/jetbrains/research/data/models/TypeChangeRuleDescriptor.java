@@ -30,4 +30,11 @@ public class TypeChangeRuleDescriptor {
     public String getRequiredImports() {
         return requiredImports;
     }
+
+    @Override
+    public String toString() {
+        return expressionBefore.replaceAll("\\$.*?\\$", "")
+                + " -> "
+                + expressionAfter.replaceAll("\\$.*?\\$", "");
+    }
 }

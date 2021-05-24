@@ -28,7 +28,7 @@
       },
       {
         "Before": "$1$.mkdir()",
-        "After": "Files.CreateDirectory($1$)",
+        "After": "Files.createDirectory($1$)",
         "ReturnType": {
           "Before": "boolean",
           "After": "java.nio.file.Path"
@@ -226,7 +226,7 @@
   },
   {
     "From": "$1$",
-    "To": "java.util.Optional<$>",
+    "To": "java.util.Optional<$1$>",
     "Kind": "Reactive",
     "Rules": [
       {

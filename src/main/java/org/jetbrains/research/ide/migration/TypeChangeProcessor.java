@@ -1,6 +1,7 @@
 package org.jetbrains.research.ide.migration;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowId;
@@ -41,14 +42,15 @@ public class TypeChangeProcessor {
         final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
         if (builtInProcessor == null) return;
 
-        final var failedUsagesCollector = FailedTypeChangesCollector.getInstance();
-        failedUsagesCollector.clear();
+        final var failedTypeChangesCollector = FailedTypeChangesCollector.getInstance();
+        failedTypeChangesCollector.clear();
         final UsageInfo[] usages = builtInProcessor.findUsages();
 
-        if (failedUsagesCollector.hasFailedTypeChanges()) {
-            final var panel = new FailedTypeChangesPanel(failedUsagesCollector.getFailedUsages(), project);
+        if (failedTypeChangesCollector.hasFailedTypeChanges()) {
+            failedTypeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
+            final var panel = new FailedTypeChangesPanel(failedTypeChangesCollector.getFailedUsages(), project);
             Content content = UsageViewContentManager.getInstance(project).addContent(
-                    "Failed Usages",
+                    "Failed Type Changes",
                     false,
                     panel,
                     true,
@@ -73,7 +75,13 @@ public class TypeChangeProcessor {
         state.refactoringEnabled = false;
         state.removeAllTypeChangesByRange(element.getTextRange());
 
-        final var document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());
+        Document document;
+        try {
+            document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());
+        } catch (PsiInvalidElementAccessException exception) {
+            LOG.warn(exception);
+            return;
+        }
         if (document == null) return;
 
         TypeChangeRefactoringAvailabilityUpdater.getInstance(project)
