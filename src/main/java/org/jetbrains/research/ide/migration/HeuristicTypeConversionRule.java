@@ -70,6 +70,11 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
                     return null;
                 }
             }
+            if (bestMatchedRule.getRequiredImports() != null) {
+                RequiredImportsCollector.getInstance().addRequiredImport(
+                        bestMatchedRule.getRequiredImports()
+                );
+            }
             return new TypeConversionDescriptor(
                     bestMatchedRule.getExpressionBefore(),
                     bestMatchedRule.getExpressionAfter()

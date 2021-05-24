@@ -43,7 +43,9 @@ public class TypeChangeProcessor {
         if (builtInProcessor == null) return;
 
         final var failedTypeChangesCollector = FailedTypeChangesCollector.getInstance();
+        final var requiredImportsCollector = RequiredImportsCollector.getInstance();
         failedTypeChangesCollector.clear();
+        requiredImportsCollector.clear();
         final UsageInfo[] usages = builtInProcessor.findUsages();
 
         if (failedTypeChangesCollector.hasFailedTypeChanges()) {
@@ -133,6 +135,12 @@ public class TypeChangeProcessor {
         final JavaCodeStyleManager javaCodeStyleManager = JavaCodeStyleManager.getInstance(project);
         final Set<PsiFile> affectedFiles = getAffectedFiles(usages);
         for (PsiFile file : affectedFiles) {
+            for (var requiredImport : RequiredImportsCollector.getInstance().getRequiredImports()) {
+                final PsiClass importClass = JavaPsiFacade.getInstance(project)
+                        .findClass(requiredImport, GlobalSearchScope.everythingScope(project));
+                if (importClass == null) continue;
+                javaCodeStyleManager.addImport((PsiJavaFile) file, importClass);
+            }
             javaCodeStyleManager.optimizeImports(file);
             javaCodeStyleManager.shortenClassReferences(file);
         }
