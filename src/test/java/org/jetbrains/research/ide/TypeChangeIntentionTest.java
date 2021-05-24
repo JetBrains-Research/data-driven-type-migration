@@ -1,60 +1,50 @@
 package org.jetbrains.research.ide;
 
-import com.intellij.dvcs.repo.Repository;
-import com.intellij.dvcs.repo.VcsRepositoryManager;
-import com.intellij.openapi.progress.EmptyProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.impl.ProjectLevelVcsManagerImpl;
-import com.intellij.openapi.vcs.impl.VcsInitObject;
-import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.testFramework.HeavyPlatformTestCase;
-import git4idea.checkout.GitCheckoutProvider;
-import git4idea.commands.Git;
+import com.intellij.pom.java.LanguageLevel;
+import com.intellij.testFramework.IdeaTestUtil;
+import com.intellij.testFramework.LightProjectDescriptor;
+import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.GlobalState;
 
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
+import java.util.Arrays;
 
-public class TypeChangeIntentionTest extends HeavyPlatformTestCase {
-    final String url = "https://github.com/JetBrains-Research/data-driven-type-migration.git";
-    final String commitHashToCheckout = "9eaa67bb";
+public class TypeChangeIntentionTest extends LightJavaCodeInsightFixtureTestCase {
+    private static final String MOCK_JDK_1_8_NAME = "mockJDK-1.8";
 
-    Path myTestNioRoot;
-
-    private VirtualFile getMyProjectRoot() {
-        return getOrCreateProjectBaseDir();
+    @Override
+    protected String getTestDataPath() {
+        return "src/test/testData";
     }
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        this.myTestNioRoot = getTempDir().createVirtualDir("test_root").toNioPath();
+    protected @NotNull LightProjectDescriptor getProjectDescriptor() {
+        return new ProjectDescriptor(LanguageLevel.JDK_1_8) {
+            @Override
+            public Sdk getSdk() {
+                final Path mockJdkPath = Path.of(getTestDataPath()).resolve(MOCK_JDK_1_8_NAME);
+                return IdeaTestUtil.createMockJdk(MOCK_JDK_1_8_NAME, mockJdkPath.toString());
+            }
+        };
     }
 
-    public void testCloningProject() throws IOException, InterruptedException {
-        final String projectName = url.substring(url.lastIndexOf('/') + 1).replace(".git", "");
-        final String parentDirectory = myTestNioRoot.toString();
-        final Git git = Git.getInstance();
+    protected void doTest(String testProjectName, String intentionText) {
+        final VirtualFile directory = myFixture.copyDirectoryToProject(testProjectName, testProjectName);
+        final VirtualFile fileForEditor = Arrays.stream(directory.getChildren()).findFirst().get();
+        myFixture.configureFromExistingVirtualFile(fileForEditor);
+        GlobalState.project = getProject(); // TODO: eliminate
 
-        final var indicator = new EmptyProgressIndicator();
-        ProgressManager.getInstance().executeProcessUnderProgress(() -> {
-            assertTrue(GitCheckoutProvider.doClone(getProject(), git, projectName, parentDirectory, url));
-        }, indicator);
+        final var action = myFixture.findSingleIntention(intentionText);
+        assertNotNull(action);
 
-        VirtualFileManager.getInstance().refreshWithoutFileWatcher(false);
-        VfsUtil.markDirtyAndRefresh(false, true, false, getMyProjectRoot());
-
-        ((ProjectLevelVcsManagerImpl) ProjectLevelVcsManager.getInstance(myProject))
-                .addInitializationRequest(VcsInitObject.AFTER_COMMON, () -> {
-                    Collection<Repository> repositories = VcsRepositoryManager.getInstance(myProject).getRepositories();
-                    System.out.println(repositories);
-                });
-
-        FileUtil.delete(myTestNioRoot);
+        myFixture.launchAction(action);
+        System.out.println(myFixture.getEditor().getDocument().getText());
     }
 
+    public void testIntention() {
+        doTest("junit5", "Data-driven type migration");
+    }
 }
