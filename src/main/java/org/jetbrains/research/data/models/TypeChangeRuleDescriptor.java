@@ -4,15 +4,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class TypeChangeRuleDescriptor {
     @SerializedName("Before")
-    private final String expressionBefore;
+    private String expressionBefore;
 
     @SerializedName("After")
-    private final String expressionAfter;
+    private String expressionAfter;
 
-    public TypeChangeRuleDescriptor(String expressionBefore, String expressionAfter) {
-        this.expressionBefore = expressionBefore;
-        this.expressionAfter = expressionAfter;
-    }
+    @SerializedName("RequiredImports")
+    private String requiredImports;
+
+    @SerializedName("ReturnType")
+    private TypeChangeDescriptor returnType;
 
     public String getExpressionAfter() {
         return expressionAfter;
@@ -20,5 +21,13 @@ public class TypeChangeRuleDescriptor {
 
     public String getExpressionBefore() {
         return expressionBefore;
+    }
+
+    public TypeChangeDescriptor getReturnType() {
+        return returnType;
+    }
+
+    public String getRequiredImports() {
+        return requiredImports;
     }
 }

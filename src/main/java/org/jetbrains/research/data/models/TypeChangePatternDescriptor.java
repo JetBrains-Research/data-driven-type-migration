@@ -14,6 +14,9 @@ public class TypeChangePatternDescriptor {
     @SerializedName("To")
     private String targetType;
 
+    @SerializedName("Kind")
+    private String kind;
+
     @SerializedName("Rules")
     private List<TypeChangeRuleDescriptor> rules;
 

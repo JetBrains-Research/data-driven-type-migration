@@ -9,7 +9,7 @@ import java.util.*;
 public class TypeChangeSuggestedRefactoringState {
     // TODO: encapsulate
     public final Map<RangeMarker, String> initialMarkerToSourceTypeMappings;
-    public final Queue<TypeChangeDescriptor> completeTypeChanges;
+    public final Queue<TypeChangeMarker> completeTypeChanges;
 
     public volatile boolean refactoringEnabled;
 
@@ -31,7 +31,7 @@ public class TypeChangeSuggestedRefactoringState {
                 .findFirst();
     }
 
-    public Optional<TypeChangeDescriptor> getRelevantTypeChangeForOffset(int offset) {
+    public Optional<TypeChangeMarker> getRelevantTypeChangeForOffset(int offset) {
         return completeTypeChanges.stream()
                 .filter(it -> {
                     final var newRange = it.newRangeMarker;
@@ -47,7 +47,7 @@ public class TypeChangeSuggestedRefactoringState {
 
     public void addCompleteTypeChange(RangeMarker relevantOldRange, RangeMarker newRange,
                                       String relevantSourceType, String targetType) {
-        final var typeChange = new TypeChangeDescriptor(relevantOldRange, newRange, relevantSourceType, targetType);
+        final var typeChange = new TypeChangeMarker(relevantOldRange, newRange, relevantSourceType, targetType);
         completeTypeChanges.add(typeChange);
     }
 

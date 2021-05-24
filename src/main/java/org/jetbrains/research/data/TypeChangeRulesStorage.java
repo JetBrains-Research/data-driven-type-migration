@@ -26,7 +26,7 @@ public class TypeChangeRulesStorage {
     static {
         String json;
         try {
-            json = getResourceFileAsString("/rules.json");
+            json = getResourceFileAsString("/new_rules.json");
             Gson gson = new Gson();
             Type type = new TypeToken<List<TypeChangePatternDescriptor>>() {
             }.getType();

@@ -2,13 +2,13 @@ package org.jetbrains.research.ide.refactoring;
 
 import com.intellij.openapi.editor.RangeMarker;
 
-public class TypeChangeDescriptor {
+public class TypeChangeMarker {
     public RangeMarker oldRangeMarker;
     public RangeMarker newRangeMarker;
     public String sourceType;
     public String targetType;
 
-    public TypeChangeDescriptor(RangeMarker oldRangeMarker, RangeMarker newRangeMarker, String sourceType, String targetType) {
+    public TypeChangeMarker(RangeMarker oldRangeMarker, RangeMarker newRangeMarker, String sourceType, String targetType) {
         this.oldRangeMarker = oldRangeMarker;
         this.newRangeMarker = newRangeMarker;
         this.sourceType = sourceType;
@@ -26,8 +26,8 @@ public class TypeChangeDescriptor {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof TypeChangeDescriptor)) return false;
-        final TypeChangeDescriptor other = (TypeChangeDescriptor) obj;
+        if (!(obj instanceof TypeChangeMarker)) return false;
+        final TypeChangeMarker other = (TypeChangeMarker) obj;
         if (other == this) return true;
         return other.sourceType.equals(this.sourceType)
                 && other.targetType.equals(this.targetType)
