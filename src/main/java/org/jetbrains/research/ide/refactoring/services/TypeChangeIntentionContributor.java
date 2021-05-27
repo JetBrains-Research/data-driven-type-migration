@@ -11,7 +11,7 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ide.intentions.FailedTypeChangeRecoveringIntention;
 import org.jetbrains.research.ide.intentions.SuggestedTypeChangeIntention;
-import org.jetbrains.research.ide.migration.FailedTypeChangesCollector;
+import org.jetbrains.research.ide.migration.TypeChangesInfoCollector;
 
 import javax.swing.*;
 
@@ -25,7 +25,7 @@ class TypeChangeIntentionContributor implements IntentionMenuContributor {
                                int passIdToShowIntentionsFor,
                                int offset) {
         final PsiElement context = hostFile.findElementAt(offset);
-        final var failedTypeChangesCollector = FailedTypeChangesCollector.getInstance();
+        final var failedTypeChangesCollector = TypeChangesInfoCollector.getInstance();
         if (context == null) return;
         final var rule = failedTypeChangesCollector.getRuleForFailedUsage(context);
 

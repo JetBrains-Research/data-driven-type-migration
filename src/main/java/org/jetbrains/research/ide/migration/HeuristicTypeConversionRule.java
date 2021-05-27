@@ -60,9 +60,10 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
             parentsPassed++;
         }
 
-        final var collector = FailedTypeChangesCollector.getInstance();
+        final var collector = TypeChangesInfoCollector.getInstance();
         if (bestMatchedRule != null) {
             if (bestMatchedRule.getReturnType() != null) {
+                // Check if the rule is "suspicious", e.g. it changes the return type of the expression
                 if (!bestMatchedRule.getReturnType().getSourceType()
                         .equals(bestMatchedRule.getReturnType().getTargetType())) {
                     collector.addFailedUsage(context);
@@ -70,11 +71,14 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
                     return null;
                 }
             }
+            // Collect required imports for this rule
             if (bestMatchedRule.getRequiredImports() != null) {
                 RequiredImportsCollector.getInstance().addRequiredImport(
                         bestMatchedRule.getRequiredImports()
                 );
             }
+            // Will be successfully updated with a rule
+            collector.addUpdatedUsage(context);
             return new TypeConversionDescriptor(
                     bestMatchedRule.getExpressionBefore(),
                     bestMatchedRule.getExpressionAfter()

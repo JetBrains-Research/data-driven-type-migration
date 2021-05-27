@@ -12,7 +12,8 @@ import com.intellij.refactoring.typeMigration.TypeConversionDescriptor;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
-import org.jetbrains.research.ide.migration.FailedTypeChangesCollector;
+import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
+import org.jetbrains.research.ide.migration.TypeChangesInfoCollector;
 import org.jetbrains.research.utils.PsiUtils;
 
 public class FailedTypeChangeRecoveringIntention extends PsiElementBaseIntentionAction implements PriorityAction {
@@ -44,11 +45,12 @@ public class FailedTypeChangeRecoveringIntention extends PsiElementBaseIntention
                 rule.getExpressionBefore(),
                 rule.getExpressionAfter()
         );
-        final var typeEvaluator = FailedTypeChangesCollector.getInstance().getTypeEvaluator();
+        final var typeEvaluator = TypeChangesInfoCollector.getInstance().getTypeEvaluator();
         conversionDescriptor.replace(
                 PsiUtils.getHighestParentOfType(element, PsiExpression.class),
                 typeEvaluator
         );
+        TypeChangeLogsCollector.getInstance().recoveringIntentionApplied(project, rule);
     }
 
     @Override

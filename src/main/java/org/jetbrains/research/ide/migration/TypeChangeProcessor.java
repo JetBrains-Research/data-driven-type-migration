@@ -18,6 +18,7 @@ import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
+import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
 import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
 import org.jetbrains.research.ide.ui.FailedTypeChangesPanel;
@@ -42,15 +43,15 @@ public class TypeChangeProcessor {
         final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
         if (builtInProcessor == null) return;
 
-        final var failedTypeChangesCollector = FailedTypeChangesCollector.getInstance();
+        final var typeChangesCollector = TypeChangesInfoCollector.getInstance();
         final var requiredImportsCollector = RequiredImportsCollector.getInstance();
-        failedTypeChangesCollector.clear();
+        typeChangesCollector.clear();
         requiredImportsCollector.clear();
         final UsageInfo[] usages = builtInProcessor.findUsages();
 
-        if (failedTypeChangesCollector.hasFailedTypeChanges()) {
-            failedTypeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
-            final var panel = new FailedTypeChangesPanel(failedTypeChangesCollector.getFailedUsages(), project);
+        if (typeChangesCollector.hasFailedTypeChanges()) {
+            typeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
+            final var panel = new FailedTypeChangesPanel(typeChangesCollector.getFailedUsages(), project);
             Content content = UsageViewContentManager.getInstance(project).addContent(
                     "Failed Type Changes",
                     false,
@@ -67,8 +68,32 @@ public class TypeChangeProcessor {
 
         builtInProcessor.performRefactoring(usages);
         addAndOptimizeImports(project, usages);
+
+        PsiElement root = Objects.requireNonNull(
+                PsiUtils.getHighestParentOfType(element, PsiTypeElement.class)
+        ).getParent();
+
         if (isRootTypeAlreadyChanged) {
+            TypeChangeLogsCollector.getInstance().reactiveIntentionApplied(
+                    project,
+                    descriptor.getSourceType(),
+                    descriptor.getTargetType(),
+                    root,
+                    typeChangesCollector.getUpdatedUsages().size(),
+                    typeChangesCollector.getSuspiciousUsages().size(),
+                    typeChangesCollector.getFailedUsages().size()
+            );
             disableRefactoring(element);
+        } else {
+            TypeChangeLogsCollector.getInstance().proactiveIntentionApplied(
+                    project,
+                    descriptor.getSourceType(),
+                    descriptor.getTargetType(),
+                    root,
+                    typeChangesCollector.getUpdatedUsages().size(),
+                    typeChangesCollector.getSuspiciousUsages().size(),
+                    typeChangesCollector.getFailedUsages().size()
+            );
         }
     }
 
@@ -131,7 +156,6 @@ public class TypeChangeProcessor {
     }
 
     private void addAndOptimizeImports(Project project, UsageInfo[] usages) {
-        // TODO: Add auto imports
         final JavaCodeStyleManager javaCodeStyleManager = JavaCodeStyleManager.getInstance(project);
         final Set<PsiFile> affectedFiles = getAffectedFiles(usages);
         for (PsiFile file : affectedFiles) {
