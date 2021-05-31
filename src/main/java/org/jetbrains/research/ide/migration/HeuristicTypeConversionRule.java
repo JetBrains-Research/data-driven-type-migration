@@ -5,20 +5,23 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiMember;
 import com.intellij.psi.PsiType;
-import com.intellij.refactoring.typeMigration.TypeConversionDescriptor;
+import com.intellij.psi.util.PsiUtil;
 import com.intellij.refactoring.typeMigration.TypeConversionDescriptorBase;
 import com.intellij.refactoring.typeMigration.TypeMigrationLabeler;
 import com.intellij.refactoring.typeMigration.rules.TypeConversionRule;
+import com.intellij.refactoring.typeMigration.usageInfo.TypeMigrationUsageInfo;
 import com.intellij.structuralsearch.MatchResult;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.utils.StringUtils;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 public class HeuristicTypeConversionRule extends TypeConversionRule {
-    private static final int MAX_PARENTS_TO_LIFT_UP = 2;
+    private static final int MAX_PARENTS_TO_LIFT_UP = 3;
     private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     @Override
@@ -29,18 +32,25 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
                 from.getCanonicalText(),
                 to.getCanonicalText()
         );
-        if (pattern == null || context == null) return null;
+        final String currentRootName = extractCurrentRootIdentName(labeler);
+        if (pattern == null || context == null || currentRootName == null) return null;
 
         PsiElement currentContext = context;
         int parentsPassed = 0;
         TypeChangeRuleDescriptor bestMatchedRule = null;
+        final List<TypeChangeRuleDescriptor> rules = pattern.getRules();
 
         while (parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
-            final List<TypeChangeRuleDescriptor> rules = pattern.getRules();
+            if (currentContext.getText().contains("=")) {
+                // It means that we lifted up to much and even touching another usage from the same assignment
+                break;
+            }
             for (var rule : rules) {
-                List<MatchResult> matches = StringUtils.findMatches(
+                List<MatchResult> matches = StringUtils.match(
                         currentContext.getText(),
-                        rule.getExpressionBefore()
+                        rule.getExpressionBefore(),
+                        currentRootName,
+                        context.getProject()
                 );
                 if (!matches.isEmpty()) {
                     if (bestMatchedRule == null) {
@@ -79,12 +89,25 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
             }
             // Will be successfully updated with a rule
             collector.addUpdatedUsage(context);
-            return new TypeConversionDescriptor(
+            return new HeuristicTypeConversionDescriptor(
                     bestMatchedRule.getExpressionBefore(),
-                    bestMatchedRule.getExpressionAfter()
+                    bestMatchedRule.getExpressionAfter(),
+                    currentRootName
             );
         }
         collector.addFailedUsage(context);
+        return null;
+    }
+
+    @ApiStatus.Internal
+    private @Nullable String extractCurrentRootIdentName(TypeMigrationLabeler labeler) {
+        try {
+            Field field = labeler.getClass().getDeclaredField("myCurrentRoot");
+            field.setAccessible(true);
+            return PsiUtil.getName(((TypeMigrationUsageInfo) field.get(labeler)).getElement());
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }

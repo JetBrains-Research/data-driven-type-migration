@@ -9,8 +9,13 @@
         "After": "$1$.resolve($2$)"
       },
       {
-        "Before": "new File($1$)",
-        "After": "Paths.get($1$)"
+        "Before": "new File($2$, $3$)",
+        "After": "Path.of($2$, $3$)"
+      },
+      {
+        "Before": "new File($2$)",
+        "After": "Paths.get($2$)",
+        "RequiredImports": "java.nio.file.Paths"
       },
       {
         "Before": "$1$.exists()",
@@ -76,11 +81,11 @@
     "Rules": [
       {
         "Before": "$1$.equals($2$)",
-        "After": "$2$.matcher($1$).matches()"
+        "After": "$1$.matcher($2$).matches()"
       },
       {
-        "Before": "$1$",
-        "After": "Patterns.compile($1$)"
+        "Before": "$2$",
+        "After": "Pattern.compile($2$)"
       },
       {
         "Before": "$1$",
@@ -229,6 +234,10 @@
     "To": "java.util.Optional<$1$>",
     "Kind": "Reactive",
     "Rules": [
+      {
+        "Before": "$1$ != null",
+        "After": "$1$.isPresent()"
+      },
       {
         "Before": "$1$",
         "After": "$1$.get()"

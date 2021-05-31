@@ -96,6 +96,6 @@ public class TypeChangeRulesStorage {
         if (source.contains(pattern)) return false;
 
         // Matching complicated cases with substitutions, such as List<String> to List<$1$>
-        return !StringUtils.findMatches(source, pattern).isEmpty();
+        return !StringUtils.findSimpleMatches(source, pattern).isEmpty(); // TODO: debug
     }
 }
