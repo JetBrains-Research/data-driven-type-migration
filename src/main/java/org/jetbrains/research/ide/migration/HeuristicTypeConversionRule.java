@@ -15,7 +15,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
-import org.jetbrains.research.utils.StringUtils;
+import org.jetbrains.research.utils.SSRUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -46,7 +46,7 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
                 break;
             }
             for (var rule : rules) {
-                List<MatchResult> matches = StringUtils.match(
+                List<MatchResult> matches = SSRUtils.matchRule(
                         currentContext.getText(),
                         rule.getExpressionBefore(),
                         currentRootName,
@@ -59,9 +59,10 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
                     }
 
                     // Update bestMatchedRule iff it matches a larger number of tokens
-                    final var ruleTokens = StringUtils.splitByTokens(rule.getExpressionBefore());
-                    final var bestMatchedRuleTokens = StringUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
-                    if (bestMatchedRuleTokens.length < ruleTokens.length) {
+                    final var ruleTokens = SSRUtils.splitByTokens(rule.getExpressionBefore());
+                    final var bestMatchedRuleTokens = SSRUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
+                    if (bestMatchedRuleTokens.length < ruleTokens.length
+                            || bestMatchedRuleTokens.length == ruleTokens.length && rule.getExpressionBefore().contains("$1$")) {
                         bestMatchedRule = rule;
                     }
                 }
@@ -74,8 +75,7 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
         if (bestMatchedRule != null) {
             if (bestMatchedRule.getReturnType() != null) {
                 // Check if the rule is "suspicious", e.g. it changes the return type of the expression
-                if (!bestMatchedRule.getReturnType().getSourceType()
-                        .equals(bestMatchedRule.getReturnType().getTargetType())) {
+                if (!bestMatchedRule.getReturnType().getSourceType().equals(bestMatchedRule.getReturnType().getTargetType())) {
                     collector.addFailedUsage(context);
                     collector.addRuleForFailedUsage(context, bestMatchedRule);
                     return null;

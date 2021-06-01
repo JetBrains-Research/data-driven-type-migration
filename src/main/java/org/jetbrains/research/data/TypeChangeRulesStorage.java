@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
-import org.jetbrains.research.utils.StringUtils;
+import org.jetbrains.research.utils.SSRUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -88,14 +88,14 @@ public class TypeChangeRulesStorage {
         }
     }
 
-    private static Boolean hasMatch(String source, String pattern) {
+    private static Boolean hasMatch(String source, String typePattern) {
         // Full match
-        if (pattern.equals(source)) return true;
+        if (typePattern.equals(source)) return true;
 
         // Preventing incorrect matches for generic types, such as from List<String> to String
-        if (source.contains(pattern)) return false;
+        if (source.contains(typePattern)) return false;
 
         // Matching complicated cases with substitutions, such as List<String> to List<$1$>
-        return !StringUtils.findSimpleMatches(source, pattern).isEmpty(); // TODO: debug
+        return !SSRUtils.matchType(source, typePattern).isEmpty(); // TODO: debug
     }
 }

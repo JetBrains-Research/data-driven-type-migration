@@ -16,26 +16,14 @@ import org.jetbrains.research.GlobalState;
 
 import java.util.List;
 
-public class StringUtils {
+public class SSRUtils {
     public static String[] splitByTokens(String source) {
         return source.split("[\\s.()<>]+");
     }
 
-    public static List<MatchResult> match(String source, String pattern, String currentRoot, Project project) {
+    public static List<MatchResult> matchRule(String source, String pattern, String currentRootName, Project project) {
         final MatchOptions options = new MatchOptions();
-        options.setRecursiveSearch(true);
-        options.fillSearchCriteria(pattern);
-        options.setFileType(JavaFileType.INSTANCE);
-
-        MatchVariableConstraint rootConstraint = new MatchVariableConstraint("1");
-        rootConstraint.setRegExp(currentRoot);
-        options.addVariableConstraint(rootConstraint);
-
-        MatchVariableConstraint nonRootConstraint = new MatchVariableConstraint("2");
-        nonRootConstraint.setRegExp(currentRoot);
-        nonRootConstraint.setInvertRegExp(true);
-        options.addVariableConstraint(nonRootConstraint);
-
+        patchMatchOptionsWithConstraints(options, pattern, currentRootName);
         final CompiledPattern compiledPattern = PatternCompiler.compilePattern(
                 project, options, false, false
         );
@@ -43,9 +31,27 @@ public class StringUtils {
         return matcher.testFindMatches(source, false, JavaFileType.INSTANCE, false);
     }
 
-    public static List<MatchResult> findSimpleMatches(String source, String pattern) {
+    public static void patchMatchOptionsWithConstraints(MatchOptions options, String pattern, String currentRootName) {
+        options.fillSearchCriteria(pattern);
+        options.setFileType(JavaFileType.INSTANCE);
+
+        MatchVariableConstraint rootConstraint = new MatchVariableConstraint("1");
+        rootConstraint.setRegExp(currentRootName + "|" + currentRootName + "[(].*[)]");
+        options.addVariableConstraint(rootConstraint);
+
+        // There should be a regex retrieving all the variables between $$,
+        // but I guess it's enough to only add constraints for 2, 3, 4, 5 with current templates
+        for (int i = 2; i < 5; ++i) {
+            MatchVariableConstraint nonRootConstraint = new MatchVariableConstraint(Integer.toString(i));
+            nonRootConstraint.setRegExp(currentRootName);
+            nonRootConstraint.setInvertRegExp(true);
+            options.addVariableConstraint(nonRootConstraint);
+        }
+    }
+
+    public static List<MatchResult> matchType(String source, String typePattern) {
         final MatchOptions options = new MatchOptions();
-        options.setSearchPattern(pattern);
+        options.setSearchPattern(typePattern);
         options.setFileType(JavaFileType.INSTANCE);
         final Matcher matcher = new Matcher(GlobalState.project, options);
         return matcher.testFindMatches(source, false, JavaFileType.INSTANCE, false);
