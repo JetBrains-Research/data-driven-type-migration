@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.migration;
+package org.jetbrains.research.ide.migration.structuralsearch;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-class MyReplacer extends Replacer {
+public class MyReplacer extends Replacer {
     public MyReplacer(@NotNull Project project, @NotNull ReplaceOptions options) {
         super(project, options);
     }

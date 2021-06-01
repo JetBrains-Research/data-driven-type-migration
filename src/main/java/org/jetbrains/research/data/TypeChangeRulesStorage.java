@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
-import org.jetbrains.research.utils.SSRUtils;
+import org.jetbrains.research.ide.migration.structuralsearch.SSRUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

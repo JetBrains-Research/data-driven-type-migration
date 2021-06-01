@@ -12,7 +12,8 @@ import com.intellij.structuralsearch.MatchResult;
 import com.intellij.structuralsearch.plugin.replace.ReplaceOptions;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.utils.SSRUtils;
+import org.jetbrains.research.ide.migration.structuralsearch.MyReplacer;
+import org.jetbrains.research.ide.migration.structuralsearch.SSRUtils;
 
 import java.util.List;
 

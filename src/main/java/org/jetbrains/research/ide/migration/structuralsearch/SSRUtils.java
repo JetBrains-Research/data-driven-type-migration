@@ -1,4 +1,4 @@
-package org.jetbrains.research.utils;
+package org.jetbrains.research.ide.migration.structuralsearch;
 
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.project.Project;
@@ -17,10 +17,6 @@ import org.jetbrains.research.GlobalState;
 import java.util.List;
 
 public class SSRUtils {
-    public static String[] splitByTokens(String source) {
-        return source.split("[\\s.()<>]+");
-    }
-
     public static List<MatchResult> matchRule(String source, String pattern, String currentRootName, Project project) {
         final MatchOptions options = new MatchOptions();
         patchMatchOptionsWithConstraints(options, pattern, currentRootName);

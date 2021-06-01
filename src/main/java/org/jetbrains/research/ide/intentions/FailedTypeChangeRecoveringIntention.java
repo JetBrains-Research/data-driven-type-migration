@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ide.migration.TypeChangesInfoCollector;
-import org.jetbrains.research.utils.PsiUtils;
+import org.jetbrains.research.utils.PsiRelatedUtils;
 
 public class FailedTypeChangeRecoveringIntention extends PsiElementBaseIntentionAction implements PriorityAction {
     private final TypeChangeRuleDescriptor rule;
@@ -47,7 +47,7 @@ public class FailedTypeChangeRecoveringIntention extends PsiElementBaseIntention
         );
         final var typeEvaluator = TypeChangesInfoCollector.getInstance().getTypeEvaluator();
         conversionDescriptor.replace(
-                PsiUtils.getHighestParentOfType(element, PsiExpression.class),
+                PsiRelatedUtils.getHighestParentOfType(element, PsiExpression.class),
                 typeEvaluator
         );
         TypeChangeLogsCollector.getInstance().recoveringIntentionApplied(project, rule);

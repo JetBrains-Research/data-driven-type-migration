@@ -3,7 +3,7 @@ package org.jetbrains.research.data.models;
 import com.google.gson.annotations.SerializedName;
 import com.intellij.psi.PsiType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.utils.SSRUtils;
+import org.jetbrains.research.ide.migration.structuralsearch.SSRUtils;
 
 import java.util.List;
 

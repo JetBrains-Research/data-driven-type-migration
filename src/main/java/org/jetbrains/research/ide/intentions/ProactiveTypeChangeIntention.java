@@ -14,7 +14,7 @@ import com.intellij.psi.PsiTypeElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
-import org.jetbrains.research.utils.PsiUtils;
+import org.jetbrains.research.utils.PsiRelatedUtils;
 
 import java.util.Objects;
 
@@ -31,7 +31,7 @@ public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction 
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-        PsiTypeElement parentType = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
+        PsiTypeElement parentType = PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class);
         if (parentType != null) {
             String parentTypeQualifiedName = parentType.getType().getCanonicalText();
             return !TypeChangeRulesStorage.getPatternsBySourceType(parentTypeQualifiedName).isEmpty();
@@ -42,7 +42,7 @@ public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction 
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
-        PsiType rootType = Objects.requireNonNull(PsiUtils.getHighestParentOfType(element, PsiTypeElement.class)).getType();
+        PsiType rootType = Objects.requireNonNull(PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class)).getType();
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeChangesListPopupStep(
                         "Type Migration Rules",

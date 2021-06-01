@@ -15,7 +15,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
-import org.jetbrains.research.utils.SSRUtils;
+import org.jetbrains.research.ide.migration.structuralsearch.SSRUtils;
+import org.jetbrains.research.utils.PsiRelatedUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -59,8 +60,8 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
                     }
 
                     // Update bestMatchedRule iff it matches a larger number of tokens
-                    final var ruleTokens = SSRUtils.splitByTokens(rule.getExpressionBefore());
-                    final var bestMatchedRuleTokens = SSRUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
+                    final var ruleTokens = PsiRelatedUtils.splitByTokens(rule.getExpressionBefore());
+                    final var bestMatchedRuleTokens = PsiRelatedUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
                     if (bestMatchedRuleTokens.length < ruleTokens.length
                             || bestMatchedRuleTokens.length == ruleTokens.length && rule.getExpressionBefore().contains("$1$")) {
                         bestMatchedRule = rule;

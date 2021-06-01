@@ -22,7 +22,7 @@ import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
 import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
 import org.jetbrains.research.ide.ui.FailedTypeChangesPanel;
-import org.jetbrains.research.utils.PsiUtils;
+import org.jetbrains.research.utils.PsiRelatedUtils;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -70,7 +70,7 @@ public class TypeChangeProcessor {
         addAndOptimizeImports(project, usages);
 
         PsiElement root = Objects.requireNonNull(
-                PsiUtils.getHighestParentOfType(element, PsiTypeElement.class)
+                PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class)
         ).getParent();
 
         if (isRootTypeAlreadyChanged) {
@@ -119,7 +119,7 @@ public class TypeChangeProcessor {
             PsiElement element,
             TypeChangePatternDescriptor descriptor
     ) {
-        PsiTypeElement rootTypeElement = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
+        PsiTypeElement rootTypeElement = PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class);
         PsiElement root;
         if (rootTypeElement != null) {
             root = rootTypeElement.getParent();
@@ -130,14 +130,14 @@ public class TypeChangeProcessor {
 
         // In case of suggested refactoring intention
         if (isRootTypeAlreadyChanged) {
-            final PsiType currentRootType = Objects.requireNonNull(PsiUtils.getExpectedType(root));
+            final PsiType currentRootType = Objects.requireNonNull(PsiRelatedUtils.getExpectedType(root));
             final String recoveredRootType = descriptor.resolveSourceType(currentRootType);
             final PsiTypeElement recoveredRootTypeElement = PsiElementFactory.getInstance(project)
                     .createTypeElementFromText(recoveredRootType, root);
             rootTypeElement.replace(recoveredRootTypeElement);
         }
 
-        final PsiType expectedRootType = Objects.requireNonNull(PsiUtils.getExpectedType(root));
+        final PsiType expectedRootType = Objects.requireNonNull(PsiRelatedUtils.getExpectedType(root));
         String targetType = descriptor.resolveTargetType(expectedRootType);
         PsiTypeCodeFragment targetTypeCodeFragment = JavaCodeFragmentFactory.getInstance(project)
                 .createTypeCodeFragment(targetType, root, true);
@@ -149,7 +149,7 @@ public class TypeChangeProcessor {
         return new TypeMigrationProcessor(
                 project,
                 new PsiElement[]{root},
-                Functions.constant(PsiUtils.getTypeOfCodeFragment(targetTypeCodeFragment)),
+                Functions.constant(PsiRelatedUtils.getTypeOfCodeFragment(targetTypeCodeFragment)),
                 rules,
                 true
         );

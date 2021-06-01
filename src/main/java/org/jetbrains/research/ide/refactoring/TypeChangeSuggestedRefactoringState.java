@@ -2,7 +2,7 @@ package org.jetbrains.research.ide.refactoring;
 
 import com.intellij.openapi.editor.RangeMarker;
 import com.intellij.openapi.util.TextRange;
-import org.jetbrains.research.utils.CommonUtils;
+import org.jetbrains.research.utils.EditorUtils;
 
 import java.util.*;
 
@@ -58,7 +58,7 @@ public class TypeChangeSuggestedRefactoringState {
     }
 
     public void removeAllTypeChangesByRange(TextRange range) {
-        initialMarkerToSourceTypeMappings.keySet().removeIf(oldMarker -> CommonUtils.intersects(oldMarker, range));
-        completeTypeChanges.removeIf(typeChange -> CommonUtils.intersects(typeChange.newRangeMarker, range));
+        initialMarkerToSourceTypeMappings.keySet().removeIf(oldMarker -> EditorUtils.intersects(oldMarker, range));
+        completeTypeChanges.removeIf(typeChange -> EditorUtils.intersects(typeChange.newRangeMarker, range));
     }
 }
