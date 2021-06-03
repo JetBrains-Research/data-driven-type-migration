@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
+import org.jetbrains.research.ide.migration.collectors.RequiredImportsCollector;
+import org.jetbrains.research.ide.migration.collectors.TypeChangesInfoCollector;
 import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
 import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
 import org.jetbrains.research.ide.ui.FailedTypeChangesPanel;
@@ -115,7 +117,7 @@ public class TypeChangeProcessor {
                 .updateAllHighlighters(document, element.getTextOffset());
     }
 
-    private @Nullable TypeMigrationProcessor createBuiltInTypeMigrationProcessor(
+    public @Nullable TypeMigrationProcessor createBuiltInTypeMigrationProcessor(
             PsiElement element,
             TypeChangePatternDescriptor descriptor
     ) {
@@ -143,7 +145,7 @@ public class TypeChangeProcessor {
                 .createTypeCodeFragment(targetType, root, true);
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
-        rules.setBoundScope(GlobalSearchScope.fileScope(element.getContainingFile()));
+        rules.setBoundScope(GlobalSearchScope.projectScope(project));
         rules.addConversionDescriptor(new HeuristicTypeConversionRule());
 
         return new TypeMigrationProcessor(

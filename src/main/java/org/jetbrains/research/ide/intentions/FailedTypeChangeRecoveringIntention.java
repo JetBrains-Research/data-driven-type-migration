@@ -13,7 +13,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
-import org.jetbrains.research.ide.migration.TypeChangesInfoCollector;
+import org.jetbrains.research.ide.migration.collectors.TypeChangesInfoCollector;
 import org.jetbrains.research.utils.PsiRelatedUtils;
 
 public class FailedTypeChangeRecoveringIntention extends PsiElementBaseIntentionAction implements PriorityAction {

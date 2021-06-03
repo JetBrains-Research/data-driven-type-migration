@@ -25,9 +25,11 @@ dependencies {
 tasks {
     runIde {
         val sourceProjectsPath: String? by project
+        val jdkPath: String? by project
         args = listOfNotNull(
             "evaluation",
-            sourceProjectsPath?.let { "--src-projects-dir=$it" }
+            sourceProjectsPath?.let { "--src-projects-dir=$it" },
+            jdkPath?.let { "--jdk-path=$it" }
         )
         jvmArgs = listOf("-Djava.awt.headless=true")
         standardInput = System.`in`

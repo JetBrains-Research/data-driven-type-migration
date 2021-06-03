@@ -15,6 +15,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
+import org.jetbrains.research.ide.migration.collectors.RequiredImportsCollector;
+import org.jetbrains.research.ide.migration.collectors.TypeChangesInfoCollector;
 import org.jetbrains.research.ide.migration.structuralsearch.SSRUtils;
 import org.jetbrains.research.utils.PsiRelatedUtils;
 

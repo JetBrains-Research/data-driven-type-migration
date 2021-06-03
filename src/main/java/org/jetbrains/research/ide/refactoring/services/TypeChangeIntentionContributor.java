@@ -11,7 +11,7 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ide.intentions.FailedTypeChangeRecoveringIntention;
 import org.jetbrains.research.ide.intentions.SuggestedTypeChangeIntention;
-import org.jetbrains.research.ide.migration.TypeChangesInfoCollector;
+import org.jetbrains.research.ide.migration.collectors.TypeChangesInfoCollector;
 
 import javax.swing.*;
 

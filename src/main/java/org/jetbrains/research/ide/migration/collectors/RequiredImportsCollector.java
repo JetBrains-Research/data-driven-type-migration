@@ -1,9 +1,9 @@
-package org.jetbrains.research.ide.migration;
+package org.jetbrains.research.ide.migration.collectors;
 
 import java.util.HashSet;
 import java.util.Set;
 
-class RequiredImportsCollector {
+public class RequiredImportsCollector extends SwitchableCollector {
     private static RequiredImportsCollector collector = null;
     private final Set<String> requiredImports;
 
@@ -19,7 +19,9 @@ class RequiredImportsCollector {
     }
 
     public void addRequiredImport(String requiredImport) {
-        requiredImports.add(requiredImport);
+        if (shouldCollect) {
+            requiredImports.add(requiredImport);
+        }
     }
 
     public Set<String> getRequiredImports() {
@@ -28,5 +30,6 @@ class RequiredImportsCollector {
 
     public void clear() {
         requiredImports.clear();
+        shouldCollect = true;
     }
 }
