@@ -43,78 +43,81 @@ public class EvaluationRunner implements ApplicationStarter {
             CommandLine parsedArgs = parseArgs(args.toArray(new String[0]));
             File pathToProjects = new File(parsedArgs.getOptionValue("src-projects-dir"));
             String pathToJdk = parsedArgs.getOptionValue("jdk-path");
+            // Make this thing work for the project path passed as argument
+            // "Create project" for each parent directory of "src/main/java"
+            // Also pass the name of the file and the offsets where the type migrtation shud be simulated
+            // Report all the changes in a JSON or something
+            for (File projectDir : Objects.requireNonNull(pathToProjects.listFiles())) {
+                if (projectDir.isDirectory()) {
+                    ApplicationManager.getApplication().runWriteAction(() -> {
+                                // Traverse all subdirectories in the specified directory and create project for each of them
+                                final Project project = ProjectUtil.openOrImport(projectDir.toPath(), null, false);
+                                if (project == null) return;
+                                IntellijProjectUtils.loadModules(projectDir, project);
+                                IntellijProjectUtils.setupJdk(project, pathToJdk);
+                                GlobalState.project = project;
 
-            ApplicationManager.getApplication().runWriteAction(() -> {
+                                // Just for test: the types for Type Change should be specified / injected from outside
+                                final String sourceType = "java.io.File";
+                                final String targetType = "java.nio.file.Path";
 
-                // Traverse all subdirectories in the specified directory and create project for each of them
-                for (File projectDir : Objects.requireNonNull(pathToProjects.listFiles())) {
-                    if (projectDir.isDirectory()) {
-                        final Project project = ProjectUtil.openOrImport(projectDir.toPath(), null, false);
-                        if (project == null) continue;
+                                // Traverse all the `.java` files in the project and build PSI for each of them
+                                VirtualFile[] roots = ProjectRootManager.getInstance(project).getContentRoots();
+                                for (var root : roots) {
+                                    VfsUtilCore.iterateChildrenRecursively(root, null, fileOrDir -> {
+                                        if (fileOrDir.getExtension() == null
+                                                || fileOrDir.getCanonicalPath() == null
+                                                || !fileOrDir.getExtension().equals("java")) {
+                                            return true;
+                                        }
+                                        final var psi = PsiManager.getInstance(project).findFile(fileOrDir);
+                                        if (psi == null) return true;
 
-                        IntellijProjectUtils.loadModules(projectDir, project);
-                        IntellijProjectUtils.setupJdk(project, pathToJdk);
-                        GlobalState.project = project;
+                                        // Find the first `<caret>` in the program and repair the corresponding element:
+                                        // Like `F<caret>ile` to `File`
+                                        // TODO: check the next <caret> tags as well
+                                        String source = psi.getText();
+                                        int caretOffset = source.indexOf("<caret>");
+                                        if (caretOffset == -1) return true;
+                                        repairElementWithCaretTag(project, sourceType, psi, caretOffset);
 
-                        // Just for test: the types for Type Change should be specified / injected from outside
-                        final String sourceType = "java.io.File";
-                        final String targetType = "java.nio.file.Path";
+                                        WriteCommandAction.runWriteCommandAction(project, () -> {
+                                            // Create built-in `TypeMigrationProcessor`
+                                            final PsiElement context = psi.findElementAt(caretOffset);
+                                            final var descriptor = TypeChangeRulesStorage.findPattern(sourceType, targetType);
+                                            final var typeChangeProcessor = new TypeChangeProcessor(project, false);
+                                            final var builtInProcessor = typeChangeProcessor.createBuiltInTypeMigrationProcessor(context, descriptor);
+                                            if (builtInProcessor == null) return;
 
-                        // Traverse all the `.java` files in the project and build PSI for each of them
-                        VirtualFile[] roots = ProjectRootManager.getInstance(project).getContentRoots();
-                        for (var root : roots) {
-                            VfsUtilCore.iterateChildrenRecursively(root, null, fileOrDir -> {
-                                if (fileOrDir.getExtension() == null
-                                        || fileOrDir.getCanonicalPath() == null
-                                        || !fileOrDir.getExtension().equals("java")) {
-                                    return true;
+                                            // Disable plugin's internal usages collectors and find migrating usages in the all project
+                                            final var typeChangesCollector = TypeChangesInfoCollector.getInstance();
+                                            final var requiredImportsCollector = RequiredImportsCollector.getInstance();
+                                            typeChangesCollector.off();
+                                            requiredImportsCollector.off();
+                                            final UsageInfo[] usages = builtInProcessor.findUsages();
+
+                                            // Traverse the usages, extract PsiElements and parents
+                                            for (var usage : usages) {
+                                                PsiElement element = usage.getElement();
+                                                assert element != null;
+
+                                                PsiElement[] parents = {
+                                                        element.getParent(),
+                                                        element.getParent().getParent(),
+                                                        element.getParent().getParent()
+                                                };
+                                                System.out.print(element + " - ");
+                                                System.out.println(Arrays.toString(parents));
+                                            }
+                                        });
+                                        return false;
+                                    });
                                 }
-                                final var psi = PsiManager.getInstance(project).findFile(fileOrDir);
-                                if (psi == null) return true;
+                            }
 
-                                // Find the first `<caret>` in the program and repair the corresponding element:
-                                // Like `F<caret>ile` to `File`
-                                // TODO: check the next <caret> tags as well
-                                String source = psi.getText();
-                                int caretOffset = source.indexOf("<caret>");
-                                if (caretOffset == -1) return true;
-                                repairElementWithCaretTag(project, sourceType, psi, caretOffset);
-
-                                WriteCommandAction.runWriteCommandAction(project, () -> {
-                                    // Create built-in `TypeMigrationProcessor`
-                                    final PsiElement context = psi.findElementAt(caretOffset);
-                                    final var descriptor = TypeChangeRulesStorage.findPattern(sourceType, targetType);
-                                    final var typeChangeProcessor = new TypeChangeProcessor(project, false);
-                                    final var builtInProcessor = typeChangeProcessor.createBuiltInTypeMigrationProcessor(context, descriptor);
-                                    if (builtInProcessor == null) return;
-
-                                    // Disable plugin's internal usages collectors and find migrating usages in the all project
-                                    final var typeChangesCollector = TypeChangesInfoCollector.getInstance();
-                                    final var requiredImportsCollector = RequiredImportsCollector.getInstance();
-                                    typeChangesCollector.off();
-                                    requiredImportsCollector.off();
-                                    final UsageInfo[] usages = builtInProcessor.findUsages();
-
-                                    // Traverse the usages, extract PsiElements and parents
-                                    for (var usage : usages) {
-                                        PsiElement element = usage.getElement();
-                                        assert element != null;
-
-                                        PsiElement[] parents = {
-                                                element.getParent(),
-                                                element.getParent().getParent(),
-                                                element.getParent().getParent()
-                                        };
-                                        System.out.print(element + " - ");
-                                        System.out.println(Arrays.toString(parents));
-                                    }
-                                });
-                                return false;
-                            });
-                        }
-                    }
+                    );
                 }
-            });
+            }
         } catch (Throwable e) {
             System.out.println(e.getMessage());
             System.exit(1);
