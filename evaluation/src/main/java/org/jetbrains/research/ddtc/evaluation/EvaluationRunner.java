@@ -10,6 +10,7 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.usageView.UsageInfo;
 import org.apache.commons.cli.*;
 import org.jetbrains.annotations.NonNls;
@@ -54,7 +55,9 @@ public class EvaluationRunner implements ApplicationStarter {
 
                         IntellijProjectUtils.loadModules(projectDir, project);
                         IntellijProjectUtils.setupJdk(project, pathToJdk);
+
                         GlobalState.project = project;
+                        GlobalState.searchScope = GlobalSearchScope.projectScope(project);
 
                         // Just for test: the types for Type Change should be specified / injected from outside
                         final String sourceType = "java.io.File";

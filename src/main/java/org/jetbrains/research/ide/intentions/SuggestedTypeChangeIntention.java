@@ -9,8 +9,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.GlobalState;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 
 public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction implements PriorityAction {
@@ -38,6 +40,7 @@ public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction 
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
+        GlobalState.searchScope = GlobalSearchScope.fileScope(element.getContainingFile());
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeChangesListPopupStep(
                         "Type Migration Rules",

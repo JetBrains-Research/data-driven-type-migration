@@ -11,8 +11,10 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.GlobalState;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.utils.PsiRelatedUtils;
 
@@ -42,6 +44,7 @@ public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction 
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
+        GlobalState.searchScope = GlobalSearchScope.fileScope(element.getContainingFile());
         PsiType rootType = Objects.requireNonNull(PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class)).getType();
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeChangesListPopupStep(

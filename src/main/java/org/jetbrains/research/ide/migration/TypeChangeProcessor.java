@@ -16,6 +16,7 @@ import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.GlobalState;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
@@ -145,7 +146,7 @@ public class TypeChangeProcessor {
                 .createTypeCodeFragment(targetType, root, true);
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
-        rules.setBoundScope(GlobalSearchScope.projectScope(project));
+        rules.setBoundScope(GlobalState.searchScope);
         rules.addConversionDescriptor(new HeuristicTypeConversionRule());
 
         return new TypeMigrationProcessor(
