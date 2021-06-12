@@ -6,8 +6,12 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PsiUtils {
-    private static final Logger LOG = Logger.getInstance(PsiUtils.class);
+public class PsiRelatedUtils {
+    private static final Logger LOG = Logger.getInstance(PsiRelatedUtils.class);
+
+    public static String[] splitByTokens(String source) {
+        return source.split("[\\s.()<>]+");
+    }
 
     public static @Nullable <T extends PsiElement> T getHighestParentOfType(
             @Nullable PsiElement element, @NotNull Class<T> aClass
@@ -60,7 +64,7 @@ public class PsiUtils {
                 correspondingTypeElement = (PsiTypeElement) element.getNextSibling();
             }
         } else {
-            correspondingTypeElement = PsiUtils.getHighestParentOfType(element, PsiTypeElement.class);
+            correspondingTypeElement = PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class);
         }
         if (correspondingTypeElement == null) return null;
 

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
 import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
-import org.jetbrains.research.utils.PsiUtils;
+import org.jetbrains.research.utils.PsiRelatedUtils;
 
 public class TypeChangeDocumentListener implements DocumentListener {
     private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
@@ -38,7 +38,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
         final var oldElement = psiFile.findElementAt(offset);
         if (oldElement == null) return;
 
-        final var oldElementQualifiedName = PsiUtils.getClosestFullyQualifiedName(oldElement);
+        final var oldElementQualifiedName = PsiRelatedUtils.getClosestFullyQualifiedName(oldElement);
         if (oldElementQualifiedName == null) return;
 
         if (TypeChangeRulesStorage.hasSourceType(oldElementQualifiedName)) {
@@ -58,7 +58,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
         final var newElement = psiFile.findElementAt(offset);
         if (newElement == null) return;
 
-        final var newElementQualifiedName = PsiUtils.getClosestFullyQualifiedName(newElement);
+        final var newElementQualifiedName = PsiRelatedUtils.getClosestFullyQualifiedName(newElement);
         if (newElementQualifiedName == null) return;
 
         if (TypeChangeRulesStorage.hasTargetType(newElementQualifiedName)) {

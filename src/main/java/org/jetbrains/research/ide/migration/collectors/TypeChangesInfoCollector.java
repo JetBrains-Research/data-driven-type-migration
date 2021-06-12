@@ -1,4 +1,4 @@
-package org.jetbrains.research.ide.migration;
+package org.jetbrains.research.ide.migration.collectors;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
@@ -16,21 +16,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class FailedTypeChangesCollector {
+public class TypeChangesInfoCollector extends SwitchableCollector {
     private static final int MAX_PARENTS_TO_LIFT_UP = 4;
 
-    private static FailedTypeChangesCollector collector = null;
+    private static TypeChangesInfoCollector collector = null;
     private TypeEvaluator typeEvaluator;
-    private List<SmartPsiElementPointer<PsiElement>> failedUsages =
-            new ArrayList<>();
+
+    private List<SmartPsiElementPointer<PsiElement>> updatedUsages = new ArrayList<>();
+    private List<SmartPsiElementPointer<PsiElement>> failedUsages = new ArrayList<>();
     private Map<SmartPsiElementPointer<PsiElement>, TypeChangeRuleDescriptor> failedUsageToCorrespondingRule =
             new HashMap<>();
 
-    public static FailedTypeChangesCollector getInstance() {
+    public static TypeChangesInfoCollector getInstance() {
         if (collector == null) {
-            collector = new FailedTypeChangesCollector();
+            collector = new TypeChangesInfoCollector();
         }
         return collector;
+    }
+
+    public List<PsiElement> getUpdatedUsages() {
+        return updatedUsages.stream()
+                .map(SmartPsiElementPointer::getElement)
+                .collect(Collectors.toList());
     }
 
     public List<PsiElement> getFailedUsages() {
@@ -39,13 +46,30 @@ public class FailedTypeChangesCollector {
                 .collect(Collectors.toList());
     }
 
+    public List<PsiElement> getSuspiciousUsages() {
+        return failedUsages.stream()
+                .filter(usage -> failedUsageToCorrespondingRule.containsKey(usage))
+                .map(SmartPsiElementPointer::getElement)
+                .collect(Collectors.toList());
+    }
+
     public void addFailedUsage(PsiElement element) {
-        failedUsages.add(SmartPointerManager.createPointer(element));
+        if (shouldCollect) {
+            failedUsages.add(SmartPointerManager.createPointer(element));
+        }
+    }
+
+    public void addUpdatedUsage(PsiElement element) {
+        if (shouldCollect) {
+            updatedUsages.add(SmartPointerManager.createPointer(element));
+        }
     }
 
     public void addRuleForFailedUsage(PsiElement element, TypeChangeRuleDescriptor rule) {
-        final var pointer = SmartPointerManager.createPointer(element);
-        failedUsageToCorrespondingRule.put(pointer, rule);
+        if (shouldCollect) {
+            final var pointer = SmartPointerManager.createPointer(element);
+            failedUsageToCorrespondingRule.put(pointer, rule);
+        }
     }
 
     public @Nullable TypeChangeRuleDescriptor getRuleForFailedUsage(@NotNull PsiElement element) {
@@ -77,7 +101,9 @@ public class FailedTypeChangesCollector {
      */
     public void clear() {
         failedUsages = new ArrayList<>();
+        updatedUsages = new ArrayList<>();
         failedUsageToCorrespondingRule = new HashMap<>();
+        shouldCollect = true;
     }
 
     public boolean hasFailedTypeChanges() {

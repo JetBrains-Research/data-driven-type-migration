@@ -32,6 +32,7 @@ public class TypeChangeIntentionTest extends LightJavaCodeInsightFixtureTestCase
     }
 
     protected void doTest(String testProjectName, String intentionText) {
+        // TODO: run migration from scratch
         final VirtualFile directory = myFixture.copyDirectoryToProject(testProjectName, testProjectName);
         final VirtualFile fileForEditor = Arrays.stream(directory.getChildren()).findFirst().get();
         myFixture.configureFromExistingVirtualFile(fileForEditor);

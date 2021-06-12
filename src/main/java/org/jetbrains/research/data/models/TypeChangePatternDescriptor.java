@@ -3,7 +3,7 @@ package org.jetbrains.research.data.models;
 import com.google.gson.annotations.SerializedName;
 import com.intellij.psi.PsiType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.utils.StringUtils;
+import org.jetbrains.research.ide.migration.structuralsearch.SSRUtils;
 
 import java.util.List;
 
@@ -38,14 +38,14 @@ public class TypeChangePatternDescriptor {
      * like in the pattern "from List<$1$> to Set<$1$>", where we should substitute resolved source type to $1$.
      */
     public @NotNull String resolveTargetType(PsiType resolvedSourceType) {
-        return StringUtils.substituteTypeByPattern(resolvedSourceType, sourceType, targetType);
+        return SSRUtils.substituteTypeByPattern(resolvedSourceType, sourceType, targetType);
     }
 
     /**
      * This method is used for recovering original root type when applying {@link org.jetbrains.research.ide.intentions.SuggestedTypeChangeIntention}
      */
     public String resolveSourceType(PsiType resolvedTargetType) {
-        return StringUtils.substituteTypeByPattern(resolvedTargetType, targetType, sourceType);
+        return SSRUtils.substituteTypeByPattern(resolvedTargetType, targetType, sourceType);
     }
 }
 

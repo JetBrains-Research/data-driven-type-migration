@@ -1,0 +1,18 @@
+<idea-plugin>
+    <id>org.jetbrains.research.java-types-migration.evaluation</id>
+    <name>Evaluation</name>
+    <vendor>JetBrains Research</vendor>
+
+    <description>Type migration plugin evaluation in headless environment</description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <appStarter implementation="org.jetbrains.research.ddtc.evaluation.EvaluationRunner"/>
+    </extensions>
+
+</idea-plugin>
