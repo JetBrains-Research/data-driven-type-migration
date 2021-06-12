@@ -9,16 +9,13 @@ intellij {
     setPlugins("java")
 }
 
-group = "org.jetbrains.research"
-version = "1.0-SNAPSHOT"
+group = rootProject.group
+version = rootProject.version
 
-repositories {
-    jcenter()
-    mavenCentral()
-}
+
 
 dependencies {
-    implementation(rootProject)
+    implementation(project(":plugin"))
     compileOnly("commons-cli:commons-cli:1.4")
 }
 
@@ -40,3 +37,6 @@ tasks {
         dependsOn("runIde")
     }
 }
+
+tasks.withType<org.jetbrains.intellij.tasks.BuildSearchableOptionsTask>()
+    .forEach { it.enabled = false }
