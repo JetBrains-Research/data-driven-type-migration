@@ -262,12 +262,13 @@
     "Kind": "Reactive",
     "Rules": [
       {
+        "Before": "$2$",
+        "After": "Paths.get($2$)",
+        "RequiredImports": "java.nio.file.Paths"
+      },
+      {
         "Before": "$1$",
-        "After": "Paths.get($1$)",
-        "ReturnType": {
-          "Before": "java.lang.String",
-          "After": "java.nio.file.Path"
-        }
+        "After": "$1$.toString()"
       },
       {
         "Before": "new File($1$)",
@@ -280,10 +281,6 @@
     "To": "long",
     "Kind": "Reactive",
     "Rules": [
-      {
-        "Before": "$2~\\d$",
-        "After": "$2~\\d$L"
-      },
       {
         "Before": "Integer.parseInt($2$)",
         "After": "Long.parseLong($2$)"

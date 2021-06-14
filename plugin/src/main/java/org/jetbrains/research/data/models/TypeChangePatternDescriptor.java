@@ -38,7 +38,10 @@ public class TypeChangePatternDescriptor {
      * like in the pattern "from List<$1$> to Set<$1$>", where we should substitute resolved source type to $1$.
      */
     public @NotNull String resolveTargetType(PsiType resolvedSourceType) {
-        return SSRUtils.substituteTypeByPattern(resolvedSourceType, sourceType, targetType);
+        if (targetType.contains("$")) {
+            return SSRUtils.substituteTypeByPattern(resolvedSourceType, sourceType, targetType);
+        }
+        return targetType;
     }
 
     /**
