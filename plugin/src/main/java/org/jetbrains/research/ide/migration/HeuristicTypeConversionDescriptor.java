@@ -38,6 +38,7 @@ public class HeuristicTypeConversionDescriptor extends TypeConversionDescriptor 
         while (parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
             if (currentExpression.getText().contains("=")) break;
             if (currentExpression.getText().contains("return")) break;
+            if (!(currentExpression instanceof PsiExpression)) break;
             List<MatchResult> matches = SSRUtils.matchRule(
                     currentExpression.getText(),
                     getStringToReplace(),
