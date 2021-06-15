@@ -38,8 +38,13 @@ public class IntellijProjectUtils {
         Module module = ModuleManager.getInstance(project).newModule(moduleImlPath, moduleType.getId());
         PsiTestUtil.addSourceContentToRoots(
                 module,
-                Objects.requireNonNull(LocalFileSystem.getInstance().findFileByPath(moduleSrcPath.toString())),
+                Objects.requireNonNull(LocalFileSystem.getInstance().findFileByPath(projectDir.toString())),
                 false
         );
     }
+
+
+//    public static boolean isParentOfSrcMAinJava(Path p){
+//        return p.resolve("src")
+//    }
 }

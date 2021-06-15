@@ -6,8 +6,8 @@ import java.io.FileNotFoundException;
 
 class FileToPathTest {
     public File openFile() {
-        F<caret>ile file = new File("file.txt", "haha");
-        if (checkIfExists(file)) {
+        File file = new File("file.txt", "haha");
+        if (file.exists()) {
             System.out.print(file.getName());
         } else {
             if (file == null) {
@@ -23,10 +23,6 @@ class FileToPathTest {
     public void main() {
         File fileResult = this.openFile();
         boolean wasCreated = openFile().mkdir();
-    }
-
-    public static boolean checkIfExists(File fileParam) {
-        return fileParam.exists();
     }
 
     public void checkMigrationWhenMethodFromAnotherScopeIsUsed(File file) {

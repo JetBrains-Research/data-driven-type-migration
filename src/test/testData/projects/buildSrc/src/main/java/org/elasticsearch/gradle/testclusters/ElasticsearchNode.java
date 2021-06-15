@@ -56,7 +56,7 @@ public class ElasticsearchNode {
     private final String name;
     private final GradleServicesAdapter services;
     private final AtomicBoolean configurationFrozen = new AtomicBoolean(false);
-    private final F<caret>ile artifactsExtractDir;
+    private final File artifactsExtractDir;
     private final File workingDir;
 
     private static final int ES_DESTROY_TIMEOUT = 20;
@@ -114,13 +114,13 @@ public class ElasticsearchNode {
         configurationFrozen.set(true);
     }
 
-    public void setJavaHome(File javaHome) {
-        requireNonNull(javaHome, "null javaHome passed when configuring test cluster `" + this + "`");
+    public void setJavaHome(File jvh) {
+        requireNonNull(jvh, "null javaHome passed when configuring test cluster `" + this + "`");
         checkFrozen();
-        if (javaHome.exists() == false) {
+        if (jvh.exists() == false) {
             throw new TestClustersException("java home for `" + this + "` does not exists: `" + javaHome + "`");
         }
-        this.javaHome = javaHome;
+        this.javaHome = jvh;
     }
 
     public File getJavaHome() {

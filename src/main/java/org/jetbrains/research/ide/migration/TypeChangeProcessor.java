@@ -1,5 +1,6 @@
 package org.jetbrains.research.ide.migration;
 
+import com.intellij.lang.jvm.types.JvmPrimitiveTypeKind;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
@@ -28,6 +29,7 @@ import org.jetbrains.research.utils.PsiRelatedUtils;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public class TypeChangeProcessor {
@@ -71,9 +73,8 @@ public class TypeChangeProcessor {
         builtInProcessor.performRefactoring(usages);
         addAndOptimizeImports(project, usages);
 
-        PsiElement root = Objects.requireNonNull(
-                PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class)
-        ).getParent();
+        PsiElement root = Objects.requireNonNull(PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class))
+                .getParent();
 
         if (isRootTypeAlreadyChanged) {
             TypeChangeLogsCollector.getInstance().reactiveIntentionApplied(
@@ -155,6 +156,29 @@ public class TypeChangeProcessor {
                 rules,
                 true
         );
+    }
+
+    public Optional<TypeMigrationProcessor> getTypeDependentReferences(PsiElement element) {
+
+        PsiTypeElement rootTypeElement = PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class);
+        PsiElement root;
+        if (rootTypeElement != null) {
+            root = rootTypeElement.getParent();
+        } else {
+            LOG.error("Type of migration root is null");
+            return Optional.empty();
+        }
+        TypeMigrationRules rules = new TypeMigrationRules(project);
+        rules.setBoundScope(GlobalSearchScope.projectScope(project));
+
+        TypeMigrationProcessor typeMigrationProcessor = new TypeMigrationProcessor(
+                project,
+                new PsiElement[]{root},
+                x -> JavaPsiFacade.getElementFactory(project).createPrimitiveType("int"),
+                rules,
+                true
+        );
+        return Optional.of(typeMigrationProcessor);
     }
 
     private void addAndOptimizeImports(Project project, UsageInfo[] usages) {
