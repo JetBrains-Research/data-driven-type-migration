@@ -70,8 +70,8 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
 
     private void showRefactoringOpportunity(Project project, Editor editor) {
         final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
-        final var sourceType = state.getSourceTypeByOffset(offset);
-        if (sourceType.isEmpty()) return;
+        final var typeChangeMarker = state.getCompletedTypeChangeForOffset(offset);
+        if (typeChangeMarker.isEmpty()) return;
 
         final PsiFile psiFile = PsiDocumentManager.getInstance(project).getCachedPsiFile(editor.getDocument());
         if (psiFile == null) return;
@@ -80,7 +80,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeChangesListPopupStep(
                         "Type Migration Rules",
-                        TypeChangeRulesStorage.getPatternsBySourceType(sourceType.get()),
+                        TypeChangeRulesStorage.getPatternsBySourceType(typeChangeMarker.get().sourceType),
                         newElement,
                         project,
                         true

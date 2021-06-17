@@ -25,20 +25,19 @@ class TypeChangeIntentionContributor implements IntentionMenuContributor {
                                int passIdToShowIntentionsFor,
                                int offset) {
         final PsiElement context = hostFile.findElementAt(offset);
-        final var failedTypeChangesCollector = TypeChangesInfoCollector.getInstance();
         if (context == null) return;
+        final var failedTypeChangesCollector = TypeChangesInfoCollector.getInstance();
         final var rule = failedTypeChangesCollector.getRuleForFailedUsage(context);
 
         IntentionAction intention;
-        if (rule != null) {
-            intention = new FailedTypeChangeRecoveringIntention(rule);
+        if (rule.isPresent()) {
+            intention = new FailedTypeChangeRecoveringIntention(rule.get());
         } else {
             final var state = TypeChangeRefactoringProviderImpl.getInstance(hostEditor.getProject()).getState();
-            if (state.getRelevantTypeChangeForOffset(offset).isEmpty() || !state.refactoringEnabled) return;
+            final var typeChangeMarker = state.getCompletedTypeChangeForOffset(offset);
+            if (typeChangeMarker.isEmpty() || !state.refactoringEnabled) return;
 
-            final var sourceType = state.getSourceTypeByOffset(offset);
-            if (sourceType.isEmpty()) return;
-            intention = new SuggestedTypeChangeIntention(sourceType.get());
+            intention = new SuggestedTypeChangeIntention(typeChangeMarker.get().sourceType);
         }
 
         // we add it into 'errorFixesToShow' if it's not empty to always be at the top of the list

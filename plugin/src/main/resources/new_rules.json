@@ -282,6 +282,10 @@
     "Kind": "Reactive",
     "Rules": [
       {
+        "Before": "$2$",
+        "After": "(long)$2$"
+      },
+      {
         "Before": "Integer.parseInt($2$)",
         "After": "Long.parseLong($2$)"
       },

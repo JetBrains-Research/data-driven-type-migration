@@ -22,7 +22,7 @@ import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ide.migration.collectors.RequiredImportsCollector;
 import org.jetbrains.research.ide.migration.collectors.TypeChangesInfoCollector;
-import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
+import org.jetbrains.research.ide.refactoring.ReactiveTypeChangeAvailabilityUpdater;
 import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
 import org.jetbrains.research.ide.ui.FailedTypeChangesPanel;
 import org.jetbrains.research.utils.PsiRelatedUtils;
@@ -43,6 +43,9 @@ public class TypeChangeProcessor {
     }
 
     public void run(PsiElement element, TypeChangePatternDescriptor descriptor) {
+        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        state.isInternalTypeChangeInProgress = true;
+
         final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
         if (builtInProcessor == null) return;
 
@@ -98,6 +101,8 @@ public class TypeChangeProcessor {
                     typeChangesCollector.getFailedUsages().size()
             );
         }
+
+        state.isInternalTypeChangeInProgress = false;
     }
 
     private void disableRefactoring(PsiElement element) {
@@ -114,7 +119,7 @@ public class TypeChangeProcessor {
         }
         if (document == null) return;
 
-        TypeChangeRefactoringAvailabilityUpdater.getInstance(project)
+        ReactiveTypeChangeAvailabilityUpdater.getInstance(project)
                 .updateAllHighlighters(document, element.getTextOffset());
     }
 

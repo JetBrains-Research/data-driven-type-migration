@@ -1,6 +1,5 @@
 package org.jetbrains.research.ide.refactoring.listeners;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.RangeMarker;
@@ -11,12 +10,13 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
-import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
+import org.jetbrains.research.ide.refactoring.ReactiveTypeChangeAvailabilityUpdater;
 import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
 import org.jetbrains.research.utils.PsiRelatedUtils;
 
 public class TypeChangeDocumentListener implements DocumentListener {
-    private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
+    public static final int WAIT_UNTIL_DISABLE = 5000;
+    private static final Logger LOG = Logger.getInstance(TypeChangeDocumentListener.class);
 
     private final Project project;
     private final PsiDocumentManager psiDocumentManager;
@@ -28,6 +28,9 @@ public class TypeChangeDocumentListener implements DocumentListener {
 
     @Override
     public void beforeDocumentChange(@NotNull DocumentEvent event) {
+        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        if (state.isInternalTypeChangeInProgress) return;
+
         final var document = event.getDocument();
         if (!psiDocumentManager.isCommitted(document) || psiDocumentManager.isDocumentBlockedByPsi(document)) return;
 
@@ -48,6 +51,9 @@ public class TypeChangeDocumentListener implements DocumentListener {
 
     @Override
     public void documentChanged(@NotNull DocumentEvent event) {
+        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        if (state.isInternalTypeChangeInProgress) return;
+
         final var document = event.getDocument();
         psiDocumentManager.commitDocument(document);
 
@@ -64,21 +70,20 @@ public class TypeChangeDocumentListener implements DocumentListener {
         if (TypeChangeRulesStorage.hasTargetType(newElementQualifiedName)) {
             processTargetTypeChangeEvent(newElement, newElementQualifiedName, document);
 
-            final var updater = TypeChangeRefactoringAvailabilityUpdater.getInstance(project);
+            final var updater = ReactiveTypeChangeAvailabilityUpdater.getInstance(project);
             updater.updateAllHighlighters(event.getDocument(), event.getOffset());
-            ApplicationManager.getApplication().invokeLater(updater::addDisableRefactoringWatcher);
         }
     }
 
     private void processSourceTypeChangeEvent(PsiElement oldElement, String sourceType, Document document) {
-        final var range = TextRange.from(
+        final TextRange range = TextRange.from(
                 oldElement.getTextOffset(),
                 oldElement.getTextLength()
         );
-        final var rangeMarker = document.createRangeMarker(range);
+        final RangeMarker rangeMarker = document.createRangeMarker(range);
 
         final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
-        state.initialMarkerToSourceTypeMappings.put(rangeMarker, sourceType);
+        state.uncompletedTypeChanges.put(rangeMarker, sourceType);
     }
 
     private void processTargetTypeChangeEvent(PsiElement newElement, String targetType, Document document) {
@@ -87,21 +92,34 @@ public class TypeChangeDocumentListener implements DocumentListener {
 
         RangeMarker relevantOldRangeMarker = null;
         String relevantSourceType = null;
-        for (var entry : state.initialMarkerToSourceTypeMappings.entrySet()) {
+        for (var entry : state.uncompletedTypeChanges.entrySet()) {
             final var oldRangeMarker = entry.getKey();
+            if (oldRangeMarker.getDocument() != document) continue;
+
             final var oldRange = new TextRange(oldRangeMarker.getStartOffset(), oldRangeMarker.getEndOffset());
-            final var sourceType = entry.getValue();
             if (oldRange.intersects(newRange)) {
                 relevantOldRangeMarker = oldRangeMarker;
-                relevantSourceType = sourceType;
+                relevantSourceType = entry.getValue();
                 break;
             }
         }
         if (relevantOldRangeMarker == null || relevantSourceType == null) return;
+        state.uncompletedTypeChanges.remove(relevantOldRangeMarker);
 
         final var newRangeMarker = document.createRangeMarker(newRange);
-        state.addCompleteTypeChange(relevantOldRangeMarker, newRangeMarker, relevantSourceType, targetType);
+        state.addCompletedTypeChange(relevantOldRangeMarker, newRangeMarker, relevantSourceType, targetType);
         state.refactoringEnabled = true;
+
+        Thread disablerWaitThread = new Thread(() -> {
+            try {
+                Thread.sleep(WAIT_UNTIL_DISABLE);
+                state.refactoringEnabled = false;
+                state.removeAllTypeChangesByRange(newRange);
+            } catch (InterruptedException e) {
+                LOG.error(e);
+            }
+        });
+        disablerWaitThread.start();
     }
 
     private Boolean shouldIgnoreFile(PsiFile file) {

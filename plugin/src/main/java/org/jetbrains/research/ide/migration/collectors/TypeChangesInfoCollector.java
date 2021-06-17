@@ -7,13 +7,9 @@ import com.intellij.psi.SmartPsiElementPointer;
 import com.intellij.refactoring.typeMigration.TypeEvaluator;
 import com.intellij.refactoring.typeMigration.TypeMigrationProcessor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TypeChangesInfoCollector extends SwitchableCollector {
@@ -72,7 +68,7 @@ public class TypeChangesInfoCollector extends SwitchableCollector {
         }
     }
 
-    public @Nullable TypeChangeRuleDescriptor getRuleForFailedUsage(@NotNull PsiElement element) {
+    public Optional<TypeChangeRuleDescriptor> getRuleForFailedUsage(@NotNull PsiElement element) {
         int parentsPassed = 0;
         PsiElement currentContext = element;
         final var psiManager = PsiManager.getInstance(element.getProject());
@@ -84,13 +80,13 @@ public class TypeChangesInfoCollector extends SwitchableCollector {
                         currentContext
                 );
                 if (arePsiElementsEqual) {
-                    return entry.getValue();
+                    return Optional.of(entry.getValue());
                 }
             }
             currentContext = currentContext.getParent();
             parentsPassed++;
         }
-        return null;
+        return Optional.empty();
     }
 
     /**

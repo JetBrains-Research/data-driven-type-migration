@@ -8,57 +8,39 @@ import java.util.*;
 
 public class TypeChangeSuggestedRefactoringState {
     // TODO: encapsulate
-    public final Map<RangeMarker, String> initialMarkerToSourceTypeMappings;
-    public final Queue<TypeChangeMarker> completeTypeChanges;
+    public final Map<RangeMarker, String> uncompletedTypeChanges;
+    public final List<TypeChangeMarker> completedTypeChanges;
 
     public volatile boolean refactoringEnabled;
+    public boolean isInternalTypeChangeInProgress = false;
 
     public TypeChangeSuggestedRefactoringState() {
         this.refactoringEnabled = false;
-        this.initialMarkerToSourceTypeMappings = new HashMap<>();
-        this.completeTypeChanges = new ArrayDeque<>();
+        this.uncompletedTypeChanges = new HashMap<>();
+        this.completedTypeChanges = new ArrayList<>();
     }
 
-    public Optional<String> getSourceTypeByOffset(int offset) {
-        return initialMarkerToSourceTypeMappings.entrySet().stream()
-                .filter(entry -> {
-                    final var range = TextRange.from(
-                            entry.getKey().getStartOffset(),
-                            entry.getValue().length());
-                    return range.contains(offset);
-                })
-                .map(Map.Entry::getValue)
-                .findFirst();
-    }
-
-    public Optional<TypeChangeMarker> getRelevantTypeChangeForOffset(int offset) {
-        return completeTypeChanges.stream()
+    public Optional<TypeChangeMarker> getCompletedTypeChangeForOffset(int offset) {
+        return completedTypeChanges.stream()
                 .filter(it -> {
                     final var newRange = it.newRangeMarker;
-                    // To cover whitespace on the right of the token and exclude symbol on the left
                     final var greedyToRightRange = new TextRange(
-                            newRange.getStartOffset() + 1,
-                            newRange.getEndOffset() + 1
+                            newRange.getStartOffset(),
+                            newRange.getEndOffset()
                     );
                     return greedyToRightRange.contains(offset);
                 })
                 .findFirst();
     }
 
-    public void addCompleteTypeChange(RangeMarker relevantOldRange, RangeMarker newRange,
-                                      String relevantSourceType, String targetType) {
+    public void addCompletedTypeChange(RangeMarker relevantOldRange, RangeMarker newRange,
+                                       String relevantSourceType, String targetType) {
         final var typeChange = new TypeChangeMarker(relevantOldRange, newRange, relevantSourceType, targetType);
-        completeTypeChanges.add(typeChange);
-    }
-
-    public void removeLastCompleteTypeChange() {
-        if (!completeTypeChanges.isEmpty()) {
-            completeTypeChanges.poll();
-        }
+        completedTypeChanges.add(typeChange);
     }
 
     public void removeAllTypeChangesByRange(TextRange range) {
-        initialMarkerToSourceTypeMappings.keySet().removeIf(oldMarker -> EditorUtils.intersects(oldMarker, range));
-        completeTypeChanges.removeIf(typeChange -> EditorUtils.intersects(typeChange.newRangeMarker, range));
+        uncompletedTypeChanges.keySet().removeIf(oldMarker -> EditorUtils.intersects(oldMarker, range));
+        completedTypeChanges.removeIf(typeChange -> EditorUtils.intersects(typeChange.newRangeMarker, range));
     }
 }

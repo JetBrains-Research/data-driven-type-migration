@@ -3,7 +3,7 @@ package org.jetbrains.research.ide.refactoring.listeners;
 import com.intellij.openapi.editor.event.CaretEvent;
 import com.intellij.openapi.editor.event.CaretListener;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ide.refactoring.TypeChangeRefactoringAvailabilityUpdater;
+import org.jetbrains.research.ide.refactoring.ReactiveTypeChangeAvailabilityUpdater;
 
 import java.util.Objects;
 
@@ -14,6 +14,6 @@ public class TypeChangeCaretListener implements CaretListener {
         final var editor = event.getEditor();
         final var project = editor.getProject();
         final int offset = Objects.requireNonNull(event.getCaret()).getOffset();
-        TypeChangeRefactoringAvailabilityUpdater.getInstance(project).updateHighlighter(editor, offset);
+        ReactiveTypeChangeAvailabilityUpdater.getInstance(project).updateHighlighter(editor, offset);
     }
 }
