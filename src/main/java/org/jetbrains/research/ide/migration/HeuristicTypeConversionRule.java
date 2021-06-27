@@ -31,75 +31,83 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
     public @Nullable TypeConversionDescriptorBase findConversion(
             PsiType from, PsiType to, PsiMember member, PsiExpression context, TypeMigrationLabeler labeler
     ) {
+        final String currentRootName = extractCurrentRootIdentName(labeler);
         final var pattern = TypeChangeRulesStorage.findPattern(
                 from.getCanonicalText(),
                 to.getCanonicalText()
         );
-        final String currentRootName = extractCurrentRootIdentName(labeler);
-        if (pattern == null || context == null || currentRootName == null) return null;
 
-        PsiElement currentContext = context;
-        int parentsPassed = 0;
-        TypeChangeRuleDescriptor bestMatchedRule = null;
-        final List<TypeChangeRuleDescriptor> rules = pattern.getRules();
+        return new HeuristicTypeConversionDescriptor(
+                context.getText(),
+                "blah",
+                currentRootName
+        );
 
-        while (parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
-            if (currentContext.getText().contains("=")) {
-                // It means that we lifted up to much and even touching another usage from the same assignment
-                break;
-            }
-            for (var rule : rules) {
-                List<MatchResult> matches = SSRUtils.matchRule(
-                        currentContext.getText(),
-                        rule.getExpressionBefore(),
-                        currentRootName,
-                        context.getProject()
-                );
-                if (!matches.isEmpty()) {
-                    if (bestMatchedRule == null) {
-                        bestMatchedRule = rule;
-                        continue;
-                    }
 
-                    // Update bestMatchedRule iff it matches a larger number of tokens
-                    final var ruleTokens = PsiRelatedUtils.splitByTokens(rule.getExpressionBefore());
-                    final var bestMatchedRuleTokens = PsiRelatedUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
-                    if (bestMatchedRuleTokens.length < ruleTokens.length
-                            || bestMatchedRuleTokens.length == ruleTokens.length && rule.getExpressionBefore().contains("$1$")) {
-                        bestMatchedRule = rule;
-                    }
-                }
-            }
-            currentContext = currentContext.getParent();
-            parentsPassed++;
-        }
+//        if (pattern == null || context == null || currentRootName == null) return null;
 
-        final var collector = TypeChangesInfoCollector.getInstance();
-        if (bestMatchedRule != null) {
-            if (bestMatchedRule.getReturnType() != null) {
-                // Check if the rule is "suspicious", e.g. it changes the return type of the expression
-                if (!bestMatchedRule.getReturnType().getSourceType().equals(bestMatchedRule.getReturnType().getTargetType())) {
-                    collector.addFailedUsage(context);
-                    collector.addRuleForFailedUsage(context, bestMatchedRule);
-                    return null;
-                }
-            }
-            // Collect required imports for this rule
-            if (bestMatchedRule.getRequiredImports() != null) {
-                RequiredImportsCollector.getInstance().addRequiredImport(
-                        bestMatchedRule.getRequiredImports()
-                );
-            }
-            // Will be successfully updated with a rule
-            collector.addUpdatedUsage(context);
-            return new HeuristicTypeConversionDescriptor(
-                    bestMatchedRule.getExpressionBefore(),
-                    bestMatchedRule.getExpressionAfter(),
-                    currentRootName
-            );
-        }
-        collector.addFailedUsage(context);
-        return null;
+//        PsiElement currentContext = context;
+//        int parentsPassed = 0;
+//        TypeChangeRuleDescriptor bestMatchedRule = null;
+//        final List<TypeChangeRuleDescriptor> rules = pattern.getRules();
+//
+//        while (parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
+//            if (currentContext.getText().contains("=")) {
+//                // It means that we lifted up to much and even touching another usage from the same assignment
+//                break;
+//            }
+//            for (var rule : rules) {
+//                List<MatchResult> matches = SSRUtils.matchRule(
+//                        currentContext.getText(),
+//                        rule.getExpressionBefore(),
+//                        currentRootName,
+//                        context.getProject()
+//                );
+//                if (!matches.isEmpty()) {
+//                    if (bestMatchedRule == null) {
+//                        bestMatchedRule = rule;
+//                        continue;
+//                    }
+//
+//                    // Update bestMatchedRule iff it matches a larger number of tokens
+//                    final var ruleTokens = PsiRelatedUtils.splitByTokens(rule.getExpressionBefore());
+//                    final var bestMatchedRuleTokens = PsiRelatedUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
+//                    if (bestMatchedRuleTokens.length < ruleTokens.length
+//                            || bestMatchedRuleTokens.length == ruleTokens.length && rule.getExpressionBefore().contains("$1$")) {
+//                        bestMatchedRule = rule;
+//                    }
+//                }
+//            }
+//            currentContext = currentContext.getParent();
+//            parentsPassed++;
+//        }
+//
+//        final var collector = TypeChangesInfoCollector.getInstance();
+//        if (bestMatchedRule != null) {
+//            if (bestMatchedRule.getReturnType() != null) {
+//                // Check if the rule is "suspicious", e.g. it changes the return type of the expression
+//                if (!bestMatchedRule.getReturnType().getSourceType().equals(bestMatchedRule.getReturnType().getTargetType())) {
+//                    collector.addFailedUsage(context);
+//                    collector.addRuleForFailedUsage(context, bestMatchedRule);
+//                    return null;
+//                }
+//            }
+//            // Collect required imports for this rule
+//            if (bestMatchedRule.getRequiredImports() != null) {
+//                RequiredImportsCollector.getInstance().addRequiredImport(
+//                        bestMatchedRule.getRequiredImports()
+//                );
+//            }
+//            // Will be successfully updated with a rule
+//            collector.addUpdatedUsage(context);
+//            return new HeuristicTypeConversionDescriptor(
+//                    bestMatchedRule.getExpressionBefore(),
+//                    bestMatchedRule.getExpressionAfter(),
+//                    currentRootName
+//            );
+//        }
+//        collector.addFailedUsage(context);
+//        return null;
     }
 
     @ApiStatus.Internal

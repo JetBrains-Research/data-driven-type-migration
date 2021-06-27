@@ -158,23 +158,25 @@ public class TypeChangeProcessor {
         );
     }
 
-    public Optional<TypeMigrationProcessor> getTypeDependentReferences(PsiElement element) {
-
-        PsiTypeElement rootTypeElement = PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class);
-        PsiElement root;
-        if (rootTypeElement != null) {
-            root = rootTypeElement.getParent();
-        } else {
-            LOG.error("Type of migration root is null");
-            return Optional.empty();
-        }
+    public Optional<TypeMigrationProcessor> getTypeDependentReferences(PsiElement root) {
+//        PsiElement root;
+//        if (rootTypeElement != null) {
+//            root = rootTypeElement.getParent();
+//        } else {
+//            LOG.error("Type of migration root is null");
+//            return Optional.empty();
+//        }
+        String targetType = "java.lang.String";
+        PsiTypeCodeFragment targetTypeCodeFragment = JavaCodeFragmentFactory.getInstance(project)
+                .createTypeCodeFragment(targetType, root, true);
         TypeMigrationRules rules = new TypeMigrationRules(project);
         rules.setBoundScope(GlobalSearchScope.projectScope(project));
+        rules.addConversionDescriptor(new HeuristicTypeConversionRule());
 
         TypeMigrationProcessor typeMigrationProcessor = new TypeMigrationProcessor(
                 project,
                 new PsiElement[]{root},
-                x -> JavaPsiFacade.getElementFactory(project).createPrimitiveType("int"),
+                Functions.constant(PsiRelatedUtils.getTypeOfCodeFragment(targetTypeCodeFragment)),
                 rules,
                 true
         );
