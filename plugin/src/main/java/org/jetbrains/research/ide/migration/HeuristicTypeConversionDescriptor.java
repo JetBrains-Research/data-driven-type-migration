@@ -12,14 +12,13 @@ import com.intellij.structuralsearch.MatchResult;
 import com.intellij.structuralsearch.plugin.replace.ReplaceOptions;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.Config;
 import org.jetbrains.research.ide.migration.structuralsearch.MyReplacer;
 import org.jetbrains.research.ide.migration.structuralsearch.SSRUtils;
 
 import java.util.List;
 
 public class HeuristicTypeConversionDescriptor extends TypeConversionDescriptor {
-    private static final int MAX_PARENTS_TO_LIFT_UP = 3;
-
     private final String currentRootName;
 
     public HeuristicTypeConversionDescriptor(@NonNls String stringToReplace,
@@ -35,7 +34,7 @@ public class HeuristicTypeConversionDescriptor extends TypeConversionDescriptor 
         PsiElement bestMatchedExpression = expression;
         int parentsPassed = 0;
 
-        while (parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
+        while (parentsPassed < Config.MAX_PARENTS_TO_LIFT_UP) {
             if (currentExpression.getText().contains("=")) break;
             if (currentExpression.getText().contains("return")) break;
             if (currentExpression instanceof PsiExpression) {

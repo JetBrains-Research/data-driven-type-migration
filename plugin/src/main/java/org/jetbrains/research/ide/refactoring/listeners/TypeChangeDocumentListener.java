@@ -9,13 +9,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.Config;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ide.refactoring.ReactiveTypeChangeAvailabilityUpdater;
 import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
 import org.jetbrains.research.utils.PsiRelatedUtils;
 
 public class TypeChangeDocumentListener implements DocumentListener {
-    public static final int WAIT_UNTIL_DISABLE = 10000;
     private static final Logger LOG = Logger.getInstance(TypeChangeDocumentListener.class);
 
     private final Project project;
@@ -116,7 +116,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
 
         Thread disablerWaitThread = new Thread(() -> {
             try {
-                Thread.sleep(WAIT_UNTIL_DISABLE);
+                Thread.sleep(Config.WAIT_UNTIL_DISABLE_INTENTION);
                 state.refactoringEnabled = false;
                 state.removeAllTypeChangesByRange(newRange);
                 state.uncompletedTypeChanges.clear();

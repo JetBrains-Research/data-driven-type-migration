@@ -13,6 +13,7 @@ import com.intellij.refactoring.typeMigration.usageInfo.TypeMigrationUsageInfo;
 import com.intellij.structuralsearch.MatchResult;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.Config;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.ide.migration.collectors.RequiredImportsCollector;
@@ -24,7 +25,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class HeuristicTypeConversionRule extends TypeConversionRule {
-    private static final int MAX_PARENTS_TO_LIFT_UP = 3;
     private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
 
     @Override
@@ -43,7 +43,7 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
         TypeChangeRuleDescriptor bestMatchedRule = null;
         final List<TypeChangeRuleDescriptor> rules = pattern.getRules();
 
-        while (parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
+        while (parentsPassed < Config.MAX_PARENTS_TO_LIFT_UP) {
             if (currentContext.getText().contains("=")) {
                 // It means that we lifted up to much and even touching another usage from the same assignment
                 break;
