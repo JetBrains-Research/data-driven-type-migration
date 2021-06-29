@@ -38,11 +38,13 @@ public class TypeChangeRulesStorage {
     }
 
     public static Boolean hasSourceType(String sourceType) {
-        return sourceTypesCache.contains(sourceType);
+        if (sourceTypesCache.contains(sourceType)) return true;
+        return !getPatternsBySourceType(sourceType).isEmpty();
     }
 
     public static Boolean hasTargetType(String targetType) {
-        return targetTypesCache.contains(targetType);
+        if (targetTypesCache.contains(targetType)) return true;
+        return !getPatternsByTargetType(targetType).isEmpty();
     }
 
     public static List<TypeChangePatternDescriptor> getPatterns() {

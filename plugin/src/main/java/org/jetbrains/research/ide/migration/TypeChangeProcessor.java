@@ -151,7 +151,10 @@ public class TypeChangeProcessor {
                 .createTypeCodeFragment(targetType, root, true);
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
-        rules.setBoundScope(GlobalState.searchScope);
+        rules.setBoundScope(Objects.requireNonNullElseGet(
+                GlobalState.searchScope,
+                () -> GlobalSearchScope.fileScope(element.getContainingFile())
+        ));
         rules.addConversionDescriptor(new HeuristicTypeConversionRule());
 
         return new TypeMigrationProcessor(

@@ -4,7 +4,11 @@ import com.intellij.openapi.editor.RangeMarker;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.research.utils.EditorUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TypeChangeSuggestedRefactoringState {
     // TODO: encapsulate
@@ -16,21 +20,19 @@ public class TypeChangeSuggestedRefactoringState {
 
     public TypeChangeSuggestedRefactoringState() {
         this.refactoringEnabled = false;
-        this.uncompletedTypeChanges = new HashMap<>();
+        this.uncompletedTypeChanges = new ConcurrentHashMap<>();
         this.completedTypeChanges = new ArrayList<>();
     }
 
     public Optional<TypeChangeMarker> getCompletedTypeChangeForOffset(int offset) {
         return completedTypeChanges.stream()
-                .filter(it -> {
-                    final var newRange = it.newRangeMarker;
-                    final var greedyToRightRange = new TextRange(
-                            newRange.getStartOffset(),
-                            newRange.getEndOffset()
-                    );
-                    return greedyToRightRange.contains(offset);
-                })
+                .filter(it -> it.newRangeMarker.getStartOffset() <= offset && offset < it.newRangeMarker.getEndOffset())
                 .findFirst();
+    }
+
+    public boolean hasUncompletedTypeChangeForOffset(int offset) {
+        return uncompletedTypeChanges.keySet().stream()
+                .anyMatch(it -> it.getStartOffset() <= offset && offset < it.getEndOffset());
     }
 
     public void addCompletedTypeChange(RangeMarker relevantOldRange, RangeMarker newRange,

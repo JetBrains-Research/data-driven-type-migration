@@ -15,7 +15,7 @@ import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProv
 import org.jetbrains.research.utils.PsiRelatedUtils;
 
 public class TypeChangeDocumentListener implements DocumentListener {
-    public static final int WAIT_UNTIL_DISABLE = 5000;
+    public static final int WAIT_UNTIL_DISABLE = 10000;
     private static final Logger LOG = Logger.getInstance(TypeChangeDocumentListener.class);
 
     private final Project project;
@@ -38,6 +38,10 @@ public class TypeChangeDocumentListener implements DocumentListener {
         if (psiFile == null || shouldIgnoreFile(psiFile)) return;
 
         final int offset = event.getOffset();
+        for (var rangeMarker : state.uncompletedTypeChanges.keySet()) {
+            if (document.getLineNumber(rangeMarker.getStartOffset()) == document.getLineNumber(offset)) return;
+        }
+
         final var oldElement = psiFile.findElementAt(offset);
         if (oldElement == null) return;
 
@@ -115,6 +119,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
                 Thread.sleep(WAIT_UNTIL_DISABLE);
                 state.refactoringEnabled = false;
                 state.removeAllTypeChangesByRange(newRange);
+                state.uncompletedTypeChanges.clear();
             } catch (InterruptedException e) {
                 LOG.error(e);
             }
