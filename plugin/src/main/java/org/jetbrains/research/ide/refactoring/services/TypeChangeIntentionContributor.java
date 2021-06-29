@@ -37,7 +37,7 @@ class TypeChangeIntentionContributor implements IntentionMenuContributor {
             final var typeChangeMarker = state.getCompletedTypeChangeForOffset(offset);
             if (typeChangeMarker.isEmpty() || !state.refactoringEnabled) return;
 
-            intention = new SuggestedTypeChangeIntention(typeChangeMarker.get().sourceType);
+            intention = new SuggestedTypeChangeIntention(typeChangeMarker.get());
         }
 
         // we add it into 'errorFixesToShow' if it's not empty to always be at the top of the list
