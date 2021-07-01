@@ -48,7 +48,10 @@ public class TypeChangePatternDescriptor {
      * This method is used for recovering original root type when applying {@link org.jetbrains.research.ide.intentions.SuggestedTypeChangeIntention}
      */
     public String resolveSourceType(PsiType resolvedTargetType) {
-        return SSRUtils.substituteTypeByPattern(resolvedTargetType, targetType, sourceType);
+        if (sourceType.contains("$")) {
+            return SSRUtils.substituteTypeByPattern(resolvedTargetType, targetType, sourceType);
+        }
+        return sourceType;
     }
 }
 

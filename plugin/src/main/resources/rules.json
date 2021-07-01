@@ -2,30 +2,43 @@
   {
     "From": "java.io.File",
     "To": "java.nio.file.Path",
+    "Kind": "Reactive",
     "Rules": [
       {
         "Before": "new File($1$, $2$)",
-        "After": "java.nio.file.Paths.get($1$, $2$)"
+        "After": "$1$.resolve($2$)"
       },
       {
-        "Before": "new File($1$)",
-        "After": "java.nio.file.Paths.get($1$)"
+        "Before": "new File($2$, $3$)",
+        "After": "Path.of($2$, $3$)"
+      },
+      {
+        "Before": "new File($2$)",
+        "After": "Paths.get($2$)",
+        "RequiredImports": "java.nio.file.Paths"
       },
       {
         "Before": "$1$.exists()",
-        "After": "java.nio.file.Files.exists($1$)"
+        "After": "Files.exists($1$)",
+        "RequiredImports": "java.nio.file.Files"
       },
       {
         "Before": "$1$.getName()",
-        "After": "$1$.getFileName().toString()"
+        "After": "$1$.getFileName()"
       },
       {
         "Before": "$1$.isFile()",
-        "After": "java.nio.file.Files.isRegularFile($1$)"
+        "After": "Files.isRegularFile($1$)",
+        "RequiredImports": "java.nio.file.Files"
       },
       {
         "Before": "$1$.mkdir()",
-        "After": "java.nio.file.Files.createDirectory($1$)"
+        "After": "Files.createDirectory($1$)",
+        "ReturnType": {
+          "Before": "boolean",
+          "After": "java.nio.file.Path"
+        },
+        "RequiredImports": "java.nio.file.Files"
       },
       {
         "Before": "$1$.getAbsolutePath()",
@@ -33,19 +46,23 @@
       },
       {
         "Before": "$1$.canWrite()",
-        "After": "java.nio.file.Files.isWritable($1$)"
+        "After": "Files.isWritable($1$)",
+        "RequiredImports": "java.nio.file.Files"
       },
       {
         "Before": "$1$.delete()",
-        "After": "java.nio.file.Files.delete($1$)"
-      },
-      {
-        "Before": "$1$.canRead()",
-        "After": "java.nio.file.Files.isReadable($1$)"
+        "After": "Files.delete($1$)",
+        "RequiredImports": "java.nio.file.Files"
       },
       {
         "Before": "$1$.isDirectory()",
-        "After": "java.nio.file.Files.isDirectory($1$)"
+        "After": "Files.isDirectory($1$)",
+        "RequiredImports": "java.nio.file.Files"
+      },
+      {
+        "Before": "$1$.canRead()",
+        "After": "Files.isReadable($1$)",
+        "RequiredImports": "java.nio.file.Files"
       },
       {
         "Before": "$1$",
@@ -60,14 +77,15 @@
   {
     "From": "java.lang.String",
     "To": "java.util.regex.Pattern",
+    "Kind": "Reactive",
     "Rules": [
       {
         "Before": "$1$.equals($2$)",
-        "After": "$2$.matcher($1$).matches()"
+        "After": "$1$.matcher($2$).matches()"
       },
       {
-        "Before": "String $1$ = $2$;",
-        "After": "java.util.regex.Pattern $1$ = java.util.regex.Pattern.compile($2$);"
+        "Before": "$2$",
+        "After": "Pattern.compile($2$)"
       },
       {
         "Before": "$1$",
@@ -78,18 +96,36 @@
   {
     "From": "java.util.List<$1$>",
     "To": "java.util.Set<$1$>",
+    "Kind": "Reactive",
     "Rules": [
       {
         "Before": "Lists.newArrayList()",
-        "After": "Sets.newHashSet()"
+        "After": "Sets.newHashSet()",
+        "RequiredImports": "com.google.common.collect.Sets"
+      },
+      {
+        "Before": "Lists.newArrayList($2$)",
+        "After": "Sets.newHashSet($2$)",
+        "RequiredImports": "com.google.common.collect.Sets"
+      },
+      {
+        "Before": "new ArrayList<>()",
+        "After": "new HashSet<>()",
+        "RequiredImports": "java.util.HashSet"
+      },
+      {
+        "Before": "new ArrayList<$2$>()",
+        "After": "new HashSet<$2$>()",
+        "RequiredImports": "java.util.HashSet"
+      },
+      {
+        "Before": "new ArrayList<$2$>($3$)",
+        "After": "new HashSet<$2$>($3$)",
+        "RequiredImports": "java.util.HashSet"
       },
       {
         "Before": "$1$.get(0)",
         "After": "$1$.iterator().next()"
-      },
-      {
-        "Before": "Collectors.toList()",
-        "After": "Collectors.toSet()"
       },
       {
         "Before": "Collections.unmodifiableList()",
@@ -105,13 +141,62 @@
       },
       {
         "Before": "ImmutableList.of($1$)",
-        "After": "ImmutableSet.of($1$)"
+        "After": "ImmutableSet.of($1$)",
+        "RequiredImports": "com.google.common.collect.ImmutableSet"
+      },
+      {
+        "Before": "Collections.synchronizedList($2$)",
+        "After": "Collections.synchronizedSet($2$)"
+      },
+      {
+        "Before": "(List)$2$",
+        "After": "(Set)$2$"
+      },
+      {
+        "Before": "new LinkedList<$2$>()",
+        "After": "new LinkedHashSet<$2$>()",
+        "RequiredImports": "java.util.LinkedHashSet"
+      },
+      {
+        "Before": "$2$.collect(Collectors.toList())",
+        "After": "$2$.collect(Collectors.toSet())"
+      },
+      {
+        "Before": "$1$",
+        "After": "new HashSet<>($1$)"
       }
     ]
   },
   {
-    "From": "java.util.concurrent.Callable",
-    "To": "java.util.function.Supplier",
+    "From": "java.lang.String",
+    "To": "java.nio.charset.Charset",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "Charset.forName($1$)",
+        "After": "$1$"
+      }
+    ]
+  },
+  {
+    "From": "java.lang.String",
+    "To": "java.net.URI",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "$1$",
+        "After": "$1$.toString()"
+      },
+      {
+        "Before": "new URL($1$)",
+        "After": "$1$.toURL()"
+      }
+    ]
+  },
+  {
+    "From": "java.util.concurrent.Callable<$1$>",
+    "To": "java.util.function.Supplier<$1$>",
+    "Kind": "Reactive",
     "Rules": [
       {
         "Before": "$1$.call()",
@@ -122,6 +207,7 @@
   {
     "From": "java.util.Map<java.lang.String, java.lang.String>",
     "To": "java.util.Properties",
+    "Kind": "Reactive",
     "Rules": [
       {
         "Before": "$1$.get()",
@@ -132,6 +218,7 @@
   {
     "From": "java.lang.String",
     "To": "java.util.UUID",
+    "Kind": "Reactive",
     "Rules": [
       {
         "Before": "UUID.fromString($1$)",
@@ -140,42 +227,146 @@
     ]
   },
   {
-    "From": "java.lang.String",
-    "To": "java.util.Optional<java.lang.String>",
+    "From": "$1$",
+    "To": "java.util.Optional<$1$>",
+    "Kind": "Reactive",
     "Rules": [
       {
-        "Before": "$1$.$2$()",
-        "After": "$1$.get().$2$()"
-      },
-      {
-        "Before": "assertThat($1$).isEqualTo($2$)",
-        "After": "assertThat($1$).contains($2$)"
-      },
-      {
-        "Before": "$1$.orElse($2$)",
-        "After": "$1$"
+        "Before": "$1$ != null",
+        "After": "$1$.isPresent()"
       },
       {
         "Before": "$1$",
-        "After": "Optional.of($1$)"
+        "After": "$1$.get()"
+      },
+      {
+        "Before": "$2$",
+        "After": "Optional.ofNullable($2$)"
+      },
+      {
+        "Before": "$1$ == null",
+        "After": "$1$.isEmpty()"
       }
     ]
   },
   {
     "From": "java.lang.String",
     "To": "java.nio.file.Path",
+    "Kind": "Reactive",
     "Rules": [
       {
+        "Before": "$2$",
+        "After": "Paths.get($2$)",
+        "RequiredImports": "java.nio.file.Paths"
+      },
+      {
         "Before": "$1$",
-        "After": "Paths.get($1$)"
+        "After": "$1$.toString()"
       },
       {
-        "Before": "$1$.toUri().getPath()",
-        "After": "Paths.get($1$.toUri())"
+        "Before": "new File($1$)",
+        "After": "$1$.toFile()"
+      }
+    ]
+  },
+  {
+    "From": "int",
+    "To": "long",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "$2$",
+        "After": "(long)$2$"
       },
       {
-        "Before": "$1$.getName()",
-        "After": "Paths.get($1$.toUri())"
+        "Before": "Integer.parseInt($2$)",
+        "After": "Long.parseLong($2$)"
+      },
+      {
+        "Before": "(int)$2$",
+        "After": "(long)$2$"
+      },
+      {
+        "Before": "(long)$2$",
+        "After": "$2$"
+      },
+      {
+        "Before": "new AtomicInteger($1$)",
+        "After": "new AtomicLong($1$)"
+      }
+    ]
+  },
+  {
+    "From": "java.util.Date",
+    "To": "java.time.Instant",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "$1$.getTime()",
+        "After": "$1$.getEpochMilli()"
+      }
+    ]
+  },
+  {
+    "From": "java.util.Date",
+    "To": "java.time.LocalDate",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "$1$.toInstant()",
+        "After": "$1$.atStartOfDay()"
+      },
+      {
+        "Before": "$1$.before($2$)",
+        "After": "$1$.isBefore($2$)"
+      },
+      {
+        "Before": "$1$.after($2$)",
+        "After": "$1$.isAfter($2$)"
+      }
+    ]
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Integer,java.lang.Integer>",
+    "To": "java.util.function.IntUnaryOperator",
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsInt($2$)"
+      }
+    ]
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Double,java.lang.Double>",
+    "To": "java.util.function.DoubleUnaryOperator",
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsDouble($2$)"
+      }
+    ]
+  },
+  {
+    "From": "java.util.function.Function<$1$,java.lang.Boolean>",
+    "To": "java.util.function.Predicate<$1$>",
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.test($2$)"
+      }
+    ]
+  },
+  {
+    "From": "java.util.function.Supplier<java.lang.Integer>",
+    "To": "java.util.function.IntSupplier",
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.get($2$)",
+        "After": "$1$.getAsInt($2$)"
       }
     ]
   }

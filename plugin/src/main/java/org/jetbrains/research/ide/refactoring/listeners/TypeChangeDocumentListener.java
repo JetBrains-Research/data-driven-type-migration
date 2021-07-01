@@ -38,8 +38,13 @@ public class TypeChangeDocumentListener implements DocumentListener {
         if (psiFile == null || shouldIgnoreFile(psiFile)) return;
 
         final int offset = event.getOffset();
-        for (var rangeMarker : state.uncompletedTypeChanges.keySet()) {
-            if (document.getLineNumber(rangeMarker.getStartOffset()) == document.getLineNumber(offset)) return;
+        try {
+            for (var rangeMarker : state.uncompletedTypeChanges.keySet()) {
+                if (document.getLineNumber(rangeMarker.getStartOffset()) == document.getLineNumber(offset)) return;
+            }
+        } catch (IndexOutOfBoundsException ex) {
+            LOG.error("Wrong offset");
+            return;
         }
 
         final var oldElement = psiFile.findElementAt(offset);

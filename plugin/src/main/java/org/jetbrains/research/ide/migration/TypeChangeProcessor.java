@@ -17,7 +17,6 @@ import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.GlobalState;
-import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ide.migration.collectors.RequiredImportsCollector;
@@ -32,7 +31,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class TypeChangeProcessor {
-    private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
+    private static final Logger LOG = Logger.getInstance(TypeChangeProcessor.class);
 
     private final Project project;
     private final Boolean isRootTypeAlreadyChanged;
@@ -44,62 +43,65 @@ public class TypeChangeProcessor {
     }
 
     public void run(PsiElement element, TypeChangePatternDescriptor descriptor) {
-        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
-        state.isInternalTypeChangeInProgress = true;
+        try {
+            final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+            state.isInternalTypeChangeInProgress = true;
 
-        final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
-        if (builtInProcessor == null) return;
+            final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
+            if (builtInProcessor == null) return;
 
-        final var typeChangesCollector = TypeChangesInfoCollector.getInstance();
-        final var requiredImportsCollector = RequiredImportsCollector.getInstance();
-        typeChangesCollector.clear();
-        requiredImportsCollector.clear();
-        final UsageInfo[] usages = builtInProcessor.findUsages();
+            final var typeChangesCollector = TypeChangesInfoCollector.getInstance();
+            final var requiredImportsCollector = RequiredImportsCollector.getInstance();
+            typeChangesCollector.clear();
+            requiredImportsCollector.clear();
+            final UsageInfo[] usages = builtInProcessor.findUsages();
 
-        if (typeChangesCollector.hasFailedTypeChanges()) {
-            typeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
-            final var panel = new FailedTypeChangesPanel(typeChangesCollector.getFailedUsages(), project);
-            Content content = UsageViewContentManager.getInstance(project).addContent(
-                    "Failed Type Changes",
-                    false,
-                    panel,
-                    true,
-                    true
-            );
-            panel.setContent(content);
-            ToolWindow toolWindow = Objects.requireNonNull(
-                    ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND)
-            );
-            toolWindow.activate(null);
+            if (typeChangesCollector.hasFailedTypeChanges()) {
+                typeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
+                final var panel = new FailedTypeChangesPanel(typeChangesCollector.getFailedUsages(), project);
+                Content content = UsageViewContentManager.getInstance(project).addContent(
+                        "Failed Type Changes",
+                        false,
+                        panel,
+                        true,
+                        true
+                );
+                panel.setContent(content);
+                ToolWindow toolWindow = Objects.requireNonNull(
+                        ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND)
+                );
+                toolWindow.activate(null);
+            }
+
+            builtInProcessor.performRefactoring(usages);
+            addAndOptimizeImports(project, usages);
+
+            if (isRootTypeAlreadyChanged) {
+                TypeChangeLogsCollector.getInstance().reactiveIntentionApplied(
+                        project,
+                        descriptor.getSourceType(),
+                        descriptor.getTargetType(),
+                        root,
+                        typeChangesCollector.getUpdatedUsages().size(),
+                        typeChangesCollector.getSuspiciousUsages().size(),
+                        typeChangesCollector.getFailedUsages().size()
+                );
+                disableRefactoring(element);
+            } else {
+                TypeChangeLogsCollector.getInstance().proactiveIntentionApplied(
+                        project,
+                        descriptor.getSourceType(),
+                        descriptor.getTargetType(),
+                        root,
+                        typeChangesCollector.getUpdatedUsages().size(),
+                        typeChangesCollector.getSuspiciousUsages().size(),
+                        typeChangesCollector.getFailedUsages().size()
+                );
+            }
+            state.isInternalTypeChangeInProgress = false;
+        } catch (Exception e) {
+            LOG.error(e);
         }
-
-        builtInProcessor.performRefactoring(usages);
-        addAndOptimizeImports(project, usages);
-
-        if (isRootTypeAlreadyChanged) {
-            TypeChangeLogsCollector.getInstance().reactiveIntentionApplied(
-                    project,
-                    descriptor.getSourceType(),
-                    descriptor.getTargetType(),
-                    root,
-                    typeChangesCollector.getUpdatedUsages().size(),
-                    typeChangesCollector.getSuspiciousUsages().size(),
-                    typeChangesCollector.getFailedUsages().size()
-            );
-            disableRefactoring(element);
-        } else {
-            TypeChangeLogsCollector.getInstance().proactiveIntentionApplied(
-                    project,
-                    descriptor.getSourceType(),
-                    descriptor.getTargetType(),
-                    root,
-                    typeChangesCollector.getUpdatedUsages().size(),
-                    typeChangesCollector.getSuspiciousUsages().size(),
-                    typeChangesCollector.getFailedUsages().size()
-            );
-        }
-
-        state.isInternalTypeChangeInProgress = false;
     }
 
     private void disableRefactoring(PsiElement element) {

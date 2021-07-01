@@ -3,7 +3,10 @@ package org.jetbrains.research.data;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiType;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.GlobalState;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.migration.structuralsearch.SSRUtils;
 
@@ -26,7 +29,7 @@ public class TypeChangeRulesStorage {
     static {
         String json;
         try {
-            json = getResourceFileAsString("/new_rules.json");
+            json = getResourceFileAsString("/rules.json");
             Gson gson = new Gson();
             Type type = new TypeToken<List<TypeChangePatternDescriptor>>() {
             }.getType();
@@ -67,8 +70,7 @@ public class TypeChangeRulesStorage {
     public static TypeChangePatternDescriptor findPattern(String sourceType, String targetType) {
         return patterns.stream()
                 .filter(pattern ->
-                        hasMatch(sourceType, pattern.getSourceType())
-                                && hasMatch(targetType, pattern.getTargetType()))
+                        hasMatch(sourceType, pattern.getSourceType()) && hasMatch(targetType, pattern.getTargetType()))
                 .findFirst()
                 .orElse(null);
     }
@@ -98,6 +100,13 @@ public class TypeChangeRulesStorage {
         if (source.contains(typePattern)) return false;
 
         // Matching complicated cases with substitutions, such as List<String> to List<$1$>
-        return !SSRUtils.matchType(source, typePattern).isEmpty(); // TODO: debug
+        if (!SSRUtils.matchType(source, typePattern).isEmpty()) return true;
+
+        // Match supertypes, such as ArrayList<> to List<>
+        PsiType sourceType = JavaPsiFacade.getElementFactory(GlobalState.project).createTypeFromText(source, null);
+        for (PsiType superType : sourceType.getSuperTypes()) {
+            if (!SSRUtils.matchType(superType.getCanonicalText(), typePattern).isEmpty()) return true;
+        }
+        return false;
     }
 }
