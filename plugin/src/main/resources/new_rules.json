@@ -244,10 +244,6 @@
       },
       {
         "Before": "$2$",
-        "After": "Optional.of($2$)"
-      },
-      {
-        "Before": "$2$",
         "After": "Optional.ofNullable($2$)"
       },
       {

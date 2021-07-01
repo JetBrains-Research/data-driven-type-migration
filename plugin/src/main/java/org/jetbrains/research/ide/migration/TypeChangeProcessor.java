@@ -36,6 +36,7 @@ public class TypeChangeProcessor {
 
     private final Project project;
     private final Boolean isRootTypeAlreadyChanged;
+    private PsiElement root;
 
     public TypeChangeProcessor(Project project, Boolean isRootTypeAlreadyChanged) {
         this.project = project;
@@ -75,10 +76,6 @@ public class TypeChangeProcessor {
         builtInProcessor.performRefactoring(usages);
         addAndOptimizeImports(project, usages);
 
-        PsiElement root = Objects.requireNonNull(
-                PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class)
-        ).getParent();
-
         if (isRootTypeAlreadyChanged) {
             TypeChangeLogsCollector.getInstance().reactiveIntentionApplied(
                     project,
@@ -109,16 +106,8 @@ public class TypeChangeProcessor {
         final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
         state.refactoringEnabled = false;
         state.removeAllTypeChangesByRange(element.getTextRange());
-
-        Document document;
-        try {
-            document = PsiDocumentManager.getInstance(project).getDocument(element.getContainingFile());
-        } catch (PsiInvalidElementAccessException exception) {
-            LOG.warn(exception);
-            return;
-        }
+        Document document = PsiDocumentManager.getInstance(project).getDocument(root.getContainingFile());
         if (document == null) return;
-
         ReactiveTypeChangeAvailabilityUpdater.getInstance(project)
                 .updateAllHighlighters(document, element.getTextOffset());
     }
@@ -135,6 +124,7 @@ public class TypeChangeProcessor {
             LOG.error("Type of migration root is null");
             return null;
         }
+        this.root = root;
 
         // In case of suggested refactoring intention
         if (isRootTypeAlreadyChanged) {
@@ -153,7 +143,7 @@ public class TypeChangeProcessor {
         TypeMigrationRules rules = new TypeMigrationRules(project);
         rules.setBoundScope(Objects.requireNonNullElseGet(
                 GlobalState.searchScope,
-                () -> GlobalSearchScope.fileScope(element.getContainingFile())
+                () -> GlobalSearchScope.fileScope(root.getContainingFile())
         ));
         rules.addConversionDescriptor(new HeuristicTypeConversionRule());
 
