@@ -11,12 +11,17 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootModificationUtil;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.psi.*;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.PsiTestUtil;
 import org.apache.commons.cli.*;
+import org.jetbrains.research.legacy.TypeRelevantUsagesProcessor;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class IntellijProjectUtils {
@@ -116,8 +121,22 @@ public class IntellijProjectUtils {
         return cmd;
     }
 
+    static class ReturnStatementExtractor extends JavaRecursiveElementVisitor {
+        public List<PsiReturnStatement> returnStatements = new ArrayList<>();
+        @Override
+        public void visitReturnStatement(PsiReturnStatement statement) {
+            returnStatements.add(statement);
+            super.visitReturnStatement(statement);
+        }
 
-//    public static boolean isParentOfSrcMAinJava(Path p){
-//        return p.resolve("src")
-//    }
+        @Override
+        public void visitLambdaExpression(PsiLambdaExpression expression) {
+            super.visitLambdaExpression(expression);
+        }
+
+        @Override
+        public void visitClass(PsiClass aClass) {
+            super.visitClass(aClass);
+        }
+    }
 }

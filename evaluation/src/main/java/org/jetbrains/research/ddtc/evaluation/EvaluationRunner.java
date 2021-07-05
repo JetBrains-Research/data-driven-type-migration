@@ -15,6 +15,7 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.util.PsiUtil;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.jetbrains.annotations.NonNls;
@@ -31,11 +32,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.copyOfRange;
 import static java.util.stream.Collectors.toMap;
+import static org.jetbrains.research.ddtc.evaluation.IntellijProjectUtils.*;
 import static org.jetbrains.research.utils.PsiRelatedUtils.getHighestParentOfType;
 
 public class EvaluationRunner implements ApplicationStarter {
@@ -52,7 +55,7 @@ public class EvaluationRunner implements ApplicationStarter {
     @Override
     public void main(@NotNull List<String> args) {
         try {
-            CommandLine parsedArgs = IntellijProjectUtils.parseArgs(args.toArray(new String[0]));
+            CommandLine parsedArgs = parseArgs(args.toArray(new String[0]));
             File pathToProject = new File(parsedArgs.getOptionValue("src-projects-dir"));
             String pathToJdk = parsedArgs.getOptionValue("jdk-path");
             Path pathToOffsets = Paths.get(parsedArgs.getOptionValue("offset"));
@@ -79,8 +82,8 @@ public class EvaluationRunner implements ApplicationStarter {
         return () -> {
             final Project project = ProjectUtil.openOrImport(pathToProject.toPath(), null, false);
             if (project == null) return new Result(new ArrayList<>());
-            IntellijProjectUtils.loadModules(pathToProject, project);
-            IntellijProjectUtils.setupJdk(project, pathToJdk);
+            loadModules(pathToProject, project);
+            setupJdk(project, pathToJdk);
             GlobalState.project = project;
             List<VirtualFile> roots = Arrays.stream(ProjectRootManager.getInstance(project).getContentRoots())
                     .filter(x -> !x.getPath().equals(pathToProject.getAbsolutePath()))
@@ -129,12 +132,16 @@ public class EvaluationRunner implements ApplicationStarter {
         Document document = PsiDocumentManager.getInstance(project).getDocument(psi.getContainingFile());
         int lineNo = Integer.parseInt(lineNoName.split("-")[0]);
         String name= lineNoName.split("-")[1];
+        String[] lines = psi.getText().split("\n");
 
-        String t = psi.getText().split("\n")[lineNo - 1];
+        if (lines.length < lineNo -1)
+            return new TypeDependentCode(null, null);
+
+        String t = lines[lineNo - 1];
         int offset = document.getLineStartOffset(lineNo - 1) + t.indexOf(name);
 
-
-        PsiElement root = getRoot(psi.findElementAt(offset));
+        PsiElement elementAt = psi.findElementAt(offset);
+        PsiElement root = getRoot(elementAt);
         if (root == null)
             return new TypeDependentCode(null, null);
 
@@ -156,28 +163,36 @@ public class EvaluationRunner implements ApplicationStarter {
                 .map(usage -> getAncestors(usage.getElement(), 4, document))
                 .peek(x -> System.out.println("---"))
                 .collect(Collectors.toList());
+        if(root instanceof PsiMethod){
+            PsiMethod m = (PsiMethod) root;
+            ReturnStatementExtractor rs = new ReturnStatementExtractor();
+            m.accept(rs);
+            for(var x : rs.returnStatements)
+                collect.add(List.of(ImmutablePair.of(x.getTextRange(),
+                        ImmutablePair.of(x.getText(),document.getLineNumber(x.getTextOffset())))));
+        }
         return new TypeDependentCode(root.getTextRange(), collect);
     }
 
-    private PsiTypeElement getTypeNode(@Nullable PsiElement elementAtOffset) {
-        PsiParameter parElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiParameter.class);
-        if(parElem!=null){
-            return parElem.getTypeElement();
-        }
-        PsiMethod mthdElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiMethod.class);
-        if(mthdElem!=null){
-            return mthdElem.getReturnTypeElement();
-        }
-        PsiField fldElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiField.class);
-        if(fldElem!=null){
-            return fldElem.getTypeElement();
-        }
-        PsiVariable varElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiVariable.class);
-        if(varElem!=null){
-            return varElem.getTypeElement();
-        }
-        return null;
-    }
+//    private PsiTypeElement getTypeNode(@Nullable PsiElement elementAtOffset) {
+//        PsiParameter parElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiParameter.class);
+//        if(parElem!=null){
+//            return parElem.getTypeElement();
+//        }
+//        PsiMethod mthdElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiMethod.class);
+//        if(mthdElem!=null){
+//            return mthdElem.getReturnTypeElement();
+//        }
+//        PsiField fldElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiField.class);
+//        if(fldElem!=null){
+//            return fldElem.getTypeElement();
+//        }
+//        PsiVariable varElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiVariable.class);
+//        if(varElem!=null){
+//            return varElem.getTypeElement();
+//        }
+//        return null;
+//    }
 
     private PsiElement getRoot(PsiElement elementAtOffset) {
         if (elementAtOffset == null) return null;
