@@ -43,7 +43,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
                 if (document.getLineNumber(rangeMarker.getStartOffset()) == document.getLineNumber(offset)) return;
             }
         } catch (IndexOutOfBoundsException ex) {
-            LOG.error("Wrong offset");
+            LOG.warn("Wrong offset");
             return;
         }
 

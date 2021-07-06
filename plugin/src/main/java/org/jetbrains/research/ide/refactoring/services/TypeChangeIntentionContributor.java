@@ -12,8 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ide.intentions.FailedTypeChangeRecoveringIntention;
 import org.jetbrains.research.ide.intentions.SuggestedTypeChangeIntention;
 import org.jetbrains.research.ide.migration.collectors.TypeChangesInfoCollector;
+import org.jetbrains.research.ide.refactoring.TypeChangeMarker;
 
 import javax.swing.*;
+import java.util.Objects;
 
 class TypeChangeIntentionContributor implements IntentionMenuContributor {
     private final Icon icon = AllIcons.Actions.SuggestedRefactoringBulb;
@@ -36,8 +38,11 @@ class TypeChangeIntentionContributor implements IntentionMenuContributor {
             final var state = TypeChangeRefactoringProviderImpl.getInstance(hostEditor.getProject()).getState();
             final var typeChangeMarker = state.getCompletedTypeChangeForOffset(offset);
             if (typeChangeMarker.isEmpty() || !state.refactoringEnabled) return;
+            TypeChangeMarker marker = typeChangeMarker.get();
+            if (Objects.equals(marker.sourceType, marker.targetType))
+                return; // to prevent strange bugs with reactive intention
 
-            intention = new SuggestedTypeChangeIntention(typeChangeMarker.get());
+            intention = new SuggestedTypeChangeIntention(marker);
         }
 
         // we add it into 'errorFixesToShow' if it's not empty to always be at the top of the list

@@ -50,7 +50,7 @@ public class TypeChangeLogsCollector {
         FeatureUsageData data = buildIntentionUsageData(
                 project, sourceType, targetType, root, usagesUpdated, suspiciousUsagesFound, usagesFailed
         ).addData("invocation_workflow", "reactive");
-        TypeChangeLogger.log(group, "proactive.intention.applied", data);
+        TypeChangeLogger.log(group, "reactive.intention.applied", data);
     }
 
     public void recoveringIntentionApplied(Project project, TypeChangeRuleDescriptor rule) {
@@ -58,7 +58,7 @@ public class TypeChangeLogsCollector {
                 .addData("expression_before", rule.getExpressionBefore())
                 .addData("expression_after", rule.getExpressionAfter())
                 .addData("invocation_workflow", "recovering");
-        TypeChangeLogger.log(group, "proactive.intention.applied", data);
+        TypeChangeLogger.log(group, "recovering.intention.applied", data);
     }
 
     private FeatureUsageData buildIntentionUsageData(Project project, String sourceType, String targetType, PsiElement root,
