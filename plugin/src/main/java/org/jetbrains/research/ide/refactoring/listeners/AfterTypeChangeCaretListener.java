@@ -7,7 +7,7 @@ import org.jetbrains.research.ide.refactoring.ReactiveTypeChangeAvailabilityUpda
 
 import java.util.Objects;
 
-public class TypeChangeCaretListener implements CaretListener {
+public class AfterTypeChangeCaretListener implements CaretListener {
 
     @Override
     public void caretPositionChanged(@NotNull CaretEvent event) {

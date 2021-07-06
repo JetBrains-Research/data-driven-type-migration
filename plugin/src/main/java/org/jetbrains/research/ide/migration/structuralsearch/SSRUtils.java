@@ -12,7 +12,7 @@ import com.intellij.structuralsearch.impl.matcher.compiler.PatternCompiler;
 import com.intellij.structuralsearch.plugin.replace.ReplaceOptions;
 import com.intellij.structuralsearch.plugin.replace.impl.Replacer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.GlobalState;
+import org.jetbrains.research.Config;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class SSRUtils {
         final MatchOptions options = new MatchOptions();
         options.setSearchPattern(typePattern);
         options.setFileType(JavaFileType.INSTANCE);
-        final Matcher matcher = new Matcher(GlobalState.project, options);
+        final Matcher matcher = new Matcher(Config.project, options);
         return matcher.testFindMatches(source, false, JavaFileType.INSTANCE, false);
     }
 
@@ -57,7 +57,7 @@ public class SSRUtils {
     public static String substituteTypeByPattern(@NotNull PsiType type,
                                                  String stringToSubstitute,
                                                  String substituteByString) {
-        final Project project = GlobalState.project;
+        final Project project = Config.project;
         final ReplaceOptions options = new ReplaceOptions();
         final MatchOptions matchOptions = options.getMatchOptions();
         matchOptions.setFileType(JavaFileType.INSTANCE);

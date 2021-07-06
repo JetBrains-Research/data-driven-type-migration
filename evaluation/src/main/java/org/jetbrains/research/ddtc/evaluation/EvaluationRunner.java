@@ -15,7 +15,7 @@ import com.intellij.usageView.UsageInfo;
 import org.apache.commons.cli.*;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.GlobalState;
+import org.jetbrains.research.Config;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ide.migration.TypeChangeProcessor;
 import org.jetbrains.research.ide.migration.collectors.RequiredImportsCollector;
@@ -56,8 +56,8 @@ public class EvaluationRunner implements ApplicationStarter {
                         IntellijProjectUtils.loadModules(projectDir, project);
                         IntellijProjectUtils.setupJdk(project, pathToJdk);
 
-                        GlobalState.project = project;
-                        GlobalState.searchScope = GlobalSearchScope.projectScope(project);
+                        Config.project = project;
+                        Config.searchScope = GlobalSearchScope.projectScope(project);
 
                         // Just for test: the types for Type Change should be specified / injected from outside
                         final String sourceType = "java.io.File";

@@ -54,7 +54,7 @@ public class PsiRelatedUtils {
     }
 
     @Nullable
-    public static String getClosestFullyQualifiedName(PsiElement element) {
+    public static PsiTypeElement getClosestPsiTypeElement(PsiElement element) {
         PsiTypeElement correspondingTypeElement = null;
 
         if (element instanceof PsiWhiteSpace) {
@@ -66,8 +66,7 @@ public class PsiRelatedUtils {
         } else {
             correspondingTypeElement = PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class);
         }
-        if (correspondingTypeElement == null) return null;
 
-        return correspondingTypeElement.getType().getCanonicalText();
+        return correspondingTypeElement;
     }
 }

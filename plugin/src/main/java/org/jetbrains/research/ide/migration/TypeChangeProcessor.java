@@ -16,7 +16,7 @@ import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.GlobalState;
+import org.jetbrains.research.Config;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ide.migration.collectors.RequiredImportsCollector;
@@ -123,7 +123,7 @@ public class TypeChangeProcessor {
         if (rootTypeElement != null) {
             root = rootTypeElement.getParent();
         } else {
-            LOG.error("Type of migration root is null");
+            LOG.warn("Type of migration root is null");
             return null;
         }
         this.root = root;
@@ -144,7 +144,7 @@ public class TypeChangeProcessor {
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
         rules.setBoundScope(Objects.requireNonNullElseGet(
-                GlobalState.searchScope,
+                Config.searchScope,
                 () -> GlobalSearchScope.fileScope(root.getContainingFile())
         ));
         rules.addConversionDescriptor(new HeuristicTypeConversionRule());

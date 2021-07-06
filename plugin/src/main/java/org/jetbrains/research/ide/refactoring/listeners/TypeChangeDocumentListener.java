@@ -44,17 +44,19 @@ public class TypeChangeDocumentListener implements DocumentListener {
             }
         } catch (IndexOutOfBoundsException ex) {
             LOG.warn("Wrong offset");
+            state.uncompletedTypeChanges.clear();
             return;
         }
 
         final var oldElement = psiFile.findElementAt(offset);
         if (oldElement == null) return;
 
-        final var oldElementQualifiedName = PsiRelatedUtils.getClosestFullyQualifiedName(oldElement);
-        if (oldElementQualifiedName == null) return;
+        final PsiTypeElement oldTypeElement = PsiRelatedUtils.getClosestPsiTypeElement(oldElement);
+        if (oldTypeElement == null) return;
+        final String sourceType = oldTypeElement.getType().getCanonicalText();
 
-        if (TypeChangeRulesStorage.hasSourceType(oldElementQualifiedName)) {
-            processSourceTypeChangeEvent(oldElement, oldElementQualifiedName, document);
+        if (TypeChangeRulesStorage.hasSourceType(sourceType)) {
+            processSourceTypeChangeEvent(oldElement, sourceType, document);
         }
     }
 
@@ -64,20 +66,31 @@ public class TypeChangeDocumentListener implements DocumentListener {
         if (state.isInternalTypeChangeInProgress) return;
 
         final var document = event.getDocument();
-        psiDocumentManager.commitDocument(document);
+        try {
+            psiDocumentManager.commitDocument(document);
+        } catch (IllegalArgumentException ex) {
+            LOG.warn("Can not commit document");
+            return;
+        }
 
         final PsiFile psiFile = psiDocumentManager.getCachedPsiFile(document);
         if (psiFile == null || shouldIgnoreFile(psiFile)) return;
 
         final int offset = event.getOffset();
-        final var newElement = psiFile.findElementAt(offset);
+        PsiElement newElement = psiFile.findElementAt(offset);
         if (newElement == null) return;
 
-        final var newElementQualifiedName = PsiRelatedUtils.getClosestFullyQualifiedName(newElement);
-        if (newElementQualifiedName == null) return;
+        final PsiTypeElement newTypeElement = PsiRelatedUtils.getClosestPsiTypeElement(newElement);
+        if (newTypeElement == null) return;
+        final String fqTargetType = newTypeElement.getType().getCanonicalText();
+        final String fqTargetTypeWithoutGenerics =
+                fqTargetType.contains("<")
+                        ? fqTargetType.substring(0, fqTargetType.indexOf('<'))
+                        : fqTargetType;
+        final String shortenedTargetType = fqTargetTypeWithoutGenerics.substring(fqTargetTypeWithoutGenerics.lastIndexOf('.') + 1);
 
-        if (TypeChangeRulesStorage.hasTargetType(newElementQualifiedName)) {
-            processTargetTypeChangeEvent(newElement, newElementQualifiedName, document);
+        if (TypeChangeRulesStorage.hasTargetType(fqTargetType) && newElement.getText().equals(shortenedTargetType)) {
+            processTargetTypeChangeEvent(newElement, fqTargetType, document);
 
             final var updater = ReactiveTypeChangeAvailabilityUpdater.getInstance(project);
             updater.updateAllHighlighters(event.getDocument(), event.getOffset());

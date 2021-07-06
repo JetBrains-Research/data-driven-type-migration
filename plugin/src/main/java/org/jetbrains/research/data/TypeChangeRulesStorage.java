@@ -6,7 +6,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiType;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.GlobalState;
+import org.jetbrains.research.Config;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.migration.structuralsearch.SSRUtils;
 
@@ -103,7 +103,7 @@ public class TypeChangeRulesStorage {
         if (!SSRUtils.matchType(source, typePattern).isEmpty()) return true;
 
         // Match supertypes, such as ArrayList<> to List<>
-        PsiType sourceType = JavaPsiFacade.getElementFactory(GlobalState.project).createTypeFromText(source, null);
+        PsiType sourceType = JavaPsiFacade.getElementFactory(Config.project).createTypeFromText(source, null);
         for (PsiType superType : sourceType.getSuperTypes()) {
             if (!SSRUtils.matchType(superType.getCanonicalText(), typePattern).isEmpty()) return true;
         }

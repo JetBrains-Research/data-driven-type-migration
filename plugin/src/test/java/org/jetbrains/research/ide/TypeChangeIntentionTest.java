@@ -7,7 +7,7 @@ import com.intellij.testFramework.IdeaTestUtil;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.GlobalState;
+import org.jetbrains.research.Config;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -36,7 +36,7 @@ public class TypeChangeIntentionTest extends LightJavaCodeInsightFixtureTestCase
         final VirtualFile directory = myFixture.copyDirectoryToProject(testProjectName, testProjectName);
         final VirtualFile fileForEditor = Arrays.stream(directory.getChildren()).findFirst().get();
         myFixture.configureFromExistingVirtualFile(fileForEditor);
-        GlobalState.project = getProject(); // TODO: eliminate
+        Config.project = getProject(); // TODO: eliminate
 
         final var action = myFixture.findSingleIntention(intentionText);
         assertNotNull(action);

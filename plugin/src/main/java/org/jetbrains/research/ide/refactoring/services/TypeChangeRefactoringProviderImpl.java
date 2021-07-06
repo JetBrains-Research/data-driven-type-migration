@@ -10,9 +10,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.Config;
-import org.jetbrains.research.GlobalState;
 import org.jetbrains.research.ide.refactoring.TypeChangeSuggestedRefactoringState;
-import org.jetbrains.research.ide.refactoring.listeners.TypeChangeCaretListener;
+import org.jetbrains.research.ide.refactoring.listeners.AfterTypeChangeCaretListener;
 import org.jetbrains.research.ide.refactoring.listeners.TypeChangeDocumentListener;
 
 import java.util.Arrays;
@@ -39,7 +38,7 @@ public class TypeChangeRefactoringProviderImpl implements TypeChangeRefactoringP
         @Override
         public void runActivity(@NotNull Project project) {
             if (!ApplicationManager.getApplication().isUnitTestMode()) {
-                GlobalState.project = project;
+                Config.project = project;
 
                 EditorFactory.getInstance().getEventMulticaster().addDocumentListener(
                         ProjectDisposeAwareDocumentListener.create(project, new TypeChangeDocumentListener(project)),
@@ -47,17 +46,17 @@ public class TypeChangeRefactoringProviderImpl implements TypeChangeRefactoringP
                 );
 
                 Arrays.stream(EditorFactory.getInstance().getAllEditors()).forEach(editor ->
-                        editor.getCaretModel().addCaretListener(new TypeChangeCaretListener()));
+                        editor.getCaretModel().addCaretListener(new AfterTypeChangeCaretListener()));
 
                 EditorFactory.getInstance().addEditorFactoryListener(new EditorFactoryListener() {
                     @Override
                     public void editorCreated(@NotNull EditorFactoryEvent event) {
-                        event.getEditor().getCaretModel().addCaretListener(new TypeChangeCaretListener());
+                        event.getEditor().getCaretModel().addCaretListener(new AfterTypeChangeCaretListener());
                     }
 
                     @Override
                     public void editorReleased(@NotNull EditorFactoryEvent event) {
-                        event.getEditor().getCaretModel().removeCaretListener(new TypeChangeCaretListener());
+                        event.getEditor().getCaretModel().removeCaretListener(new AfterTypeChangeCaretListener());
                     }
                 }, project);
 
