@@ -47,10 +47,11 @@ public class TypeChangeProcessor {
             final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
             state.isInternalTypeChangeInProgress = true;
 
+            // TODO: Use facade
             final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
             if (builtInProcessor == null) return;
 
-            final var typeChangesCollector = TypeChangesInfoCollector.getInstance();
+            final TypeChangesInfoCollector typeChangesCollector = TypeChangesInfoCollector.getInstance();
             final var requiredImportsCollector = RequiredImportsCollector.getInstance();
             typeChangesCollector.clear();
             requiredImportsCollector.clear();
@@ -58,19 +59,27 @@ public class TypeChangeProcessor {
 
             if (typeChangesCollector.hasFailedTypeChanges()) {
                 typeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
-                final var panel = new FailedTypeChangesPanel(typeChangesCollector.getFailedUsages(), project);
+                UsageInfo[] infos = typeChangesCollector.getFailedUsages().stream()
+                        .map(UsageInfo::new)
+                        .toArray(UsageInfo[]::new);
+
+                final var panel = new FailedTypeChangesPanel(project);
                 Content content = UsageViewContentManager.getInstance(project).addContent(
                         "Failed Type Changes",
-                        false,
-                        panel,
                         true,
-                        true
+                        panel,
+                        false,
+                        false
                 );
                 panel.setContent(content);
-                ToolWindow toolWindow = Objects.requireNonNull(
-                        ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND)
-                );
-                toolWindow.activate(null);
+                ToolWindow toolWindow = Objects.requireNonNull(ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND));
+                toolWindow.activate(() -> {
+                    panel.getInnerPanel().showUsages(PsiElement.EMPTY_ARRAY, infos);
+                }, true, true);
+                // FIXME: idk, but it still doesn't refresh the tool window from time to time
+                toolWindow.show(() -> {
+                    panel.getInnerPanel().showUsages(PsiElement.EMPTY_ARRAY, infos);
+                });
             }
 
             builtInProcessor.performRefactoring(usages);

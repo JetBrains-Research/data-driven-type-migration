@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiType;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.Config;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.migration.structuralsearch.SSRUtils;
@@ -17,6 +16,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -66,13 +66,10 @@ public class TypeChangeRulesStorage {
                 .collect(Collectors.toList());
     }
 
-    @Nullable
-    public static TypeChangePatternDescriptor findPattern(String sourceType, String targetType) {
+    public static Optional<TypeChangePatternDescriptor> findPattern(String sourceType, String targetType) {
         return patterns.stream()
-                .filter(pattern ->
-                        hasMatch(sourceType, pattern.getSourceType()) && hasMatch(targetType, pattern.getTargetType()))
-                .findFirst()
-                .orElse(null);
+                .filter(pattern -> hasMatch(sourceType, pattern.getSourceType()) && hasMatch(targetType, pattern.getTargetType()))
+                .findFirst();
     }
 
     private static void initCache() {

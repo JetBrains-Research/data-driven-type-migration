@@ -86,7 +86,7 @@ public class EvaluationRunner implements ApplicationStarter {
                                 WriteCommandAction.runWriteCommandAction(project, () -> {
                                     // Create built-in `TypeMigrationProcessor`
                                     final PsiElement context = psi.findElementAt(caretOffset);
-                                    final var descriptor = TypeChangeRulesStorage.findPattern(sourceType, targetType);
+                                    final var descriptor = TypeChangeRulesStorage.findPattern(sourceType, targetType).get();
                                     final var typeChangeProcessor = new TypeChangeProcessor(project, false);
                                     final var builtInProcessor = typeChangeProcessor.createBuiltInTypeMigrationProcessor(context, descriptor);
                                     if (builtInProcessor == null) return;

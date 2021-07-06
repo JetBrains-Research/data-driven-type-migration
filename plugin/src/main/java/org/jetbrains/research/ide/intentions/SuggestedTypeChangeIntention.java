@@ -46,10 +46,13 @@ public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction 
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
         Config.searchScope = GlobalSearchScope.fileScope(element.getContainingFile());
+        final var pattern = TypeChangeRulesStorage.findPattern(sourceType, targetType);
+        if (pattern.isEmpty()) return;
+
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeChangesListPopupStep(
                         "Type Migration Rules",
-                        Collections.singletonList(TypeChangeRulesStorage.findPattern(sourceType, targetType)),
+                        Collections.singletonList(pattern.get()),
                         element,
                         project,
                         true

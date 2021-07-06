@@ -1,7 +1,6 @@
 package org.jetbrains.research.ide.ui;
 
 import com.intellij.core.JavaPsiBundle;
-import com.intellij.ide.util.treeView.AlphaComparator;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataProvider;
@@ -14,8 +13,6 @@ import com.intellij.psi.util.PsiFormatUtilBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.*;
 import com.intellij.ui.content.Content;
-import com.intellij.ui.tree.AsyncTreeModel;
-import com.intellij.ui.tree.StructureTreeModel;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewBundle;
@@ -31,44 +28,37 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class FailedTypeChangesPanel extends JPanel implements Disposable {
-    private final List<PsiElement> myFailedUsages;
-    private final MyTree myRootsTree;
-    private Content myContent;
+    private final FailedTypeChangesRootsPanel failedUsagesPanel;
 
-    public FailedTypeChangesPanel(List<PsiElement> failedUsages, Project project) {
+    public FailedTypeChangesPanel(Project project) {
         super(new BorderLayout());
-        myFailedUsages = failedUsages;
 
-        final FailedTypeChangeRootNode currentRoot = new FailedTypeChangeRootNode(project, failedUsages);
+//        final FailedTypeChangeRootNode currentRoot = new FailedTypeChangeRootNode(project, failedUsages);
+//        MyTree myRootsTree = new MyTree();
+//        FailedTypeChangesTreeStructure structure = new FailedTypeChangesTreeStructure(project);
+//        structure.setRoots(currentRoot);
+//        final var model = new StructureTreeModel<>(structure, AlphaComparator.INSTANCE, this);
+//
+//        myRootsTree.setModel(new AsyncTreeModel(model, this));
+//        initTree(myRootsTree);
+//        add(ScrollPaneFactory.createScrollPane(myRootsTree));
+//        model.invalidate();
 
-        myRootsTree = new MyTree();
-        FailedTypeChangesTreeStructure structure = new FailedTypeChangesTreeStructure(project);
-        structure.setRoots(currentRoot);
-        final var model = new StructureTreeModel<>(structure, AlphaComparator.INSTANCE, this);
 
-        myRootsTree.setModel(new AsyncTreeModel(model, this));
-        initTree(myRootsTree);
-
-        add(ScrollPaneFactory.createScrollPane(myRootsTree));
-        add(createToolbar(), BorderLayout.SOUTH);
-
-        model.invalidate();
+        failedUsagesPanel = new FailedTypeChangesRootsPanel(project);
+        failedUsagesPanel.setToInitialPosition();
+        add(failedUsagesPanel, BorderLayout.CENTER);
+        Disposer.register(this, failedUsagesPanel);
     }
 
-    private JComponent createToolbar() {
-        // TODO: think about toolbar contents
-        final JPanel panel = new JPanel(new GridBagLayout());
-        final JButton performButton = new JButton("Test Button");
-        panel.add(performButton);
-        return panel;
+    public FailedTypeChangesRootsPanel getInnerPanel() {
+        return failedUsagesPanel;
     }
 
     public void setContent(final Content content) {
-        myContent = content;
         Disposer.register(content, this);
     }
 
@@ -82,7 +72,6 @@ public class FailedTypeChangesPanel extends JPanel implements Disposable {
         SmartExpander.installOn(tree);
         EditSourceOnDoubleClickHandler.install(tree);
         new TreeSpeedSearch(tree);
-        // PopupHandler.installUnknownPopupHandler(tree, createTreePopupActions());
     }
 
     @Override

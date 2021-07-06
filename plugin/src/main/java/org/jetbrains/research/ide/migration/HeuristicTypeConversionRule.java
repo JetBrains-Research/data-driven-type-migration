@@ -36,12 +36,12 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
                 to.getCanonicalText()
         );
         final String currentRootName = extractCurrentRootIdentName(labeler);
-        if (pattern == null || context == null || currentRootName == null) return null;
+        if (pattern.isEmpty() || context == null || currentRootName == null) return null;
 
         PsiElement currentContext = context;
         int parentsPassed = 0;
         TypeChangeRuleDescriptor bestMatchedRule = null;
-        final List<TypeChangeRuleDescriptor> rules = pattern.getRules();
+        final List<TypeChangeRuleDescriptor> rules = pattern.get().getRules();
 
         while (parentsPassed < Config.MAX_PARENTS_TO_LIFT_UP) {
             if (currentContext.getText().contains("=")) {
