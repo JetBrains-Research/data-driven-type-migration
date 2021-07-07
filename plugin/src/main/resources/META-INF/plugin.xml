@@ -14,30 +14,31 @@
     <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="org.jetbrains.research.ide.settings.TypeChangeSettingsState"/>
+        <applicationService serviceImplementation="org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState"/>
 
         <applicationConfigurable parentId="tools"
-                                 instance="org.jetbrains.research.ide.settings.TypeChangeSettingsConfigurable"
-                                 id="org.jetbrains.research.ide.settings.TypeChangeSettingsConfigurable"
+                                 instance="org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsConfigurable"
+                                 id="org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsConfigurable"
                                  displayName="Data-Driven Type Migration"/>
 
         <statistic.eventLog.eventLoggerProvider
-                implementation="org.jetbrains.research.ide.fus.TypeChangeLoggerProvider"/>
+                implementation="org.jetbrains.research.ddtm.ide.fus.TypeChangeLoggerProvider"/>
 
         <intentionAction>
-            <className>org.jetbrains.research.ide.intentions.ProactiveTypeChangeIntention</className>
+            <className>org.jetbrains.research.ddtm.ide.intentions.ProactiveTypeChangeIntention</className>
             <category>Type migration</category>
         </intentionAction>
 
-        <projectService serviceInterface="org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProvider"
-                        serviceImplementation="org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl"/>
+        <projectService
+                serviceInterface="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider"
+                serviceImplementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl"/>
 
         <postStartupActivity
-                implementation="org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl$Startup"/>
+                implementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl$Startup"/>
 
         <!--suppress PluginXmlValidity -->
         <intentionMenuContributor
-                implementation="org.jetbrains.research.ide.refactoring.services.TypeChangeIntentionContributor"/>
+                implementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeIntentionContributor"/>
 
     </extensions>
 
