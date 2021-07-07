@@ -7,6 +7,7 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.migration.TypeChangeProcessor;
 
@@ -37,7 +38,7 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
 
     @Override
     public @NotNull String getTextFor(TypeChangePatternDescriptor value) {
-        return value.getSourceType() + " to " + value.getTargetType();
+        return DataDrivenTypeMigrationBundle.message("intention.list.item.text", value.getSourceType(), value.getTargetType());
     }
 
     @Override

@@ -14,7 +14,7 @@ public class TypeChangeLogsCollector {
     private static final Integer LOG_DELAY_MIN = 24 * 60;
     private static final Integer LOG_INITIAL_DELAY_MIN = 11;
     // TODO: approve group id
-    private static final EventLogGroup group = new EventLogGroup("dbp.ddtc.count", TypeChangeLogger.version);
+    private static final EventLogGroup group = new EventLogGroup("dbp.ddtm.count", TypeChangeLogger.version);
     private static TypeChangeLogsCollector instance;
 
     private TypeChangeLogsCollector() {

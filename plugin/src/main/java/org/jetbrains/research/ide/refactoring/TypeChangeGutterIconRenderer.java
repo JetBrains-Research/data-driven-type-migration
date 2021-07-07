@@ -24,6 +24,7 @@ import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.Config;
+import org.jetbrains.research.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.migration.TypeChangeProcessor;
@@ -47,7 +48,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
 
     @Override
     public @Nullable String getTooltipText() {
-        return "Suggested type migration refactoring";
+        return DataDrivenTypeMigrationBundle.message("suggested.gutter.icon.tooltip.text");
     }
 
     @Override

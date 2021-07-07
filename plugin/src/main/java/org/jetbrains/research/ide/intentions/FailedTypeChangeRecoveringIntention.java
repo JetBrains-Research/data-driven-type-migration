@@ -13,6 +13,7 @@ import com.intellij.refactoring.typeMigration.TypeConversionDescriptor;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.Config;
+import org.jetbrains.research.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ide.migration.collectors.TypeChangesInfoCollector;
@@ -27,7 +28,7 @@ public class FailedTypeChangeRecoveringIntention extends PsiElementBaseIntention
 
     @Override
     public @NotNull @IntentionFamilyName String getFamilyName() {
-        return "Data-driven type migration";
+        return DataDrivenTypeMigrationBundle.message("intention.family.name");
     }
 
     @Override

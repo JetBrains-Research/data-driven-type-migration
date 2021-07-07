@@ -1,6 +1,7 @@
 package org.jetbrains.research.ide.ui;
 
 import com.intellij.util.ui.JBUI;
+import org.jetbrains.research.DataDrivenTypeMigrationBundle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,7 @@ public class TypeChangeGutterPopupPanel extends JPanel {
 
         final var buttonPanel = new JPanel();
         buttonPanel.setLayout(new BorderLayout());
-        JButton button = new JButton("Apply") {
+        JButton button = new JButton(DataDrivenTypeMigrationBundle.message("suggested.gutter.popup.button")) {
             @Override
             public boolean isDefaultButton() {
                 return true;
@@ -25,11 +26,12 @@ public class TypeChangeGutterPopupPanel extends JPanel {
 
         final var labelsPanel = new JPanel();
         labelsPanel.setLayout(new BorderLayout());
-        final var header = new JLabel("Suggested type change:");
-        final var content = new JLabel(String.format(
-                "<html><pre>from:<code>  %s</code></pre><br><pre>       to:<code>  %s</code></pre></html>",
-                escapeHTML(sourceType), escapeHTML(targetType)
-        ));
+        final var header = new JLabel(DataDrivenTypeMigrationBundle.message("suggested.gutter.popup.header"));
+        final var content = new JLabel(DataDrivenTypeMigrationBundle.message(
+                "suggested.gutter.popup.content",
+                escapeHTML(sourceType),
+                escapeHTML(targetType))
+        );
         content.setBorder(JBUI.Borders.empty(15, 30));
         labelsPanel.add(header, BorderLayout.NORTH);
         labelsPanel.add(content, BorderLayout.SOUTH);

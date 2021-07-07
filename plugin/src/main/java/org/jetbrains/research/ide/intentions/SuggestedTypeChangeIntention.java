@@ -13,6 +13,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.Config;
+import org.jetbrains.research.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ide.refactoring.TypeChangeMarker;
 
@@ -29,7 +30,7 @@ public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction 
 
     @Override
     public @NotNull @IntentionFamilyName String getFamilyName() {
-        return "Data-driven type migration";
+        return DataDrivenTypeMigrationBundle.message("intention.family.name");
     }
 
     @Override
@@ -51,7 +52,7 @@ public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction 
 
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeChangesListPopupStep(
-                        "Type Migration Rules",
+                        DataDrivenTypeMigrationBundle.message("intention.list.caption"),
                         Collections.singletonList(pattern.get()),
                         element,
                         project,

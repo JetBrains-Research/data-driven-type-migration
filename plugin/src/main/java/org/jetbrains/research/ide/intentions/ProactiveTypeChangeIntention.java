@@ -15,6 +15,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.Config;
+import org.jetbrains.research.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.utils.PsiRelatedUtils;
 
@@ -23,7 +24,7 @@ import java.util.Objects;
 public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction implements PriorityAction {
     @Override
     public @NotNull @IntentionFamilyName String getFamilyName() {
-        return "Data-driven type migration";
+        return DataDrivenTypeMigrationBundle.message("intention.family.name");
     }
 
     @Override
@@ -48,7 +49,7 @@ public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction 
         PsiType rootType = Objects.requireNonNull(PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class)).getType();
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeChangesListPopupStep(
-                        "Type Migration Rules",
+                        DataDrivenTypeMigrationBundle.message("intention.list.caption"),
                         TypeChangeRulesStorage.getPatternsBySourceType(rootType.getCanonicalText()),
                         element,
                         project,
