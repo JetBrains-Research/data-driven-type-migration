@@ -1,5 +1,6 @@
 package org.jetbrains.research.ide.refactoring.listeners;
 
+import com.intellij.openapi.command.undo.UndoManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.RangeMarker;
@@ -28,6 +29,8 @@ public class TypeChangeDocumentListener implements DocumentListener {
 
     @Override
     public void beforeDocumentChange(@NotNull DocumentEvent event) {
+        if (UndoManager.getInstance(project).isUndoInProgress()) return;
+
         final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
         if (state.isInternalTypeChangeInProgress) return;
 
@@ -62,6 +65,8 @@ public class TypeChangeDocumentListener implements DocumentListener {
 
     @Override
     public void documentChanged(@NotNull DocumentEvent event) {
+        if (UndoManager.getInstance(project).isUndoInProgress()) return;
+
         final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
         if (state.isInternalTypeChangeInProgress) return;
 
@@ -115,13 +120,14 @@ public class TypeChangeDocumentListener implements DocumentListener {
         RangeMarker relevantOldRangeMarker = null;
         String relevantSourceType = null;
         for (var entry : state.uncompletedTypeChanges.entrySet()) {
-            final var oldRangeMarker = entry.getKey();
+            final RangeMarker oldRangeMarker = entry.getKey();
+            final String sourceType = entry.getValue();
             if (oldRangeMarker.getDocument() != document) continue;
 
             final var oldRange = new TextRange(oldRangeMarker.getStartOffset(), oldRangeMarker.getEndOffset());
-            if (oldRange.intersects(newRange)) {
+            if (oldRange.intersects(newRange) && TypeChangeRulesStorage.findPattern(sourceType, targetType).isPresent()) {
                 relevantOldRangeMarker = oldRangeMarker;
-                relevantSourceType = entry.getValue();
+                relevantSourceType = sourceType;
                 break;
             }
         }

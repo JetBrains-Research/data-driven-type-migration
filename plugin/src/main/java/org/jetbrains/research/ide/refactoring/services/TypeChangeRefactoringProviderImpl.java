@@ -63,8 +63,12 @@ public class TypeChangeRefactoringProviderImpl implements TypeChangeRefactoringP
                 TypeChangeSuggestedRefactoringState state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
                 Thread uncompletedTypeChangesCollector = new Thread(() -> {
                     try {
-                        Thread.sleep(Config.WAIT_UNTIL_COLLECT_GARBAGE);
-                        state.uncompletedTypeChanges.clear();
+                        // Probably, this is a busy waiting. But such way of "garbage collection" helps to avoid bugs
+                        // with the reactive type-change intention after applying the undoable actions.
+                        while (true) {
+                            Thread.sleep(Config.WAIT_UNTIL_COLLECT_GARBAGE);
+                            state.uncompletedTypeChanges.clear();
+                        }
                     } catch (InterruptedException e) {
                         LOG.error(e);
                     }
