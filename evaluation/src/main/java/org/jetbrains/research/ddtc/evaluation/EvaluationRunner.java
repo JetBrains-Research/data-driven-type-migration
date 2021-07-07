@@ -10,16 +10,17 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.usageView.UsageInfo;
 import org.apache.commons.cli.*;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.Config;
+import org.jetbrains.research.SupportedSearchScope;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ide.migration.TypeChangeProcessor;
 import org.jetbrains.research.ide.migration.collectors.RequiredImportsCollector;
 import org.jetbrains.research.ide.migration.collectors.TypeChangesInfoCollector;
+import org.jetbrains.research.ide.settings.TypeChangeSettingsState;
 import org.jetbrains.research.utils.PsiRelatedUtils;
 
 import java.io.File;
@@ -57,7 +58,7 @@ public class EvaluationRunner implements ApplicationStarter {
                         IntellijProjectUtils.setupJdk(project, pathToJdk);
 
                         Config.project = project;
-                        Config.searchScope = GlobalSearchScope.projectScope(project);
+                        TypeChangeSettingsState.getInstance().searchScope = SupportedSearchScope.PROJECT;
 
                         // Just for test: the types for Type Change should be specified / injected from outside
                         final String sourceType = "java.io.File";

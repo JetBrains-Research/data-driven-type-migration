@@ -18,12 +18,10 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.Config;
 import org.jetbrains.research.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.data.TypeChangeRulesStorage;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
@@ -82,7 +80,6 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
         final PsiFile psiFile = PsiDocumentManager.getInstance(project).getCachedPsiFile(editor.getDocument());
         if (psiFile == null) return;
         final PsiElement newElement = psiFile.findElementAt(offset);
-        Config.searchScope = GlobalSearchScope.fileScope(psiFile);
 
         final var pattern = TypeChangeRulesStorage.findPattern(typeChangeMarker.sourceType, typeChangeMarker.targetType);
         if (pattern.isEmpty()) return;

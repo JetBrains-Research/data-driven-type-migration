@@ -8,11 +8,9 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiExpression;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.refactoring.typeMigration.TypeConversionDescriptor;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.Config;
 import org.jetbrains.research.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
@@ -44,7 +42,6 @@ public class FailedTypeChangeRecoveringIntention extends PsiElementBaseIntention
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
-        Config.searchScope = GlobalSearchScope.fileScope(element.getContainingFile());
         final var conversionDescriptor = new TypeConversionDescriptor(
                 rule.getExpressionBefore(),
                 rule.getExpressionAfter()

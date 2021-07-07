@@ -14,6 +14,13 @@
     <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="org.jetbrains.research.ide.settings.TypeChangeSettingsState"/>
+
+        <applicationConfigurable parentId="tools"
+                                 instance="org.jetbrains.research.ide.settings.TypeChangeSettingsConfigurable"
+                                 id="org.jetbrains.research.ide.settings.TypeChangeSettingsConfigurable"
+                                 displayName="Data-Driven Type Migration"/>
+
         <statistic.eventLog.eventLoggerProvider
                 implementation="org.jetbrains.research.ide.fus.TypeChangeLoggerProvider"/>
 

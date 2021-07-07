@@ -16,13 +16,14 @@ import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.research.Config;
+import org.jetbrains.research.SupportedSearchScope;
 import org.jetbrains.research.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ide.migration.collectors.RequiredImportsCollector;
 import org.jetbrains.research.ide.migration.collectors.TypeChangesInfoCollector;
 import org.jetbrains.research.ide.refactoring.ReactiveTypeChangeAvailabilityUpdater;
 import org.jetbrains.research.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
+import org.jetbrains.research.ide.settings.TypeChangeSettingsState;
 import org.jetbrains.research.ide.ui.FailedTypeChangesPanel;
 import org.jetbrains.research.utils.PsiRelatedUtils;
 
@@ -152,10 +153,12 @@ public class TypeChangeProcessor {
                 .createTypeCodeFragment(targetType, root, true);
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
-        rules.setBoundScope(Objects.requireNonNullElseGet(
-                Config.searchScope,
-                () -> GlobalSearchScope.fileScope(root.getContainingFile())
-        ));
+        final var chosenSearchScope = TypeChangeSettingsState.getInstance().searchScope;
+        if (chosenSearchScope == null || chosenSearchScope.equals(SupportedSearchScope.FILE)) {
+            rules.setBoundScope(GlobalSearchScope.fileScope(root.getContainingFile()));
+        } else if (chosenSearchScope.equals(SupportedSearchScope.PROJECT)) {
+            rules.setBoundScope(GlobalSearchScope.projectScope(project));
+        }
         rules.addConversionDescriptor(new HeuristicTypeConversionRule());
 
         return new TypeMigrationProcessor(
