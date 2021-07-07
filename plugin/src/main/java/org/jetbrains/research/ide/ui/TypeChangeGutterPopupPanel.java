@@ -4,12 +4,13 @@ import com.intellij.util.ui.JBUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+import static org.jetbrains.research.utils.EditorUtils.escapeHTML;
 
 public class TypeChangeGutterPopupPanel extends JPanel {
+    public Runnable onRefactor;
 
-    public TypeChangeGutterPopupPanel(Runnable onRefactor) {
+    public TypeChangeGutterPopupPanel(String sourceType, String targetType) {
         super.setLayout(new BorderLayout());
 
         final var buttonPanel = new JPanel();
@@ -22,20 +23,22 @@ public class TypeChangeGutterPopupPanel extends JPanel {
         };
         buttonPanel.add(button, BorderLayout.EAST);
 
-        final var label = new JLabel("Data-driven type change");
-        label.setBorder(JBUI.Borders.emptyRight(24));
+        final var labelsPanel = new JPanel();
+        labelsPanel.setLayout(new BorderLayout());
+        final var header = new JLabel("Suggested type change:");
+        final var content = new JLabel(String.format(
+                "<html><pre>from:<code>  %s</code></pre><br><pre>       to:<code>  %s</code></pre></html>",
+                escapeHTML(sourceType), escapeHTML(targetType)
+        ));
+        content.setBorder(JBUI.Borders.empty(15, 30));
+        labelsPanel.add(header, BorderLayout.NORTH);
+        labelsPanel.add(content, BorderLayout.SOUTH);
 
-        add(label, BorderLayout.NORTH);
-        add(Box.createVerticalStrut(18));
+        add(labelsPanel, BorderLayout.NORTH);
         add(buttonPanel, BorderLayout.SOUTH);
 
         this.setBorder(JBUI.Borders.empty(5, 2));
 
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                onRefactor.run();
-            }
-        });
+        button.addActionListener(actionEvent -> onRefactor.run());
     }
 }
