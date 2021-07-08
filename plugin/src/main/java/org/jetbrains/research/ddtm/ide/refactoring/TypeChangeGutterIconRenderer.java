@@ -171,7 +171,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
 }
 
 class SuggestedRefactoringData {
-    private static SuggestedRefactoringData INSTANCE;
+    private static volatile SuggestedRefactoringData INSTANCE;
 
     public Project project;
     public PsiElement context;
@@ -181,10 +181,11 @@ class SuggestedRefactoringData {
     }
 
     public static SuggestedRefactoringData getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new SuggestedRefactoringData();
-        }
-        return INSTANCE;
+        return Holder.INSTANCE;
+    }
+
+    private static class Holder {
+        private static final SuggestedRefactoringData INSTANCE = new SuggestedRefactoringData();
     }
 }
 

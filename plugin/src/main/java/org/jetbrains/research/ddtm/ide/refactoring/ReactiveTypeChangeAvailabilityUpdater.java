@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ReactiveTypeChangeAvailabilityUpdater {
-    private static ReactiveTypeChangeAvailabilityUpdater INSTANCE = null;
+    private static volatile ReactiveTypeChangeAvailabilityUpdater INSTANCE = null;
 
     private final Project project;
     private final Map<Editor, RangeHighlighter> editorsAndHighlighters = new HashMap<>();
