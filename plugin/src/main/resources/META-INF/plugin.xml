@@ -4,7 +4,10 @@
     <vendor>JetBrains Research</vendor>
 
     <description><![CDATA[
-    A data-driven plugin for intelligent type migration in Java.
+    An IntelliJ IDEA plugin that adjusts the current approach to `Type Migration`
+refactoring for Java using inferred type change rules, which were gathered from popular open-source Java repositories.
+In general, it helps to automate the process of updating the data-flow dependent references of a program element, which
+type has been changed.
     ]]></description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html

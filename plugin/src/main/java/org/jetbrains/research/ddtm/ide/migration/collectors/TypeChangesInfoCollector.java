@@ -20,8 +20,7 @@ public class TypeChangesInfoCollector extends SwitchableCollector {
 
     private List<SmartPsiElementPointer<PsiElement>> updatedUsages = new ArrayList<>();
     private List<SmartPsiElementPointer<PsiElement>> failedUsages = new ArrayList<>();
-    private Map<SmartPsiElementPointer<PsiElement>, TypeChangeRuleDescriptor> failedUsageToCorrespondingRule =
-            new HashMap<>();
+    private Map<SmartPsiElementPointer<PsiElement>, TypeChangeRuleDescriptor> failedUsageToCorrespondingRule = new HashMap<>();
 
     public static TypeChangesInfoCollector getInstance() {
         if (collector == null) {
@@ -73,7 +72,7 @@ public class TypeChangesInfoCollector extends SwitchableCollector {
         PsiElement currentContext = element;
         final var psiManager = PsiManager.getInstance(element.getProject());
 
-        while (parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
+        while (currentContext != null && parentsPassed < MAX_PARENTS_TO_LIFT_UP) {
             for (var entry : failedUsageToCorrespondingRule.entrySet()) {
                 final boolean arePsiElementsEqual = psiManager.areElementsEquivalent(
                         entry.getKey().getElement(),
