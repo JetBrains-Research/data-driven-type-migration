@@ -33,7 +33,7 @@
                 serviceInterface="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider"
                 serviceImplementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl"/>
 
-        <postStartupActivity
+        <backgroundPostStartupActivity
                 implementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl$Startup"/>
 
         <!--suppress PluginXmlValidity -->

@@ -33,7 +33,7 @@ public class TypeChangeRefactoringProviderImpl implements TypeChangeRefactoringP
         return state;
     }
 
-    static class Startup implements StartupActivity.DumbAware {
+    static class Startup implements StartupActivity.Background {
         private static final Logger LOG = Logger.getInstance(Startup.class);
 
         @Override
