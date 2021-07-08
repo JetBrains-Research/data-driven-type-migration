@@ -5,7 +5,7 @@ plugins {
 
 intellij {
     type = "IC"
-    version = "2020.3.2"
+    version = "2021.1"
     setPlugins("java")
 }
 

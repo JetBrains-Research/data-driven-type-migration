@@ -1,4 +1,4 @@
-group = "org.jetbrains.research"
+group = "org.jetbrains.research.ddtm"
 version = "1.0-SNAPSHOT"
 
 plugins {
