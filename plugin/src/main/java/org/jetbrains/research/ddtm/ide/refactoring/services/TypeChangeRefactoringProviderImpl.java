@@ -13,6 +13,7 @@ import org.jetbrains.research.ddtm.Config;
 import org.jetbrains.research.ddtm.ide.refactoring.TypeChangeSuggestedRefactoringState;
 import org.jetbrains.research.ddtm.ide.refactoring.listeners.AfterTypeChangeCaretListener;
 import org.jetbrains.research.ddtm.ide.refactoring.listeners.TypeChangeDocumentListener;
+import org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState;
 
 import java.util.Arrays;
 
@@ -66,7 +67,7 @@ public class TypeChangeRefactoringProviderImpl implements TypeChangeRefactoringP
                         // Probably, this is a busy waiting. But such way of "garbage collection" helps to avoid bugs
                         // with the reactive type-change intention after applying the undoable actions.
                         while (true) {
-                            Thread.sleep(Config.WAIT_UNTIL_COLLECT_GARBAGE);
+                            Thread.sleep(Config.GARBAGE_COLLECTOR_FACTOR * TypeChangeSettingsState.getInstance().disableIntentionTimeout);
                             state.uncompletedTypeChanges.clear();
                         }
                     } catch (InterruptedException e) {

@@ -34,19 +34,22 @@ public class TypeChangeSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         TypeChangeSettingsState settings = TypeChangeSettingsState.getInstance();
-        return !settingsComponent.getSearchScopeOption().equals(settings.searchScope);
+        return !settingsComponent.getSearchScopeOption().equals(settings.searchScope)
+                || settingsComponent.getDisableIntentionTimeout() != settings.disableIntentionTimeout;
     }
 
     @Override
     public void apply() {
         TypeChangeSettingsState settings = TypeChangeSettingsState.getInstance();
         settings.searchScope = settingsComponent.getSearchScopeOption();
+        settings.disableIntentionTimeout = settingsComponent.getDisableIntentionTimeout();
     }
 
     @Override
     public void reset() {
         TypeChangeSettingsState settings = TypeChangeSettingsState.getInstance();
         settingsComponent.setSearchScopeOption(settings.searchScope);
+        settingsComponent.setDisableIntentionTimeout(settings.disableIntentionTimeout);
     }
 
     @Override

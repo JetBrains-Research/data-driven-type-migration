@@ -7,6 +7,7 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.ddtm.Config;
 import org.jetbrains.research.ddtm.SupportedSearchScope;
 
 /**
@@ -20,6 +21,7 @@ import org.jetbrains.research.ddtm.SupportedSearchScope;
 )
 public class TypeChangeSettingsState implements PersistentStateComponent<TypeChangeSettingsState> {
     public SupportedSearchScope searchScope = SupportedSearchScope.FILE;
+    public int disableIntentionTimeout = Config.DISABLE_INTENTION_TIMEOUT_BY_DEFAULT;
 
     public static TypeChangeSettingsState getInstance() {
         return ApplicationManager.getApplication().getService(TypeChangeSettingsState.class);

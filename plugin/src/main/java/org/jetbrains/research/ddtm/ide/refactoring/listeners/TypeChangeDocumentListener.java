@@ -10,10 +10,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ddtm.Config;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ddtm.ide.refactoring.ReactiveTypeChangeAvailabilityUpdater;
 import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
+import org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState;
 import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
 public class TypeChangeDocumentListener implements DocumentListener {
@@ -73,7 +73,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
         final var document = event.getDocument();
         try {
             psiDocumentManager.commitDocument(document);
-        } catch (IllegalArgumentException ex) {
+        } catch (Exception ex) {
             LOG.warn("Can not commit document");
             return;
         }
@@ -140,7 +140,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
 
         Thread disablerWaitThread = new Thread(() -> {
             try {
-                Thread.sleep(Config.WAIT_UNTIL_DISABLE_INTENTION);
+                Thread.sleep(TypeChangeSettingsState.getInstance().disableIntentionTimeout);
                 state.refactoringEnabled = false;
                 state.removeAllTypeChangesByRange(newRange);
                 state.uncompletedTypeChanges.clear();
