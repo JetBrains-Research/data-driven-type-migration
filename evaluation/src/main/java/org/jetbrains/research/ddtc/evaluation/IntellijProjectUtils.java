@@ -128,15 +128,15 @@ public class IntellijProjectUtils {
             returnStatements.add(statement);
             super.visitReturnStatement(statement);
         }
-
-        @Override
-        public void visitLambdaExpression(PsiLambdaExpression expression) {
-            super.visitLambdaExpression(expression);
-        }
-
-        @Override
-        public void visitClass(PsiClass aClass) {
-            super.visitClass(aClass);
-        }
+//
+//        @Override
+//        public void visitLambdaExpression(PsiLambdaExpression expression) {
+//            super.visitLambdaExpression(expression);
+//        }
+//
+//        @Override
+//        public void visitClass(PsiClass aClass) {
+//            super.visitClass(aClass);
+//        }
     }
 }

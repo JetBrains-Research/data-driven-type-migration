@@ -134,11 +134,22 @@ public class EvaluationRunner implements ApplicationStarter {
         String name= lineNoName.split("-")[1];
         String[] lines = psi.getText().split("\n");
 
-        if (lines.length < lineNo -1)
+        int curr = lineNo - 1;
+        if (lines.length < curr)
             return new TypeDependentCode(null, null);
 
-        String t = lines[lineNo - 1];
-        int offset = document.getLineStartOffset(lineNo - 1) + t.indexOf(name);
+        String t = lines[curr];
+        int cntr = 1;
+        while(t.trim().startsWith("*") || t.trim().startsWith("//") || t.trim().startsWith("/*") || t.trim().startsWith("@")){
+            curr += cntr;
+            t = lines[curr];
+            cntr+=1;
+            if (cntr > 20){
+                return new TypeDependentCode(null, null);
+            }
+        }
+
+        int offset = document.getLineStartOffset(curr) + t.indexOf(name);
 
         PsiElement elementAt = psi.findElementAt(offset);
         PsiElement root = getRoot(elementAt);
@@ -166,33 +177,15 @@ public class EvaluationRunner implements ApplicationStarter {
         if(root instanceof PsiMethod){
             PsiMethod m = (PsiMethod) root;
             ReturnStatementExtractor rs = new ReturnStatementExtractor();
-            m.accept(rs);
+            if(m.getBody()!=null && !m.getBody().isEmpty())
+                m.getBody().accept(rs);
+
             for(var x : rs.returnStatements)
                 collect.add(List.of(ImmutablePair.of(x.getTextRange(),
                         ImmutablePair.of(x.getText(),document.getLineNumber(x.getTextOffset())))));
         }
         return new TypeDependentCode(root.getTextRange(), collect);
     }
-
-//    private PsiTypeElement getTypeNode(@Nullable PsiElement elementAtOffset) {
-//        PsiParameter parElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiParameter.class);
-//        if(parElem!=null){
-//            return parElem.getTypeElement();
-//        }
-//        PsiMethod mthdElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiMethod.class);
-//        if(mthdElem!=null){
-//            return mthdElem.getReturnTypeElement();
-//        }
-//        PsiField fldElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiField.class);
-//        if(fldElem!=null){
-//            return fldElem.getTypeElement();
-//        }
-//        PsiVariable varElem = PsiTreeUtil.getParentOfType(elementAtOffset, PsiVariable.class);
-//        if(varElem!=null){
-//            return varElem.getTypeElement();
-//        }
-//        return null;
-//    }
 
     private PsiElement getRoot(PsiElement elementAtOffset) {
         if (elementAtOffset == null) return null;
