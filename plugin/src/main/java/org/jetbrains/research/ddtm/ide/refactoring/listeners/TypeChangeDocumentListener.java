@@ -71,12 +71,12 @@ public class TypeChangeDocumentListener implements DocumentListener {
         if (state.isInternalTypeChangeInProgress) return;
 
         final var document = event.getDocument();
-        try {
-            psiDocumentManager.commitDocument(document);
-        } catch (Exception ex) {
-            LOG.warn("Can not commit document");
-            return;
-        }
+//        try {
+//            psiDocumentManager.commitDocument(document);
+//        } catch (Throwable ex) {
+//            LOG.warn("Can not commit document");
+//            return;
+//        }
 
         final PsiFile psiFile = psiDocumentManager.getCachedPsiFile(document);
         if (psiFile == null || shouldIgnoreFile(psiFile)) return;
