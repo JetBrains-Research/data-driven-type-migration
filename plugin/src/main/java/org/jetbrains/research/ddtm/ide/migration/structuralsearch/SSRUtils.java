@@ -14,6 +14,7 @@ import com.intellij.structuralsearch.plugin.replace.impl.Replacer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.Config;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 public class SSRUtils {
@@ -32,7 +33,7 @@ public class SSRUtils {
         options.setFileType(JavaFileType.INSTANCE);
 
         MatchVariableConstraint rootConstraint = new MatchVariableConstraint("1");
-        rootConstraint.setRegExp(currentRootName + "|" + currentRootName + "[(].*[)]");
+        rootConstraint.setRegExp(MessageFormat.format("{0}|{0}[(].*[)]", currentRootName));
         options.addVariableConstraint(rootConstraint);
 
         // There should be a regex retrieving all the variables between $$,
@@ -61,6 +62,12 @@ public class SSRUtils {
         final ReplaceOptions options = new ReplaceOptions();
         final MatchOptions matchOptions = options.getMatchOptions();
         matchOptions.setFileType(JavaFileType.INSTANCE);
-        return Replacer.testReplace(type.getCanonicalText(), stringToSubstitute, substituteByString, options, project);
+        String result = Replacer.testReplace(
+                type.getCanonicalText() + " x;",
+                stringToSubstitute + " x;",
+                substituteByString + " x;",
+                options, project
+        );
+        return result.substring(0, result.length() - 3);
     }
 }
