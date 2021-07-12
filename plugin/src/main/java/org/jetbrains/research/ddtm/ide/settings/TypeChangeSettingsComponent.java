@@ -27,7 +27,7 @@ public class TypeChangeSettingsComponent {
                         false
                 )
                 .addLabeledComponent(
-                        new JBLabel(DataDrivenTypeMigrationBundle.message("settings.searchscope.combobox.label")),
+                        new JBLabel(DataDrivenTypeMigrationBundle.message("settings.scope.combobox.label")),
                         searchScopeOptionsComboBox,
                         1,
                         false

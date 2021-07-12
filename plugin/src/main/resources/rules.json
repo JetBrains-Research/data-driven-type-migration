@@ -250,6 +250,14 @@
       {
         "Before": "$1$ == null",
         "After": "$1$.isEmpty()"
+      },
+      {
+        "Before": "Optional.of($1$)",
+        "After": "$1$"
+      },
+      {
+        "Before": "Optional.ofNullable($1$)",
+        "After": "$1$"
       }
     ]
   },

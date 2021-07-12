@@ -14,8 +14,8 @@ public class Config {
     public static Project project;
 
     public static final BiMap<SupportedSearchScope, String> SEARCH_SCOPE_OPTIONS = HashBiMap.create(Map.of(
-            SupportedSearchScope.FILE, "Current file",
-            SupportedSearchScope.PROJECT, "All project"
+            SupportedSearchScope.FILE, DataDrivenTypeMigrationBundle.message("settings.scope.file"),
+            SupportedSearchScope.PROJECT, DataDrivenTypeMigrationBundle.message("settings.scope.project")
     ));
 }
 

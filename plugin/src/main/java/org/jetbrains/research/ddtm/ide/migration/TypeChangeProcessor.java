@@ -153,11 +153,15 @@ public class TypeChangeProcessor {
                 .createTypeCodeFragment(targetType, root, true);
 
         TypeMigrationRules rules = new TypeMigrationRules(project);
-        final var chosenSearchScope = TypeChangeSettingsState.getInstance().searchScope;
-        if (chosenSearchScope == null || chosenSearchScope.equals(SupportedSearchScope.FILE)) {
-            rules.setBoundScope(GlobalSearchScope.fileScope(root.getContainingFile()));
-        } else if (chosenSearchScope.equals(SupportedSearchScope.PROJECT)) {
-            rules.setBoundScope(GlobalSearchScope.projectScope(project));
+        var chosenSearchScope = TypeChangeSettingsState.getInstance().searchScope;
+        if (chosenSearchScope == null) chosenSearchScope = SupportedSearchScope.FILE; // by default
+        switch (chosenSearchScope) {
+            case FILE:
+                rules.setBoundScope(GlobalSearchScope.fileScope(root.getContainingFile()));
+                break;
+            case PROJECT:
+                rules.setBoundScope(GlobalSearchScope.projectScope(project));
+                break;
         }
         rules.addConversionDescriptor(new HeuristicTypeConversionRule());
 
