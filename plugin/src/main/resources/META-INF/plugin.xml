@@ -41,7 +41,6 @@ type has been changed.
         <!--suppress PluginXmlValidity -->
         <intentionMenuContributor
                 implementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeIntentionContributor"/>
-
     </extensions>
 
 </idea-plugin>

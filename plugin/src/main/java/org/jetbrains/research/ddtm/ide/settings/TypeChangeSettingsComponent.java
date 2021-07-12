@@ -16,7 +16,7 @@ public class TypeChangeSettingsComponent {
     private final JBIntSpinner disableIntentionTimeoutIntSpinner =
             new JBIntSpinner(Config.DISABLE_INTENTION_TIMEOUT_BY_DEFAULT, 1_000, 100_000, 1_000);
     private final ComboBox<String> searchScopeOptionsComboBox =
-            new ComboBox<>(Config.SEARCH_SCOPE_OPTIONS.values().toArray(String[]::new));
+            new ComboBox<>(DataDrivenTypeMigrationBundle.SEARCH_SCOPE_OPTIONS.values().toArray(String[]::new));
 
     public TypeChangeSettingsComponent() {
         panel = FormBuilder.createFormBuilder()
@@ -45,11 +45,11 @@ public class TypeChangeSettingsComponent {
     }
 
     public SupportedSearchScope getSearchScopeOption() {
-        return Config.SEARCH_SCOPE_OPTIONS.inverse().get(searchScopeOptionsComboBox.getSelectedItem());
+        return DataDrivenTypeMigrationBundle.SEARCH_SCOPE_OPTIONS.inverse().get(searchScopeOptionsComboBox.getSelectedItem());
     }
 
     public void setSearchScopeOption(@NotNull SupportedSearchScope searchScope) {
-        searchScopeOptionsComboBox.setSelectedItem(Config.SEARCH_SCOPE_OPTIONS.get(searchScope));
+        searchScopeOptionsComboBox.setSelectedItem(DataDrivenTypeMigrationBundle.SEARCH_SCOPE_OPTIONS.get(searchScope));
     }
 
     public int getDisableIntentionTimeout() {

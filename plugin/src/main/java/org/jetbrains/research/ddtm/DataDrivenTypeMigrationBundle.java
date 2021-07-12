@@ -1,13 +1,20 @@
 package org.jetbrains.research.ddtm;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.intellij.AbstractBundle;
 import com.intellij.reference.SoftReference;
 import org.jetbrains.annotations.PropertyKey;
 
 import java.lang.ref.Reference;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class DataDrivenTypeMigrationBundle {
+    public static final BiMap<SupportedSearchScope, String> SEARCH_SCOPE_OPTIONS = HashBiMap.create(Map.of(
+            SupportedSearchScope.FILE, message("settings.scope.file"),
+            SupportedSearchScope.PROJECT, message("settings.scope.project")
+    ));
     private static final String BUNDLE = "DataDrivenTypeMigrationBundle";
     private static Reference<ResourceBundle> INSTANCE;
 
