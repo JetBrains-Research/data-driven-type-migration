@@ -1,10 +1,8 @@
 package org.jetbrains.research.ddtm.ide.migration;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.PsiMember;
-import com.intellij.psi.PsiType;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.*;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.refactoring.typeMigration.TypeConversionDescriptorBase;
 import com.intellij.refactoring.typeMigration.TypeMigrationLabeler;
@@ -25,48 +23,52 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class HeuristicTypeConversionRule extends TypeConversionRule {
-    private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
-
     @Override
     public @Nullable TypeConversionDescriptorBase findConversion(
             PsiType from, PsiType to, PsiMember member, PsiExpression context, TypeMigrationLabeler labeler
     ) {
+        if (from.getCanonicalText().equals(to.getCanonicalText()) || context == null) return null;
         final var pattern = TypeChangeRulesStorage.findPattern(
                 from.getCanonicalText(),
                 to.getCanonicalText()
         );
-        final String currentRootName = extractCurrentRootIdentName(labeler);
-        if (pattern.isEmpty() || context == null || currentRootName == null) return null;
 
+        final TypeMigrationUsageInfo currentRoot = extractCurrentRoot(labeler);
+        if (pattern.isEmpty() || currentRoot == null) return null;
+        final String currentRootName = PsiUtil.getName(currentRoot.getElement());
+
+        Project project = context.getProject();
         PsiElement currentContext = context;
         int parentsPassed = 0;
         TypeChangeRuleDescriptor bestMatchedRule = null;
         final List<TypeChangeRuleDescriptor> rules = pattern.get().getRules();
 
         while (parentsPassed < Config.MAX_PARENTS_TO_LIFT_UP) {
-            if (currentContext.getText().contains("=")) {
-                // It means that we lifted up to much and even touching another usage from the same assignment
-                break;
-            }
-            for (var rule : rules) {
-                List<MatchResult> matches = SSRUtils.matchRule(
-                        currentContext.getText(),
-                        rule.getExpressionBefore(),
-                        currentRootName,
-                        context.getProject()
-                );
-                if (!matches.isEmpty()) {
-                    if (bestMatchedRule == null) {
-                        bestMatchedRule = rule;
+            if (currentContext instanceof PsiExpression) {
+                // It means that we lifted up to much and even touching full statement
+                for (var rule : rules) {
+                    if (rule.getExpressionBefore().contains("$1$") && !currentContext.getText().equals(currentRootName) &&
+                            PsiTreeUtil.findChildrenOfType(currentContext, PsiReferenceExpression.class).stream()
+                                    .noneMatch(element -> element.getText().equals(currentRootName))) {
+                        // To avoid cases when `currentRootName` appears in the `currentContext` as a part of some string literal,
+                        // such as root reference `file` in the expression `new File("file.txt")`
                         continue;
                     }
+                    List<MatchResult> matches = SSRUtils.matchRule(rule.getExpressionBefore(), currentRootName, currentContext, project);
+                    if (!matches.isEmpty()) {
+                        if (bestMatchedRule == null) {
+                            bestMatchedRule = rule;
+                            continue;
+                        }
 
-                    // Update bestMatchedRule iff it matches a larger number of tokens
-                    final var ruleTokens = PsiRelatedUtils.splitByTokens(rule.getExpressionBefore());
-                    final var bestMatchedRuleTokens = PsiRelatedUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
-                    if (bestMatchedRuleTokens.length < ruleTokens.length
-                            || bestMatchedRuleTokens.length == ruleTokens.length && rule.getExpressionBefore().contains("$1$")) {
-                        bestMatchedRule = rule;
+                        // Update bestMatchedRule iff it matches a larger number of tokens
+                        final var ruleTokens = PsiRelatedUtils.splitByTokens(rule.getExpressionBefore());
+                        final var bestMatchedRuleTokens = PsiRelatedUtils.splitByTokens(bestMatchedRule.getExpressionBefore());
+                        if (bestMatchedRuleTokens.length < ruleTokens.length
+                                || bestMatchedRuleTokens.length == ruleTokens.length && rule.getExpressionBefore().contains("$1$")) {
+                            // The second condition is used to always prefer rules with a current root in the "before" part
+                            bestMatchedRule = rule;
+                        }
                     }
                 }
             }
@@ -103,11 +105,11 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
     }
 
     @ApiStatus.Internal
-    private @Nullable String extractCurrentRootIdentName(TypeMigrationLabeler labeler) {
+    private @Nullable TypeMigrationUsageInfo extractCurrentRoot(TypeMigrationLabeler labeler) {
         try {
             Field field = labeler.getClass().getDeclaredField("myCurrentRoot");
             field.setAccessible(true);
-            return PsiUtil.getName(((TypeMigrationUsageInfo) field.get(labeler)).getElement());
+            return (TypeMigrationUsageInfo) field.get(labeler);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }

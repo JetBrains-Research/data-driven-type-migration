@@ -30,20 +30,14 @@ public class HeuristicTypeConversionDescriptor extends TypeConversionDescriptor 
 
     @Override
     public PsiExpression replace(PsiExpression expression, @NotNull TypeEvaluator evaluator) {
+        Project project = expression.getProject();
         PsiElement currentExpression = expression;
         PsiElement bestMatchedExpression = expression;
         int parentsPassed = 0;
 
         while (parentsPassed < Config.MAX_PARENTS_TO_LIFT_UP) {
-            if (currentExpression.getText().contains("=")) break;
-            if (currentExpression.getText().contains("return")) break;
             if (currentExpression instanceof PsiExpression) {
-                List<MatchResult> matches = SSRUtils.matchRule(
-                        currentExpression.getText(),
-                        getStringToReplace(),
-                        currentRootName,
-                        expression.getProject()
-                );
+                List<MatchResult> matches = SSRUtils.matchRule(getStringToReplace(), currentRootName, currentExpression, project);
                 if (!matches.isEmpty()) {
                     bestMatchedExpression = currentExpression;
                 }
@@ -52,10 +46,9 @@ public class HeuristicTypeConversionDescriptor extends TypeConversionDescriptor 
             parentsPassed++;
         }
 
-        Project project = expression.getProject();
         final ReplaceOptions options = new ReplaceOptions();
         final MatchOptions matchOptions = options.getMatchOptions();
-        SSRUtils.patchMatchOptionsWithConstraints(matchOptions, getStringToReplace(), currentRootName);
+        SSRUtils.patchMatchOptionsWithConstraints(matchOptions, getStringToReplace(), currentRootName, bestMatchedExpression);
 
         final String replacement = MyReplacer.testReplace(
                 bestMatchedExpression.getText(), getStringToReplace(), getReplaceByString(), options, project
