@@ -26,7 +26,7 @@ import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.ide.migration.TypeChangeProcessor;
-import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
+import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider;
 import org.jetbrains.research.ddtm.ide.ui.TypeChangeGutterPopupPanel;
 
 import javax.swing.*;
@@ -72,7 +72,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
     }
 
     private void showRefactoringOpportunity(Project project, Editor editor) {
-        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
         final var optionalTypeChangeMarker = state.getCompletedTypeChangeForOffset(offset);
         if (optionalTypeChangeMarker.isEmpty()) return;
         final var typeChangeMarker = optionalTypeChangeMarker.get();
@@ -81,7 +81,8 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
         if (psiFile == null) return;
         final PsiElement newElement = psiFile.findElementAt(offset);
 
-        final var pattern = TypeChangeRulesStorage.findPattern(typeChangeMarker.sourceType, typeChangeMarker.targetType);
+        final var storage = project.getService(TypeChangeRulesStorage.class);
+        final var pattern = storage.findPattern(typeChangeMarker.sourceType, typeChangeMarker.targetType);
         if (pattern.isEmpty()) return;
 
         final var data = SuggestedRefactoringData.getInstance();

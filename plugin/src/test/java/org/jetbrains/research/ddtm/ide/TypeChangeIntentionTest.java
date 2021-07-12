@@ -7,7 +7,6 @@ import com.intellij.testFramework.IdeaTestUtil;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ddtm.Config;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -32,11 +31,9 @@ public class TypeChangeIntentionTest extends LightJavaCodeInsightFixtureTestCase
     }
 
     protected void doTest(String testProjectName, String intentionText) {
-        // TODO: run migration from scratch
         final VirtualFile directory = myFixture.copyDirectoryToProject(testProjectName, testProjectName);
         final VirtualFile fileForEditor = Arrays.stream(directory.getChildren()).findFirst().get();
         myFixture.configureFromExistingVirtualFile(fileForEditor);
-        Config.project = getProject(); // TODO: eliminate
 
         final var action = myFixture.findSingleIntention(intentionText);
         assertNotNull(action);

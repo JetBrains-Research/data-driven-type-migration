@@ -1,6 +1,7 @@
 package org.jetbrains.research.ddtm.data.models;
 
 import com.google.gson.annotations.SerializedName;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.ide.intentions.SuggestedTypeChangeIntention;
@@ -38,9 +39,9 @@ public class TypeChangePatternDescriptor {
      * But the following method supposed to resolve more complicated situations including generics,
      * like in the pattern "from List<$1$> to Set<$1$>", where we should substitute resolved source type to $1$.
      */
-    public @NotNull String resolveTargetType(PsiType resolvedSourceType) {
+    public @NotNull String resolveTargetType(PsiType resolvedSourceType, Project project) {
         if (targetType.contains("$")) {
-            return SSRUtils.substituteTypeByPattern(resolvedSourceType, sourceType, targetType);
+            return SSRUtils.substituteTypeByPattern(resolvedSourceType, sourceType, targetType, project);
         }
         return targetType;
     }
@@ -48,9 +49,9 @@ public class TypeChangePatternDescriptor {
     /**
      * This method is used for recovering original root type when applying {@link SuggestedTypeChangeIntention}
      */
-    public String resolveSourceType(PsiType resolvedTargetType) {
+    public String resolveSourceType(PsiType resolvedTargetType, Project project) {
         if (sourceType.contains("$")) {
-            return SSRUtils.substituteTypeByPattern(resolvedTargetType, targetType, sourceType);
+            return SSRUtils.substituteTypeByPattern(resolvedTargetType, targetType, sourceType, project);
         }
         return sourceType;
     }

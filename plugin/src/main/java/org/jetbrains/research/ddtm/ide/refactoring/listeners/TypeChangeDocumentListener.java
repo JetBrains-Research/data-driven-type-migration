@@ -12,7 +12,7 @@ import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ddtm.ide.refactoring.ReactiveTypeChangeAvailabilityUpdater;
-import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
+import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider;
 import org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState;
 import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
@@ -31,7 +31,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
     public void beforeDocumentChange(@NotNull DocumentEvent event) {
         if (UndoManager.getInstance(project).isUndoInProgress()) return;
 
-        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
         if (state.isInternalTypeChangeInProgress) return;
 
         final var document = event.getDocument();
@@ -58,7 +58,8 @@ public class TypeChangeDocumentListener implements DocumentListener {
         if (oldTypeElement == null) return;
         final String sourceType = oldTypeElement.getType().getCanonicalText();
 
-        if (TypeChangeRulesStorage.hasSourceType(sourceType)) {
+        final var storage = project.getService(TypeChangeRulesStorage.class);
+        if (storage.hasSourceType(sourceType)) {
             processSourceTypeChangeEvent(oldElement, sourceType, document);
         }
     }
@@ -67,7 +68,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
     public void documentChanged(@NotNull DocumentEvent event) {
         if (UndoManager.getInstance(project).isUndoInProgress()) return;
 
-        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
         if (state.isInternalTypeChangeInProgress) return;
 
         final var document = event.getDocument();
@@ -94,10 +95,11 @@ public class TypeChangeDocumentListener implements DocumentListener {
                         : fqTargetType;
         final String shortenedTargetType = fqTargetTypeWithoutGenerics.substring(fqTargetTypeWithoutGenerics.lastIndexOf('.') + 1);
 
-        if (TypeChangeRulesStorage.hasTargetType(fqTargetType) && newElement.getText().equals(shortenedTargetType)) {
+        final var storage = project.getService(TypeChangeRulesStorage.class);
+        if (storage.hasTargetType(fqTargetType) && newElement.getText().equals(shortenedTargetType)) {
             processTargetTypeChangeEvent(newElement, fqTargetType, document);
 
-            final var updater = ReactiveTypeChangeAvailabilityUpdater.getInstance(project);
+            final var updater = project.getService(ReactiveTypeChangeAvailabilityUpdater.class);
             updater.updateAllHighlighters(event.getDocument(), event.getOffset());
         }
     }
@@ -109,13 +111,13 @@ public class TypeChangeDocumentListener implements DocumentListener {
         );
         final RangeMarker rangeMarker = document.createRangeMarker(range);
 
-        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
         state.uncompletedTypeChanges.put(rangeMarker, sourceType);
     }
 
     private void processTargetTypeChangeEvent(PsiElement newElement, String targetType, Document document) {
         final var newRange = TextRange.from(newElement.getTextOffset(), newElement.getTextLength());
-        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
 
         RangeMarker relevantOldRangeMarker = null;
         String relevantSourceType = null;
@@ -124,8 +126,9 @@ public class TypeChangeDocumentListener implements DocumentListener {
             final String sourceType = entry.getValue();
             if (oldRangeMarker.getDocument() != document) continue;
 
+            final var storage = project.getService(TypeChangeRulesStorage.class);
             final var oldRange = new TextRange(oldRangeMarker.getStartOffset(), oldRangeMarker.getEndOffset());
-            if (oldRange.intersects(newRange) && TypeChangeRulesStorage.findPattern(sourceType, targetType).isPresent()) {
+            if (oldRange.intersects(newRange) && storage.findPattern(sourceType, targetType).isPresent()) {
                 relevantOldRangeMarker = oldRangeMarker;
                 relevantSourceType = sourceType;
                 break;

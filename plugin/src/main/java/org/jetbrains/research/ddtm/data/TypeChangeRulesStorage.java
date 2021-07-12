@@ -2,10 +2,11 @@ package org.jetbrains.research.ddtm.data;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiType;
-import org.jetbrains.research.ddtm.Config;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.ide.migration.structuralsearch.SSRUtils;
 
@@ -20,66 +21,70 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class TypeChangeRulesStorage {
+@Service
+public final class TypeChangeRulesStorage {
     private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
-    private static List<TypeChangePatternDescriptor> patterns;
-    private static final Set<String> sourceTypesCache = new HashSet<>();
-    private static final Set<String> targetTypesCache = new HashSet<>();
 
-    static {
+    private final Project project;
+    private final Set<String> sourceTypesCache = new HashSet<>();
+    private final Set<String> targetTypesCache = new HashSet<>();
+    private List<TypeChangePatternDescriptor> patterns;
+
+    public TypeChangeRulesStorage(Project project) {
+        this.project = project;
         String json;
         try {
             json = getResourceFileAsString("/rules.json");
             Gson gson = new Gson();
             Type type = new TypeToken<List<TypeChangePatternDescriptor>>() {
             }.getType();
-            patterns = gson.fromJson(json, type);
+            this.patterns = gson.fromJson(json, type);
             initCache();
         } catch (IOException e) {
             LOG.error(e);
         }
     }
 
-    public static Boolean hasSourceType(String sourceType) {
-        if (sourceTypesCache.contains(sourceType)) return true;
-        return !getPatternsBySourceType(sourceType).isEmpty();
-    }
-
-    public static Boolean hasTargetType(String targetType) {
-        if (targetTypesCache.contains(targetType)) return true;
-        return !getPatternsByTargetType(targetType).isEmpty();
-    }
-
-    public static List<TypeChangePatternDescriptor> getPatterns() {
-        return patterns;
-    }
-
-    public static List<TypeChangePatternDescriptor> getPatternsBySourceType(String sourceType) {
-        return patterns.stream()
-                .filter(pattern -> hasMatch(sourceType, pattern.getSourceType()))
-                .collect(Collectors.toList());
-    }
-
-    public static List<TypeChangePatternDescriptor> getPatternsByTargetType(String targetType) {
-        return patterns.stream()
-                .filter(pattern -> hasMatch(targetType, pattern.getTargetType()))
-                .collect(Collectors.toList());
-    }
-
-    public static Optional<TypeChangePatternDescriptor> findPattern(String sourceType, String targetType) {
-        return patterns.stream()
-                .filter(pattern -> hasMatch(sourceType, pattern.getSourceType()) && hasMatch(targetType, pattern.getTargetType()))
-                .findFirst();
-    }
-
-    private static void initCache() {
+    private void initCache() {
         for (var pattern : patterns) {
             sourceTypesCache.add(pattern.getSourceType());
             targetTypesCache.add(pattern.getTargetType());
         }
     }
 
-    private static String getResourceFileAsString(String fileName) throws IOException {
+    public Boolean hasSourceType(String sourceType) {
+        if (sourceTypesCache.contains(sourceType)) return true;
+        return !getPatternsBySourceType(sourceType).isEmpty();
+    }
+
+    public Boolean hasTargetType(String targetType) {
+        if (targetTypesCache.contains(targetType)) return true;
+        return !getPatternsByTargetType(targetType).isEmpty();
+    }
+
+    public List<TypeChangePatternDescriptor> getPatterns() {
+        return patterns;
+    }
+
+    public List<TypeChangePatternDescriptor> getPatternsBySourceType(String sourceType) {
+        return patterns.stream()
+                .filter(pattern -> hasMatch(sourceType, pattern.getSourceType()))
+                .collect(Collectors.toList());
+    }
+
+    public List<TypeChangePatternDescriptor> getPatternsByTargetType(String targetType) {
+        return patterns.stream()
+                .filter(pattern -> hasMatch(targetType, pattern.getTargetType()))
+                .collect(Collectors.toList());
+    }
+
+    public Optional<TypeChangePatternDescriptor> findPattern(String sourceType, String targetType) {
+        return patterns.stream()
+                .filter(pattern -> hasMatch(sourceType, pattern.getSourceType()) && hasMatch(targetType, pattern.getTargetType()))
+                .findFirst();
+    }
+
+    private String getResourceFileAsString(String fileName) throws IOException {
         try (InputStream stream = TypeChangeRulesStorage.class.getResourceAsStream(fileName)) {
             if (stream == null) return null;
             try (InputStreamReader isr = new InputStreamReader(stream);
@@ -89,7 +94,7 @@ public class TypeChangeRulesStorage {
         }
     }
 
-    private static Boolean hasMatch(String source, String typePattern) {
+    private Boolean hasMatch(String source, String typePattern) {
         // Full match
         if (typePattern.equals(source)) return true;
 
@@ -97,12 +102,12 @@ public class TypeChangeRulesStorage {
         if (source.contains(typePattern)) return false;
 
         // Matching complicated cases with substitutions, such as List<String> to List<$1$>
-        if (!SSRUtils.matchType(source, typePattern).isEmpty()) return true;
+        if (!SSRUtils.matchType(source, typePattern, project).isEmpty()) return true;
 
         // Match supertypes, such as ArrayList<> to List<>
-        PsiType sourceType = JavaPsiFacade.getElementFactory(Config.project).createTypeFromText(source, null);
+        PsiType sourceType = JavaPsiFacade.getElementFactory(project).createTypeFromText(source, null);
         for (PsiType superType : sourceType.getSuperTypes()) {
-            if (!SSRUtils.matchType(superType.getCanonicalText(), typePattern).isEmpty()) return true;
+            if (!SSRUtils.matchType(superType.getCanonicalText(), typePattern, project).isEmpty()) return true;
         }
         return false;
     }

@@ -35,7 +35,8 @@ public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction 
         PsiTypeElement parentType = PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class);
         if (parentType != null) {
             String parentTypeQualifiedName = parentType.getType().getCanonicalText();
-            return !TypeChangeRulesStorage.getPatternsBySourceType(parentTypeQualifiedName).isEmpty();
+            final var storage = project.getService(TypeChangeRulesStorage.class);
+            return !storage.getPatternsBySourceType(parentTypeQualifiedName).isEmpty();
         }
         return false;
     }
@@ -44,10 +45,11 @@ public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction 
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
         PsiType rootType = Objects.requireNonNull(PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class)).getType();
+        final var storage = project.getService(TypeChangeRulesStorage.class);
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
                 new TypeChangesListPopupStep(
                         DataDrivenTypeMigrationBundle.message("intention.list.caption"),
-                        TypeChangeRulesStorage.getPatternsBySourceType(rootType.getCanonicalText()),
+                        storage.getPatternsBySourceType(rootType.getCanonicalText()),
                         element,
                         project,
                         false

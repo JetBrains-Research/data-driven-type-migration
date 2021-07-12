@@ -44,7 +44,8 @@ public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction 
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element)
             throws IncorrectOperationException {
-        final var pattern = TypeChangeRulesStorage.findPattern(sourceType, targetType);
+        final var storage = project.getService(TypeChangeRulesStorage.class);
+        final var pattern = storage.findPattern(sourceType, targetType);
         if (pattern.isEmpty()) return;
 
         ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(

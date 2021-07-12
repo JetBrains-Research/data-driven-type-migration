@@ -14,7 +14,6 @@ import com.intellij.usageView.UsageInfo;
 import org.apache.commons.cli.*;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ddtm.Config;
 import org.jetbrains.research.ddtm.SupportedSearchScope;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ddtm.ide.migration.TypeChangeProcessor;
@@ -57,7 +56,6 @@ public class EvaluationRunner implements ApplicationStarter {
                         IntellijProjectUtils.loadModules(projectDir, project);
                         IntellijProjectUtils.setupJdk(project, pathToJdk);
 
-                        Config.project = project;
                         TypeChangeSettingsState.getInstance().searchScope = SupportedSearchScope.PROJECT;
 
                         // Just for test: the types for Type Change should be specified / injected from outside
@@ -87,7 +85,8 @@ public class EvaluationRunner implements ApplicationStarter {
                                 WriteCommandAction.runWriteCommandAction(project, () -> {
                                     // Create built-in `TypeMigrationProcessor`
                                     final PsiElement context = psi.findElementAt(caretOffset);
-                                    final var descriptor = TypeChangeRulesStorage.findPattern(sourceType, targetType).get();
+                                    final var storage = project.getService(TypeChangeRulesStorage.class);
+                                    final var descriptor = storage.findPattern(sourceType, targetType).get();
                                     final var typeChangeProcessor = new TypeChangeProcessor(project, false);
                                     final var builtInProcessor = typeChangeProcessor.createBuiltInTypeMigrationProcessor(context, descriptor);
                                     if (builtInProcessor == null) return;

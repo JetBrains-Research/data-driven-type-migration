@@ -33,11 +33,10 @@ type has been changed.
         </intentionAction>
 
         <projectService
-                serviceInterface="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider"
-                serviceImplementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl"/>
+                serviceImplementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider"/>
 
         <backgroundPostStartupActivity
-                implementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl$Startup"/>
+                implementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider$Startup"/>
 
         <!--suppress PluginXmlValidity -->
         <intentionMenuContributor

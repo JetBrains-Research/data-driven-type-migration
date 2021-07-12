@@ -22,7 +22,7 @@ import org.jetbrains.research.ddtm.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ddtm.ide.migration.collectors.RequiredImportsCollector;
 import org.jetbrains.research.ddtm.ide.migration.collectors.TypeChangesInfoCollector;
 import org.jetbrains.research.ddtm.ide.refactoring.ReactiveTypeChangeAvailabilityUpdater;
-import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
+import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider;
 import org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState;
 import org.jetbrains.research.ddtm.ide.ui.FailedTypeChangesPanel;
 import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
@@ -45,7 +45,7 @@ public class TypeChangeProcessor {
 
     public void run(PsiElement element, TypeChangePatternDescriptor descriptor) {
         try {
-            final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+            final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
             state.isInternalTypeChangeInProgress = true;
 
             // TODO: Use facade
@@ -115,13 +115,13 @@ public class TypeChangeProcessor {
     }
 
     private void disableRefactoring(PsiElement element) {
-        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
         state.refactoringEnabled = false;
         state.removeAllTypeChangesByRange(element.getTextRange());
         Document document = PsiDocumentManager.getInstance(project).getDocument(root.getContainingFile());
         if (document == null) return;
-        ReactiveTypeChangeAvailabilityUpdater.getInstance(project)
-                .updateAllHighlighters(document, element.getTextOffset());
+        final var updater = project.getService(ReactiveTypeChangeAvailabilityUpdater.class);
+        updater.updateAllHighlighters(document, element.getTextOffset());
     }
 
     public @Nullable TypeMigrationProcessor createBuiltInTypeMigrationProcessor(
@@ -141,14 +141,14 @@ public class TypeChangeProcessor {
         // In case of suggested refactoring intention
         if (isRootTypeAlreadyChanged) {
             final PsiType currentRootType = Objects.requireNonNull(PsiRelatedUtils.getExpectedType(root));
-            final String recoveredRootType = descriptor.resolveSourceType(currentRootType);
+            final String recoveredRootType = descriptor.resolveSourceType(currentRootType, project);
             final PsiTypeElement recoveredRootTypeElement = PsiElementFactory.getInstance(project)
                     .createTypeElementFromText(recoveredRootType, root);
             rootTypeElement.replace(recoveredRootTypeElement);
         }
 
         final PsiType expectedRootType = Objects.requireNonNull(PsiRelatedUtils.getExpectedType(root));
-        String targetType = descriptor.resolveTargetType(expectedRootType);
+        String targetType = descriptor.resolveTargetType(expectedRootType, project);
         PsiTypeCodeFragment targetTypeCodeFragment = JavaCodeFragmentFactory.getInstance(project)
                 .createTypeCodeFragment(targetType, root, true);
 

@@ -13,7 +13,6 @@ import com.intellij.structuralsearch.impl.matcher.compiler.PatternCompiler;
 import com.intellij.structuralsearch.plugin.replace.ReplaceOptions;
 import com.intellij.structuralsearch.plugin.replace.impl.Replacer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ddtm.Config;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -68,19 +67,19 @@ public class SSRUtils {
         }
     }
 
-    public static List<MatchResult> matchType(String source, String typePattern) {
+    public static List<MatchResult> matchType(String source, String typePattern, Project project) {
         final MatchOptions options = new MatchOptions();
         options.setSearchPattern(typePattern);
         options.setFileType(JavaFileType.INSTANCE);
-        final Matcher matcher = new Matcher(Config.project, options);
+        final Matcher matcher = new Matcher(project, options);
         return matcher.testFindMatches(source, false, JavaFileType.INSTANCE, false);
     }
 
     @NotNull
     public static String substituteTypeByPattern(@NotNull PsiType type,
                                                  String stringToSubstitute,
-                                                 String substituteByString) {
-        final Project project = Config.project;
+                                                 String substituteByString,
+                                                 Project project) {
         final ReplaceOptions options = new ReplaceOptions();
         final MatchOptions matchOptions = options.getMatchOptions();
         matchOptions.setFileType(JavaFileType.INSTANCE);

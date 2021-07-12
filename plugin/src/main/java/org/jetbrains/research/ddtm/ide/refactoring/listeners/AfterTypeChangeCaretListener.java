@@ -14,6 +14,7 @@ public class AfterTypeChangeCaretListener implements CaretListener {
         final var editor = event.getEditor();
         final var project = editor.getProject();
         final int offset = Objects.requireNonNull(event.getCaret()).getOffset();
-        ReactiveTypeChangeAvailabilityUpdater.getInstance(project).updateHighlighter(editor, offset);
+        final var updater = project.getService(ReactiveTypeChangeAvailabilityUpdater.class);
+        updater.updateHighlighter(editor, offset);
     }
 }

@@ -35,7 +35,7 @@ class TypeChangeIntentionContributor implements IntentionMenuContributor {
         if (rule.isPresent()) {
             intention = new FailedTypeChangeRecoveringIntention(rule.get());
         } else {
-            final var state = TypeChangeRefactoringProviderImpl.getInstance(hostEditor.getProject()).getState();
+            final var state = TypeChangeRefactoringProvider.getInstance(hostEditor.getProject()).getState();
             final var typeChangeMarker = state.getCompletedTypeChangeForOffset(offset);
             if (typeChangeMarker.isEmpty() || !state.refactoringEnabled) return;
             TypeChangeMarker marker = typeChangeMarker.get();

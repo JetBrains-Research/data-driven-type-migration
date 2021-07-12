@@ -1,5 +1,6 @@
 package org.jetbrains.research.ddtm.ide.refactoring;
 
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
@@ -7,26 +8,18 @@ import com.intellij.openapi.editor.markup.HighlighterLayer;
 import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProviderImpl;
+import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReactiveTypeChangeAvailabilityUpdater {
-    private static volatile ReactiveTypeChangeAvailabilityUpdater INSTANCE = null;
-
+@Service
+public final class ReactiveTypeChangeAvailabilityUpdater {
     private final Project project;
     private final Map<Editor, RangeHighlighter> editorsAndHighlighters = new HashMap<>();
 
-    private ReactiveTypeChangeAvailabilityUpdater(Project project) {
+    public ReactiveTypeChangeAvailabilityUpdater(Project project) {
         this.project = project;
-    }
-
-    public static ReactiveTypeChangeAvailabilityUpdater getInstance(Project project) {
-        if (INSTANCE == null) {
-            INSTANCE = new ReactiveTypeChangeAvailabilityUpdater(project);
-        }
-        return INSTANCE;
     }
 
     public void updateAllHighlighters(Document document, int caretOffset) {
@@ -36,7 +29,7 @@ public class ReactiveTypeChangeAvailabilityUpdater {
     }
 
     public void updateHighlighter(Editor editor, int caretOffset) {
-        final var state = TypeChangeRefactoringProviderImpl.getInstance(project).getState();
+        final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
         final var relevantTypeChangeForCurrentOffset = state.getCompletedTypeChangeForOffset(caretOffset);
 
         final var prevHighlighter = editorsAndHighlighters.get(editor);

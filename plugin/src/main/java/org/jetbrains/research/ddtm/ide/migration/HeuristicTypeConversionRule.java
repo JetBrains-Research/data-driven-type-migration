@@ -28,7 +28,10 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
             PsiType from, PsiType to, PsiMember member, PsiExpression context, TypeMigrationLabeler labeler
     ) {
         if (from.getCanonicalText().equals(to.getCanonicalText()) || context == null) return null;
-        final var pattern = TypeChangeRulesStorage.findPattern(
+        Project project = context.getProject();
+
+        final var storage = project.getService(TypeChangeRulesStorage.class);
+        final var pattern = storage.findPattern(
                 from.getCanonicalText(),
                 to.getCanonicalText()
         );
@@ -37,7 +40,6 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
         if (pattern.isEmpty() || currentRoot == null) return null;
         final String currentRootName = PsiUtil.getName(currentRoot.getElement());
 
-        Project project = context.getProject();
         PsiElement currentContext = context;
         int parentsPassed = 0;
         TypeChangeRuleDescriptor bestMatchedRule = null;
