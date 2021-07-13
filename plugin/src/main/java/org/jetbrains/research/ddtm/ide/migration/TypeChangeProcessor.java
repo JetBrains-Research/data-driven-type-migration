@@ -127,7 +127,7 @@ public class TypeChangeProcessor {
             PsiElement element,
             TypeChangePatternDescriptor descriptor
     ) {
-        PsiTypeElement rootTypeElement = PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class);
+        PsiTypeElement rootTypeElement = PsiRelatedUtils.getClosestPsiTypeElement(element);
         PsiElement root;
         if (rootTypeElement != null) {
             root = rootTypeElement.getParent();

@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.research.ddtm.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.ddtm.ide.intentions.FailedTypeChangeRecoveringIntention;
 import org.jetbrains.research.ddtm.ide.intentions.SuggestedTypeChangeIntention;
 import org.jetbrains.research.ddtm.ide.migration.collectors.TypeChangesInfoCollector;
@@ -16,6 +17,7 @@ import org.jetbrains.research.ddtm.ide.refactoring.TypeChangeMarker;
 
 import javax.swing.*;
 import java.util.Objects;
+import java.util.Optional;
 
 class TypeChangeIntentionContributor implements IntentionMenuContributor {
     private final Icon icon = AllIcons.Actions.SuggestedRefactoringBulb;
@@ -29,7 +31,7 @@ class TypeChangeIntentionContributor implements IntentionMenuContributor {
         final PsiElement context = hostFile.findElementAt(offset);
         if (context == null) return;
         final var failedTypeChangesCollector = TypeChangesInfoCollector.getInstance();
-        final var rule = failedTypeChangesCollector.getRuleForFailedUsage(context);
+        final Optional<TypeChangeRuleDescriptor> rule = failedTypeChangesCollector.getRuleForFailedUsage(context);
 
         IntentionAction intention;
         if (rule.isPresent()) {

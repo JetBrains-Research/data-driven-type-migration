@@ -108,7 +108,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
             processTargetTypeChangeEvent(newElement, fqTargetType, document);
 
             final var updater = project.getService(ReactiveTypeChangeAvailabilityUpdater.class);
-            updater.updateAllHighlighters(event.getDocument(), event.getOffset());
+            updater.updateAllHighlighters(event.getDocument(), newElement.getTextRange().getEndOffset());
         }
     }
 
@@ -124,7 +124,10 @@ public class TypeChangeDocumentListener implements DocumentListener {
     }
 
     private void processTargetTypeChangeEvent(PsiElement newElement, String targetType, Document document) {
-        final var newRange = TextRange.from(newElement.getTextOffset(), newElement.getTextLength());
+        final var newRange = TextRange.from(
+                newElement.getTextOffset(),
+                newElement.getTextLength() + 1
+        );
         final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
 
         RangeMarker relevantOldRangeMarker = null;
@@ -153,7 +156,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
             try {
                 Thread.sleep(TypeChangeSettingsState.getInstance().disableIntentionTimeout);
                 state.refactoringEnabled = false;
-                state.removeAllTypeChangesByRange(newRange);
+                state.completedTypeChanges.clear();
                 state.uncompletedTypeChanges.clear();
             } catch (InterruptedException e) {
                 LOG.error(e);

@@ -67,6 +67,7 @@ public class TypeChangeRefactoringProvider {
                         // with the reactive type-change intention after applying the undoable actions.
                         while (!project.isDisposed()) {
                             Thread.sleep(Config.GARBAGE_COLLECTOR_FACTOR * TypeChangeSettingsState.getInstance().disableIntentionTimeout);
+                            state.completedTypeChanges.clear();
                             state.uncompletedTypeChanges.clear();
                         }
                     } catch (InterruptedException e) {

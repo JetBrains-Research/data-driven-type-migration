@@ -27,7 +27,7 @@ public class TypeChangeSuggestedRefactoringState {
     public Optional<TypeChangeMarker> getCompletedTypeChangeForOffset(int offset) {
         return completedTypeChanges.stream()
                 .filter(it -> it.newRangeMarker.getStartOffset() <= offset && offset < it.newRangeMarker.getEndOffset())
-                .findFirst();
+                .reduce((x, y) -> y); // ~ findLast()
     }
 
     public boolean hasUncompletedTypeChangeForOffset(int offset) {
