@@ -23,9 +23,7 @@ public final class ReactiveTypeChangeAvailabilityUpdater {
     }
 
     public void updateAllHighlighters(Document document, int caretOffset) {
-        EditorFactory.getInstance().editors(document, project).forEach(editor ->
-                updateHighlighter(editor, caretOffset)
-        );
+        EditorFactory.getInstance().editors(document, project).forEach(editor -> updateHighlighter(editor, caretOffset));
     }
 
     public void updateHighlighter(Editor editor, int caretOffset) {

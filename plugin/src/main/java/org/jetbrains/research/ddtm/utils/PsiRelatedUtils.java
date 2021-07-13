@@ -69,4 +69,14 @@ public class PsiRelatedUtils {
 
         return correspondingTypeElement;
     }
+
+    public static Boolean shouldIgnoreFile(PsiFile file) {
+        return !file.isPhysical() || file instanceof PsiBinaryFile || file instanceof PsiCodeFragment;
+    }
+
+    public static Boolean hasRootInside(PsiElement context, String currentRootName) {
+        return context.getText().equals(currentRootName) ||
+                PsiTreeUtil.findChildrenOfType(context, PsiReferenceExpression.class).stream()
+                        .anyMatch(element -> element.getText().equals(currentRootName));
+    }
 }

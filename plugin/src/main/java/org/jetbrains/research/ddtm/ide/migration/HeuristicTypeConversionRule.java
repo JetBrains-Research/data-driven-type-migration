@@ -1,8 +1,10 @@
 package org.jetbrains.research.ddtm.ide.migration;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.*;
-import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiExpression;
+import com.intellij.psi.PsiMember;
+import com.intellij.psi.PsiType;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.refactoring.typeMigration.TypeConversionDescriptorBase;
 import com.intellij.refactoring.typeMigration.TypeMigrationLabeler;
@@ -47,11 +49,9 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
 
         while (parentsPassed < Config.MAX_PARENTS_TO_LIFT_UP) {
             if (currentContext instanceof PsiExpression) {
-                // It means that we lifted up to much and even touching full statement
+                // It means that we didn't lift up too much
                 for (var rule : rules) {
-                    if (rule.getExpressionBefore().contains("$1$") && !currentContext.getText().equals(currentRootName) &&
-                            PsiTreeUtil.findChildrenOfType(currentContext, PsiReferenceExpression.class).stream()
-                                    .noneMatch(element -> element.getText().equals(currentRootName))) {
+                    if (rule.getExpressionBefore().contains("$1$") && !PsiRelatedUtils.hasRootInside(currentContext, currentRootName)) {
                         // To avoid cases when `currentRootName` appears in the `currentContext` as a part of some string literal,
                         // such as root reference `file` in the expression `new File("file.txt")`
                         continue;

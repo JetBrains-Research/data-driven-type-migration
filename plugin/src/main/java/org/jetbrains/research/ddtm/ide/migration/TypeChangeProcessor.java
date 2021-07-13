@@ -48,7 +48,6 @@ public class TypeChangeProcessor {
             final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
             state.isInternalTypeChangeInProgress = true;
 
-            // TODO: Use facade
             final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
             if (builtInProcessor == null) return;
 
