@@ -67,7 +67,7 @@ You can also click on the icon that appears on the gutter, and run the type migr
 You can setup the appropriate `Search Scope` for type migration or `Reactive Intention Disabling Timeout`
 in the menu of the plugin: `File` - `Settings` - `Tools` - `Data-Driven Type Migration`.
 
-<img src="assets/img/settings.png" alt="Gutter Icon Example" width="600">
+<img src="assets/img/settings.png" alt="Gutter Icon Example" width="400">
 
 ### Currently supported Type Change Patterns:
 
