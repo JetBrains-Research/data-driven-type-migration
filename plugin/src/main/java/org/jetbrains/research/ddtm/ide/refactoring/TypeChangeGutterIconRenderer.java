@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.CustomShortcutSet;
 import com.intellij.openapi.application.impl.LaterInvocator;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
@@ -102,7 +101,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
     private void doRefactoring() {
         final var data = SuggestedRefactoringData.getInstance();
         final var processor = new TypeChangeProcessor(data.project, true);
-        WriteCommandAction.runWriteCommandAction(data.project, () -> processor.run(data.context, data.pattern));
+        processor.run(data.context, data.pattern);
     }
 
     private BalloonCallback createAndShowBalloon(JComponent content, Editor editor, Runnable doRefactoring) {

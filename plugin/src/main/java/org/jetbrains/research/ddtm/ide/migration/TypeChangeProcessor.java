@@ -1,5 +1,7 @@
 package org.jetbrains.research.ddtm.ide.migration;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
@@ -12,10 +14,12 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.refactoring.typeMigration.TypeMigrationProcessor;
 import com.intellij.refactoring.typeMigration.TypeMigrationRules;
 import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentManager;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.SupportedSearchScope;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.ide.fus.TypeChangeLogsCollector;
@@ -57,33 +61,38 @@ public class TypeChangeProcessor {
             requiredImportsCollector.clear();
             final UsageInfo[] usages = builtInProcessor.findUsages();
 
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                builtInProcessor.performRefactoring(usages);
+                addAndOptimizeImports(project, usages);
+            });
+
             if (typeChangesCollector.hasFailedTypeChanges()) {
                 typeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
                 UsageInfo[] infos = typeChangesCollector.getFailedUsages().stream()
                         .map(UsageInfo::new)
                         .toArray(UsageInfo[]::new);
 
-                final var panel = new FailedTypeChangesPanel(project);
-                Content content = UsageViewContentManager.getInstance(project).addContent(
-                        "Failed Type Changes",
-                        true,
-                        panel,
-                        false,
-                        false
-                );
-                panel.setContent(content);
-                ToolWindow toolWindow = Objects.requireNonNull(ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND));
-                toolWindow.activate(() -> {
-                    panel.getInnerPanel().showUsages(PsiElement.EMPTY_ARRAY, infos);
-                }, true, true);
-                // FIXME: idk, but it still doesn't refresh the tool window from time to time
-                toolWindow.show(() -> {
-                    panel.getInnerPanel().showUsages(PsiElement.EMPTY_ARRAY, infos);
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    final var panel = new FailedTypeChangesPanel(project);
+                    Content content = UsageViewContentManager.getInstance(project).addContent(
+                            DataDrivenTypeMigrationBundle.message("tool.window.content.name"),
+                            true,
+                            panel,
+                            false,
+                            false
+                    );
+                    content.setDisposer(panel);
+                    panel.setContent(content);
+
+                    ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(ToolWindowId.FIND);
+                    if (toolWindow == null) return;
+                    ContentManager contentManager = toolWindow.getContentManager();
+                    contentManager.addContent(content);
+                    toolWindow.activate(null);
+
+                    panel.updateLayout(infos);
                 });
             }
-
-            builtInProcessor.performRefactoring(usages);
-            addAndOptimizeImports(project, usages);
 
             if (isRootTypeAlreadyChanged) {
                 TypeChangeLogsCollector.getInstance().reactiveIntentionApplied(
@@ -143,7 +152,9 @@ public class TypeChangeProcessor {
             final String recoveredRootType = descriptor.resolveSourceType(currentRootType, project);
             final PsiTypeElement recoveredRootTypeElement = PsiElementFactory.getInstance(project)
                     .createTypeElementFromText(recoveredRootType, root);
-            rootTypeElement.replace(recoveredRootTypeElement);
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                rootTypeElement.replace(recoveredRootTypeElement);
+            });
         }
 
         final PsiType expectedRootType = Objects.requireNonNull(PsiRelatedUtils.getExpectedType(root));

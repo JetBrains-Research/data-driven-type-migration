@@ -1,6 +1,5 @@
 package org.jetbrains.research.ddtm.ide.intentions;
 
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
@@ -43,9 +42,9 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
 
     @Override
     public @Nullable Runnable getFinalRunnable() {
-        return () -> WriteCommandAction.runWriteCommandAction(project, () -> {
+        return () -> {
             final var processor = new TypeChangeProcessor(project, isRootTypeAlreadyChanged);
             processor.run(context, selectedPatternDescriptor);
-        });
+        };
     }
 }
