@@ -69,23 +69,25 @@ in the menu of the plugin: `File` - `Settings` - `Tools` - `Data-Driven Type Mig
 
 <img src="assets/img/settings.png" alt="Gutter Icon Example" width="400">
 
-### Currently supported Type Change Patterns:
+### Currently supported Type Change Patterns*:
+
+**Examples are provided with [comby](https://comby.dev/) template syntax*
 
 | Source Type | Target Type |
 | --- | --- |
 |`java.io.File` | `java.nio.file.Path` |
-| `java.lang.String` | `java.util.regex.Pattern` |
-| `java.lang.String` | `java.nio.charset.Charset` |
-| `java.lang.String` | `java.net.URI` |
-| `java.lang.String` | `java.util.UUID` |
-| `java.lang.String` | `java.nio.file.Path` |
+| `String` | `java.util.regex.Pattern` |
+| `String` | `java.nio.charset.Charset` |
+| `String` | `java.net.URI` |
+| `String` | `java.util.UUID` |
+| `String` | `java.nio.file.Path` |
 | `java.util.Date` | `java.time.Instant` |
 | `java.util.Date` | `java.time.LocalDate` |
 | `int` | `long` |
-| `java.util.List<$1$>` | `java.util.Set<$1$>` |
-| `java.util.function.Function<java.lang.Double,java.lang.Double>` | `java.util.function.DoubleUnaryOperator` |
-| `java.util.function.Function<$1$,java.lang.Boolean>` | `java.util.function.Predicate<$1$>` |
-| `java.util.function.Supplier<java.lang.Integer>` | `java.util.function.IntSupplier` |
-| `java.util.function.Function<java.lang.Integer,java.lang.Integer>` | `java.util.function.IntUnaryOperator` |
-| `java.util.concurrent.Callable<$1$>` | `java.util.function.Supplier<$1$>` |
-| `$1$` | `java.util.Optional<$1$>` |
+| `java.util.List<:[type]>` | `java.util.Set<:[type]>` |
+| `java.util.function.Function<Double, Double>` | `java.util.function.DoubleUnaryOperator` |
+| `java.util.function.Function<:[type], Boolean>` | `java.util.function.Predicate<:[type]>` |
+| `java.util.function.Supplier<Integer>` | `java.util.function.IntSupplier` |
+| `java.util.function.Function<Integer, Integer>` | `java.util.function.IntUnaryOperator` |
+| `java.util.concurrent.Callable<:[type]>` | `java.util.function.Supplier<:[type]>` |
+| `:[type]` | `java.util.Optional<:[type]>` |
