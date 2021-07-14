@@ -60,33 +60,32 @@ You can also click on the icon that appears on the gutter, and run the type migr
 
 <img src="assets/img/gutter.gif" alt="Gutter Icon Example" width="700">
 
+*Note: the reactive intention for the particular type element in the code turns off by timeout (10 sec by default).*
+
 ### Settings
 
 You can setup the appropriate `Search Scope` for type migration or `Reactive Intention Disabling Timeout`
 in the menu of the plugin: `File` - `Settings` - `Tools` - `Data-Driven Type Migration`.
 
-### Currently-supported Type Change Patterns:
+<img src="assets/img/settings.png" alt="Gutter Icon Example" width="600">
 
-- `java.io.File` to `java.nio.file.Path`
+### Currently supported Type Change Patterns:
 
-- `java.lang.String` to `java.util.regex.Pattern`
-- `java.lang.String` to `java.nio.charset.Charset`
-- `java.lang.String` to `java.net.URI`
-- `java.lang.String` to `java.util.UUID`
-- `java.lang.String` to `java.nio.file.Path`
-
-- `java.util.Date` to `java.time.Instant`
-- `java.util.Date` to `java.time.LocalDate`
-
-- `int` to `long`
-
-- `java.util.List<$1$>` to `java.util.Set<$1$>`
-
-- `java.util.function.Function<java.lang.Double,java.lang.Double>` to `java.util.function.DoubleUnaryOperator`
-- `java.util.function.Function<$1$,java.lang.Boolean>` to `java.util.function.Predicate<$1$>`
-- `java.util.function.Supplier<java.lang.Integer>` to `java.util.function.IntSupplier`
-- `java.util.function.Function<java.lang.Integer,java.lang.Integer>` to `java.util.function.IntUnaryOperator`
-- `java.util.concurrent.Callable<$1$>` to `java.util.function.Supplier<$1$>`
-- `java.util.Map<java.lang.String, java.lang.String>` to `java.util.Properties`
-
-- `$1$` to `java.util.Optional<$1$>`
+| Source Type | Target Type |
+| --- | --- |
+|`java.io.File` | `java.nio.file.Path` |
+| `java.lang.String` | `java.util.regex.Pattern` |
+| `java.lang.String` | `java.nio.charset.Charset` |
+| `java.lang.String` | `java.net.URI` |
+| `java.lang.String` | `java.util.UUID` |
+| `java.lang.String` | `java.nio.file.Path` |
+| `java.util.Date` | `java.time.Instant` |
+| `java.util.Date` | `java.time.LocalDate` |
+| `int` | `long` |
+| `java.util.List<$1$>` | `java.util.Set<$1$>` |
+| `java.util.function.Function<java.lang.Double,java.lang.Double>` | `java.util.function.DoubleUnaryOperator` |
+| `java.util.function.Function<$1$,java.lang.Boolean>` | `java.util.function.Predicate<$1$>` |
+| `java.util.function.Supplier<java.lang.Integer>` | `java.util.function.IntSupplier` |
+| `java.util.function.Function<java.lang.Integer,java.lang.Integer>` | `java.util.function.IntUnaryOperator` |
+| `java.util.concurrent.Callable<$1$>` | `java.util.function.Supplier<$1$>` |
+| `$1$` | `java.util.Optional<$1$>` |
