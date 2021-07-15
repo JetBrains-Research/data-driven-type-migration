@@ -31,6 +31,7 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
     ) {
         if (from.getCanonicalText().equals(to.getCanonicalText()) || context == null) return null;
         Project project = context.getProject();
+        final var collector = TypeChangesInfoCollector.getInstance();
 
         final var storage = project.getService(TypeChangeRulesStorage.class);
         final var pattern = storage.findPattern(
@@ -39,7 +40,10 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
         );
 
         final TypeMigrationUsageInfo currentRoot = extractCurrentRoot(labeler);
-        if (pattern.isEmpty() || currentRoot == null) return null;
+        if (pattern.isEmpty() || currentRoot == null) {
+            collector.addFailedUsage(context);
+            return null;
+        }
         final String currentRootName = PsiUtil.getName(currentRoot.getElement());
 
         PsiElement currentContext = context;
@@ -58,6 +62,15 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
                     }
                     List<MatchResult> matches = SSRUtils.matchRule(rule.getExpressionBefore(), currentRootName, currentContext, project);
                     if (!matches.isEmpty()) {
+                        // To prevent cases like `UUID.fromString(System.out.println(s))`, where `s` is current root,
+                        // and the rule $2$ -> UUId.fromString($2$) matches to all statement, which is wrong,
+                        // because it should not contain the root inside
+                        if (matches.get(0).getChildren().stream()
+                                .anyMatch(matchResult -> !matchResult.getName().equals("1")
+                                        && PsiRelatedUtils.hasRootInside(matchResult.getMatch(), currentRootName))) {
+                            continue;
+                        }
+
                         if (bestMatchedRule == null) {
                             bestMatchedRule = rule;
                             continue;
@@ -78,7 +91,6 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
             parentsPassed++;
         }
 
-        final var collector = TypeChangesInfoCollector.getInstance();
         if (bestMatchedRule != null) {
             if (bestMatchedRule.getReturnType() != null) {
                 // Check if the rule is "suspicious", e.g. it changes the return type of the expression

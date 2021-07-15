@@ -13,9 +13,7 @@ import com.intellij.structuralsearch.impl.matcher.compiler.PatternCompiler;
 import com.intellij.structuralsearch.plugin.replace.ReplaceOptions;
 import com.intellij.structuralsearch.plugin.replace.impl.Replacer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -59,15 +57,11 @@ public class SSRUtils {
         rootConstraint.setRegExp(regexForRoot);
         options.addVariableConstraint(rootConstraint);
 
-        String regexForNonRoot =
-                PsiRelatedUtils.hasRootInside(sourceExpression, currentRootName)
-                        ? MessageFormat.format(".*{0}.*", regexForRoot)
-                        : regexForRoot;
         // There should be a regex retrieving all the variables between $$,
         // but I guess it's enough to only add constraints for 2, 3, 4, 5 with current templates
         for (int i = 2; i < 5; ++i) {
             MatchVariableConstraint nonRootConstraint = new MatchVariableConstraint(Integer.toString(i));
-            nonRootConstraint.setRegExp(regexForNonRoot);
+            nonRootConstraint.setRegExp(regexForRoot);
             nonRootConstraint.setInvertRegExp(true);
             options.addVariableConstraint(nonRootConstraint);
         }

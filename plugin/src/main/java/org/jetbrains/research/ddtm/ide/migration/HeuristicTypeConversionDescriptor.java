@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.Config;
 import org.jetbrains.research.ddtm.ide.migration.structuralsearch.MyReplacer;
 import org.jetbrains.research.ddtm.ide.migration.structuralsearch.SSRUtils;
+import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
 import java.util.List;
 
@@ -38,7 +39,10 @@ public class HeuristicTypeConversionDescriptor extends TypeConversionDescriptor 
         while (parentsPassed < Config.MAX_PARENTS_TO_LIFT_UP) {
             if (currentExpression instanceof PsiExpression) {
                 List<MatchResult> matches = SSRUtils.matchRule(getStringToReplace(), currentRootName, currentExpression, project);
-                if (!matches.isEmpty()) {
+                if (!matches.isEmpty() &&
+                        matches.get(0).getChildren().stream()
+                                .noneMatch(matchResult -> !matchResult.getName().equals("1")
+                                        && PsiRelatedUtils.hasRootInside(matchResult.getMatch(), currentRootName))) {
                     bestMatchedExpression = currentExpression;
                 }
             }
