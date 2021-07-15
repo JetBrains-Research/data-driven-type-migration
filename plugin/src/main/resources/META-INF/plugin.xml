@@ -1,0 +1,51 @@
+<idea-plugin>
+    <id>org.jetbrains.research.java-types-migration</id>
+    <name>Data-Driven Type Migration</name>
+    <vendor>JetBrains Research</vendor>
+
+    <description><![CDATA[
+    An IntelliJ IDEA plugin that adjusts the current approach to `Type Migration`
+refactoring for Java using inferred type change rules, which were gathered from popular open-source Java repositories.
+In general, it helps to automate the process of updating the data-flow dependent references of a program element, which
+type has been changed.
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>Git4Idea</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState"/>
+
+        <applicationConfigurable parentId="tools"
+                                 instance="org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsConfigurable"
+                                 id="org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsConfigurable"
+                                 displayName="Data-Driven Type Migration"/>
+
+        <statistic.eventLog.eventLoggerProvider
+                implementation="org.jetbrains.research.ddtm.ide.fus.TypeChangeLoggerProvider"/>
+
+        <intentionAction>
+            <className>org.jetbrains.research.ddtm.ide.intentions.ProactiveTypeChangeIntention</className>
+            <category>Type migration</category>
+        </intentionAction>
+
+        <projectService
+                serviceImplementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider"/>
+
+        <backgroundPostStartupActivity
+                implementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider$Startup"/>
+
+        <!--suppress PluginXmlValidity -->
+        <intentionMenuContributor
+                implementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeIntentionContributor"/>
+    </extensions>
+
+    <projectListeners>
+        <listener class="org.jetbrains.research.ddtm.ide.refactoring.listeners.UndoTypeChangeListener"
+                  topic="com.intellij.openapi.command.CommandListener"/>
+    </projectListeners>
+
+</idea-plugin>

@@ -12,7 +12,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <appStarter implementation="org.jetbrains.research.ddtc.evaluation.EvaluationRunner"/>
+        <appStarter implementation="org.jetbrains.research.ddtm.evaluation.EvaluationRunner"/>
     </extensions>
 
 </idea-plugin>
