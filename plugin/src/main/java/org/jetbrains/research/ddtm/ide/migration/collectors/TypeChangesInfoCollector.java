@@ -29,22 +29,17 @@ public class TypeChangesInfoCollector extends SwitchableCollector {
         return collector;
     }
 
-    public List<PsiElement> getUpdatedUsages() {
-        return updatedUsages.stream()
-                .map(SmartPsiElementPointer::getElement)
-                .collect(Collectors.toList());
+    public List<SmartPsiElementPointer<PsiElement>> getUpdatedUsages() {
+        return updatedUsages;
     }
 
-    public List<PsiElement> getFailedUsages() {
-        return failedUsages.stream()
-                .map(SmartPsiElementPointer::getElement)
-                .collect(Collectors.toList());
+    public List<SmartPsiElementPointer<PsiElement>> getFailedUsages() {
+        return failedUsages;
     }
 
-    public List<PsiElement> getSuspiciousUsages() {
+    public List<SmartPsiElementPointer<PsiElement>> getSuspiciousUsages() {
         return failedUsages.stream()
                 .filter(usage -> failedUsageToCorrespondingRule.containsKey(usage))
-                .map(SmartPsiElementPointer::getElement)
                 .collect(Collectors.toList());
     }
 

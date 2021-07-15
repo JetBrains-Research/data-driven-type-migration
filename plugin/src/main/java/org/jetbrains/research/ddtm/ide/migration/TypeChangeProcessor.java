@@ -69,7 +69,7 @@ public class TypeChangeProcessor {
             if (typeChangesCollector.hasFailedTypeChanges()) {
                 typeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
                 UsageInfo[] infos = typeChangesCollector.getFailedUsages().stream()
-                        .map(UsageInfo::new)
+                        .map(pointer -> new UsageInfo(pointer, null, false, false))
                         .toArray(UsageInfo[]::new);
 
                 ApplicationManager.getApplication().invokeLater(() -> {
