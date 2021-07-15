@@ -166,6 +166,9 @@ public class TypeChangeProcessor {
         var chosenSearchScope = TypeChangeSettingsState.getInstance().searchScope;
         if (chosenSearchScope == null) chosenSearchScope = SupportedSearchScope.FILE; // by default
         switch (chosenSearchScope) {
+            case LOCAL:
+                rules.setBoundScope(root.getUseScope());
+                break;
             case FILE:
                 rules.setBoundScope(GlobalSearchScope.fileScope(root.getContainingFile()));
                 break;

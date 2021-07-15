@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 
 public class DataDrivenTypeMigrationBundle {
     public static final BiMap<SupportedSearchScope, String> SEARCH_SCOPE_OPTIONS = HashBiMap.create(Map.of(
+            SupportedSearchScope.LOCAL, message("settings.scope.local"),
             SupportedSearchScope.FILE, message("settings.scope.file"),
             SupportedSearchScope.PROJECT, message("settings.scope.project")
     ));
