@@ -37,6 +37,13 @@ public class TypeChangeLogsCollector {
         TypeChangeLogger.log(group, "registered");
     }
 
+    public void refactoringUndone(Project project, String sourceType, String targetType) {
+        FeatureUsageData data = new FeatureUsageData().addProject(project)
+                .addData("source_type", sourceType)
+                .addData("target_type", targetType);
+        TypeChangeLogger.log(group, "refactoring.undone", data);
+    }
+
     public void proactiveIntentionApplied(Project project, String sourceType, String targetType, PsiElement root,
                                           int usagesUpdated, int suspiciousUsagesFound, int usagesFailed) {
         FeatureUsageData data = buildIntentionUsageData(

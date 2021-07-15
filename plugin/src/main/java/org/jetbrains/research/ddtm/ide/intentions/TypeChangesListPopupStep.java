@@ -1,5 +1,6 @@
 package org.jetbrains.research.ddtm.ide.intentions;
 
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
@@ -44,7 +45,10 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
     public @Nullable Runnable getFinalRunnable() {
         return () -> {
             final var processor = new TypeChangeProcessor(project, isRootTypeAlreadyChanged);
-            processor.run(context, selectedPatternDescriptor);
+            WriteCommandAction.writeCommandAction(project)
+                    .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + selectedPatternDescriptor.toString())
+                    .withGlobalUndo()
+                    .run(() -> processor.run(context, selectedPatternDescriptor));
         };
     }
 }

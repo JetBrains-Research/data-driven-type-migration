@@ -43,4 +43,9 @@ type has been changed.
                 implementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeIntentionContributor"/>
     </extensions>
 
+    <projectListeners>
+        <listener class="org.jetbrains.research.ddtm.ide.refactoring.listeners.UndoTypeChangeListener"
+                  topic="com.intellij.openapi.command.CommandListener"/>
+    </projectListeners>
+
 </idea-plugin>

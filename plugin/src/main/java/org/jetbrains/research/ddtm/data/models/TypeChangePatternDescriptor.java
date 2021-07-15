@@ -34,6 +34,11 @@ public class TypeChangePatternDescriptor {
         return rules;
     }
 
+    @Override
+    public String toString() {
+        return sourceType + " to " + targetType;
+    }
+
     /**
      * Actually, for simple types like File and Path we already have {@link TypeChangePatternDescriptor#getTargetType()}.
      * But the following method supposed to resolve more complicated situations including generics,

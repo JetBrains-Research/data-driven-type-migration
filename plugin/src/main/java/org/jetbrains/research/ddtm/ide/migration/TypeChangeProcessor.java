@@ -1,7 +1,6 @@
 package org.jetbrains.research.ddtm.ide.migration;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
@@ -61,10 +60,8 @@ public class TypeChangeProcessor {
             requiredImportsCollector.clear();
             final UsageInfo[] usages = builtInProcessor.findUsages();
 
-            WriteCommandAction.runWriteCommandAction(project, () -> {
-                builtInProcessor.performRefactoring(usages);
-                addAndOptimizeImports(project, usages);
-            });
+            builtInProcessor.performRefactoring(usages);
+            addAndOptimizeImports(project, usages);
 
             if (typeChangesCollector.hasFailedTypeChanges()) {
                 typeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
@@ -152,9 +149,7 @@ public class TypeChangeProcessor {
             final String recoveredRootType = descriptor.resolveSourceType(currentRootType, project);
             final PsiTypeElement recoveredRootTypeElement = PsiElementFactory.getInstance(project)
                     .createTypeElementFromText(recoveredRootType, root);
-            WriteCommandAction.runWriteCommandAction(project, () -> {
-                rootTypeElement.replace(recoveredRootTypeElement);
-            });
+            rootTypeElement.replace(recoveredRootTypeElement);
         }
 
         final PsiType expectedRootType = Objects.requireNonNull(PsiRelatedUtils.getExpectedType(root));
