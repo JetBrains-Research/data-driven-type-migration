@@ -37,11 +37,17 @@ public class TypeChangeLogsCollector {
         TypeChangeLogger.log(group, "registered");
     }
 
-    public void refactoringUndone(Project project, String sourceType, String targetType) {
+    public void migrationUndone(Project project, String sourceType, String targetType) {
         FeatureUsageData data = new FeatureUsageData().addProject(project)
                 .addData("source_type", sourceType)
                 .addData("target_type", targetType);
-        TypeChangeLogger.log(group, "refactoring.undone", data);
+        TypeChangeLogger.log(group, "migration.undone", data);
+    }
+
+    public void renamePerformed(Project project, String elementCanonicalName) {
+        FeatureUsageData data = new FeatureUsageData().addProject(project)
+                .addData("element_canonical_name", elementCanonicalName);
+        TypeChangeLogger.log(group, "rename.performed", data);
     }
 
     public void proactiveIntentionApplied(Project project, String sourceType, String targetType, PsiElement root,
