@@ -7,7 +7,7 @@ import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.Config;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
-import org.jetbrains.research.ddtm.SupportedSearchScope;
+import org.jetbrains.research.ddtm.data.enums.SupportedSearchScope;
 
 import javax.swing.*;
 

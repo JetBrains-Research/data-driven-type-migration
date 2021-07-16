@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.intellij.AbstractBundle;
 import com.intellij.reference.SoftReference;
 import org.jetbrains.annotations.PropertyKey;
+import org.jetbrains.research.ddtm.data.enums.SupportedSearchScope;
 
 import java.lang.ref.Reference;
 import java.util.Map;

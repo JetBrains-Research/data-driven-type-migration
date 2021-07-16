@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
+import org.jetbrains.research.ddtm.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ddtm.ide.migration.TypeChangeProcessor;
 import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider;
 import org.jetbrains.research.ddtm.ide.ui.TypeChangeGutterPopupPanel;
@@ -102,6 +103,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
     private void doRefactoring() {
         final var data = SuggestedRefactoringData.getInstance();
         final var processor = new TypeChangeProcessor(data.project, true);
+        TypeChangeLogsCollector.getInstance().gutterIconClicked(data.project);
         WriteCommandAction.writeCommandAction(data.project)
                 .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + data.pattern.toString())
                 .withGlobalUndo()

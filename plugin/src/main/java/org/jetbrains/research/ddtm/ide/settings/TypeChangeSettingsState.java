@@ -8,7 +8,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.ddtm.Config;
-import org.jetbrains.research.ddtm.SupportedSearchScope;
+import org.jetbrains.research.ddtm.data.enums.SupportedSearchScope;
 
 /**
  * Supports storing the application settings in a persistent way.

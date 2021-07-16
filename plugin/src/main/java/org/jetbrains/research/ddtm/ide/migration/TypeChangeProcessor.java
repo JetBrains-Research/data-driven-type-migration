@@ -19,7 +19,8 @@ import com.intellij.usageView.UsageViewContentManager;
 import com.intellij.util.Functions;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
-import org.jetbrains.research.ddtm.SupportedSearchScope;
+import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
+import org.jetbrains.research.ddtm.data.enums.SupportedSearchScope;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ddtm.ide.migration.collectors.RequiredImportsCollector;
@@ -92,25 +93,27 @@ public class TypeChangeProcessor {
             }
 
             if (isRootTypeAlreadyChanged) {
-                TypeChangeLogsCollector.getInstance().reactiveIntentionApplied(
+                TypeChangeLogsCollector.getInstance().refactoringIntentionApplied(
                         project,
                         descriptor.getSourceType(),
                         descriptor.getTargetType(),
                         root,
                         typeChangesCollector.getUpdatedUsages().size(),
                         typeChangesCollector.getSuspiciousUsages().size(),
-                        typeChangesCollector.getFailedUsages().size()
+                        typeChangesCollector.getFailedUsages().size(),
+                        InvocationWorkflow.REACTIVE
                 );
                 disableRefactoring(element);
             } else {
-                TypeChangeLogsCollector.getInstance().proactiveIntentionApplied(
+                TypeChangeLogsCollector.getInstance().refactoringIntentionApplied(
                         project,
                         descriptor.getSourceType(),
                         descriptor.getTargetType(),
                         root,
                         typeChangesCollector.getUpdatedUsages().size(),
                         typeChangesCollector.getSuspiciousUsages().size(),
-                        typeChangesCollector.getFailedUsages().size()
+                        typeChangesCollector.getFailedUsages().size(),
+                        InvocationWorkflow.PROACTIVE
                 );
             }
             state.isInternalTypeChangeInProgress = false;

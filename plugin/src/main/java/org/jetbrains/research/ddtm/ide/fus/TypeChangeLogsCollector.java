@@ -5,6 +5,7 @@ import com.intellij.internal.statistic.eventLog.EventLogGroup;
 import com.intellij.internal.statistic.eventLog.FeatureUsageData;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.data.models.TypeChangeRuleDescriptor;
 
 import java.util.concurrent.TimeUnit;
@@ -50,38 +51,30 @@ public class TypeChangeLogsCollector {
         TypeChangeLogger.log(group, "rename.performed", data);
     }
 
-    public void proactiveIntentionApplied(Project project, String sourceType, String targetType, PsiElement root,
-                                          int usagesUpdated, int suspiciousUsagesFound, int usagesFailed) {
-        FeatureUsageData data = buildIntentionUsageData(
-                project, sourceType, targetType, root, usagesUpdated, suspiciousUsagesFound, usagesFailed
-        ).addData("invocation_workflow", "proactive");
-        TypeChangeLogger.log(group, "proactive.intention.applied", data);
-    }
-
-    public void reactiveIntentionApplied(Project project, String sourceType, String targetType, PsiElement root,
-                                         int usagesUpdated, int suspiciousUsagesFound, int usagesFailed) {
-        FeatureUsageData data = buildIntentionUsageData(
-                project, sourceType, targetType, root, usagesUpdated, suspiciousUsagesFound, usagesFailed
-        ).addData("invocation_workflow", "reactive");
-        TypeChangeLogger.log(group, "reactive.intention.applied", data);
-    }
-
-    public void recoveringIntentionApplied(Project project, TypeChangeRuleDescriptor rule) {
+    public void gutterIconClicked(Project project) {
         FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("expression_before", rule.getExpressionBefore())
-                .addData("expression_after", rule.getExpressionAfter())
-                .addData("invocation_workflow", "recovering");
-        TypeChangeLogger.log(group, "recovering.intention.applied", data);
+                .addData("gutter_icon_clicked", true);
+        TypeChangeLogger.log(group, "gutter.icon.clicked", data);
     }
 
-    private FeatureUsageData buildIntentionUsageData(Project project, String sourceType, String targetType, PsiElement root,
-                                                     int usagesUpdated, int suspiciousUsagesFound, int usagesFailed) {
-        return new FeatureUsageData().addProject(project)
+    public void refactoringIntentionApplied(Project project, String sourceType, String targetType, PsiElement root,
+                                            int usagesUpdated, int suspiciousUsagesFound, int usagesFailed,
+                                            InvocationWorkflow workflow) {
+        FeatureUsageData data = new FeatureUsageData().addProject(project)
                 .addData("source_type", sourceType)
                 .addData("target_type", targetType)
                 .addData("migration_root", root.getClass().getName())
                 .addData("usages_updated", usagesUpdated)
                 .addData("suspicious_usages_found", suspiciousUsagesFound)
-                .addData("usages_failed", usagesFailed);
+                .addData("usages_failed", usagesFailed)
+                .addData("invocation_workflow", workflow.name().toLowerCase());
+        TypeChangeLogger.log(group, "refactoring.intention.applied", data);
+    }
+
+    public void recoveringIntentionApplied(Project project, TypeChangeRuleDescriptor rule) {
+        FeatureUsageData data = new FeatureUsageData().addProject(project)
+                .addData("expression_before", rule.getExpressionBefore())
+                .addData("expression_after", rule.getExpressionAfter());
+        TypeChangeLogger.log(group, "recovering.intention.applied", data);
     }
 }
