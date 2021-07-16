@@ -45,4 +45,9 @@ public class TypeChangeSuggestedRefactoringState {
         uncompletedTypeChanges.keySet().removeIf(oldMarker -> EditorUtils.intersects(oldMarker, range));
         completedTypeChanges.removeIf(typeChange -> EditorUtils.intersects(typeChange.newRangeMarker, range));
     }
+
+    public void clear() {
+        uncompletedTypeChanges.clear();
+        completedTypeChanges.clear();
+    }
 }

@@ -1,5 +1,6 @@
 package org.jetbrains.research.ddtm.ide.refactoring.services;
 
+import com.intellij.concurrency.JobScheduler;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.EditorFactory;
@@ -16,6 +17,7 @@ import org.jetbrains.research.ddtm.ide.refactoring.listeners.TypeChangeDocumentL
 import org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class TypeChangeRefactoringProvider {
     private final TypeChangeSuggestedRefactoringState state = new TypeChangeSuggestedRefactoringState();
@@ -61,20 +63,13 @@ public class TypeChangeRefactoringProvider {
                 }, project);
 
                 TypeChangeSuggestedRefactoringState state = TypeChangeRefactoringProvider.getInstance(project).getState();
-                Thread uncompletedTypeChangesCollector = new Thread(() -> {
-                    try {
-                        // Probably, this is a busy waiting. But such way of "garbage collection" helps to avoid bugs
-                        // with the reactive type-change intention after applying the undoable actions.
-                        while (!project.isDisposed()) {
-                            Thread.sleep(Config.GARBAGE_COLLECTOR_FACTOR * TypeChangeSettingsState.getInstance().disableIntentionTimeout);
-                            state.completedTypeChanges.clear();
-                            state.uncompletedTypeChanges.clear();
-                        }
-                    } catch (InterruptedException e) {
-                        LOG.error(e);
-                    }
-                });
-                uncompletedTypeChangesCollector.start();
+                final long delay = Config.GARBAGE_COLLECTOR_FACTOR * TypeChangeSettingsState.getInstance().disableIntentionTimeout;
+                JobScheduler.getScheduler().scheduleWithFixedDelay(
+                        state::clear,
+                        delay,
+                        delay,
+                        TimeUnit.MILLISECONDS
+                );
             }
         }
     }
