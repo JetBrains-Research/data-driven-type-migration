@@ -17,14 +17,16 @@ import java.util.List;
 
 public class TypeChangeQuickFix implements LocalQuickFix {
     List<TypeChangePatternDescriptor> inspectionPatterns;
+    private final String familyName;
 
-    public TypeChangeQuickFix(List<TypeChangePatternDescriptor> inspectionPatterns) {
+    public TypeChangeQuickFix(List<TypeChangePatternDescriptor> inspectionPatterns, String familyName) {
         this.inspectionPatterns = inspectionPatterns;
+        this.familyName = familyName;
     }
 
     @Override
     public @IntentionFamilyName @NotNull String getFamilyName() {
-        return DataDrivenTypeMigrationBundle.message("inspection.family.name");
+        return familyName;
     }
 
     @Override

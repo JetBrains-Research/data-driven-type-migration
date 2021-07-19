@@ -3,15 +3,16 @@ package org.jetbrains.research.ddtm.ide.inspections;
 import com.intellij.codeInspection.AbstractBaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiTypeElement;
+import com.intellij.psi.*;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
+import org.jetbrains.research.ddtm.utils.StringUtils;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,47 @@ public class TypeChangeInspection extends AbstractBaseJavaLocalInspectionTool {
                         .filter(TypeChangePatternDescriptor::shouldInspect)
                         .collect(Collectors.toList());
                 if (!inspectionPatterns.isEmpty()) {
-                    holder.registerProblem(type, DESCRIPTION_TEMPLATE, new TypeChangeQuickFix(inspectionPatterns));
+                    holder.registerProblem(
+                            type,
+                            DESCRIPTION_TEMPLATE,
+                            new TypeChangeQuickFix(
+                                    inspectionPatterns,
+                                    DataDrivenTypeMigrationBundle.message("inspection.simple.family.name")
+                            )
+                    );
+                }
+            }
+
+            @Override
+            public void visitDeclarationStatement(PsiDeclarationStatement statement) {
+                super.visitDeclarationStatement(statement);
+                if (statement.getDeclaredElements().length != 1) return;
+                PsiElement decl = statement.getDeclaredElements()[0];
+
+                PsiTypeElement sourceTypeElement = PsiTreeUtil.findChildOfType(decl, PsiTypeElement.class);
+                if (sourceTypeElement == null) return;
+
+                String sourceType = sourceTypeElement.getType().getCanonicalText();
+                if (sourceType.equals(String.class.getCanonicalName())) {
+                    PsiLiteral literal = PsiTreeUtil.findChildOfType(decl, PsiLiteral.class);
+                    if (literal == null) return;
+
+                    String value = (String) literal.getValue();
+                    if (StringUtils.isSystemPath(value)) {
+                        final Project project = holder.getProject();
+                        final TypeChangeRulesStorage storage = project.getService(TypeChangeRulesStorage.class);
+                        final var pattern = storage.findPattern(
+                                String.class.getCanonicalName(), Path.class.getCanonicalName()
+                        ).get();
+                        holder.registerProblem(
+                                sourceTypeElement,
+                                DESCRIPTION_TEMPLATE,
+                                new TypeChangeQuickFix(
+                                        List.of(pattern),
+                                        DataDrivenTypeMigrationBundle.message("inspection.smart.string.to.path")
+                                )
+                        );
+                    }
                 }
             }
         };
