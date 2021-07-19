@@ -71,6 +71,15 @@ in the menu of the plugin: `File` - `Settings` - `Tools` - `Data-Driven Type Mig
 
 <img src="assets/img/settings.png" alt="Gutter Icon Example" width="400">
 
+### Inspections
+
+The plugin will also try to recommend you some type changes to apply in the form
+of [Code Inspection](https://www.jetbrains.com/help/idea/code-inspection.html). Generally, these suggestions will have
+a `WARNING` level, but just to attract your attention during plugin evaluation. Such hints are mostly of a
+recommendation and training nature.
+
+<img src="assets/img/inspection.gif" alt="Gutter Icon Example" width="600">
+
 ### Currently supported Type Change Patterns*:
 
 **Examples are provided with [comby](https://comby.dev/) template syntax*
