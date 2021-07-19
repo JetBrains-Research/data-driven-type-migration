@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.RangeMarker;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
+import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
@@ -59,7 +60,12 @@ public class TypeChangeDocumentListener implements DocumentListener {
 
         final PsiTypeElement oldTypeElement = PsiRelatedUtils.getClosestPsiTypeElement(oldElement);
         if (oldTypeElement == null) return;
-        final String sourceType = oldTypeElement.getType().getCanonicalText();
+        String sourceType;
+        try {
+            sourceType = oldTypeElement.getType().getCanonicalText();
+        } catch (IndexNotReadyException e) {
+            return;
+        }
 
         final var storage = project.getService(TypeChangeRulesStorage.class);
         if (storage.hasSourceType(sourceType)) {
