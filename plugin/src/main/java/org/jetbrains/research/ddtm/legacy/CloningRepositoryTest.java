@@ -1,4 +1,4 @@
-package org.jetbrains.research.ddtm.ide;
+package org.jetbrains.research.ddtm.legacy;
 
 import com.intellij.dvcs.repo.Repository;
 import com.intellij.dvcs.repo.VcsRepositoryManager;

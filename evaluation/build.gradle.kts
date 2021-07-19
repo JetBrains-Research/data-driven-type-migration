@@ -1,3 +1,6 @@
+group = rootProject.group
+version = rootProject.version
+
 plugins {
     java
     id("org.jetbrains.intellij")
@@ -8,11 +11,6 @@ intellij {
     version = "2021.1"
     setPlugins("java")
 }
-
-group = rootProject.group
-version = rootProject.version
-
-
 
 dependencies {
     implementation(project(":plugin"))
