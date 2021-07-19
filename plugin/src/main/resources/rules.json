@@ -341,6 +341,7 @@
   {
     "From": "java.util.function.Function<java.lang.Integer,java.lang.Integer>",
     "To": "java.util.function.IntUnaryOperator",
+    "Inspect": true,
     "Kind": "Proactive",
     "Rules": [
       {
@@ -352,6 +353,7 @@
   {
     "From": "java.util.function.Function<java.lang.Double,java.lang.Double>",
     "To": "java.util.function.DoubleUnaryOperator",
+    "Inspect": true,
     "Kind": "Proactive",
     "Rules": [
       {
@@ -363,6 +365,7 @@
   {
     "From": "java.util.function.Function<$1$,java.lang.Boolean>",
     "To": "java.util.function.Predicate<$1$>",
+    "Inspect": true,
     "Kind": "Proactive",
     "Rules": [
       {
@@ -375,6 +378,7 @@
     "From": "java.util.function.Supplier<java.lang.Integer>",
     "To": "java.util.function.IntSupplier",
     "Kind": "Proactive",
+    "Inspect": true,
     "Rules": [
       {
         "Before": "$1$.get($2$)",

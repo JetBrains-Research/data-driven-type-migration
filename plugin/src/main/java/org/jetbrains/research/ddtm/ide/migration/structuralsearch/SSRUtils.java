@@ -2,6 +2,7 @@ package org.jetbrains.research.ddtm.ide.migration.structuralsearch;
 
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiType;
 import com.intellij.structuralsearch.MatchOptions;
@@ -90,5 +91,23 @@ public class SSRUtils {
                 options, project
         );
         return result.substring(0, result.length() - 3);
+    }
+
+    public static Boolean hasMatch(String source, String typePattern, Project project) {
+        // Full match
+        if (typePattern.equals(source)) return true;
+
+        // Preventing incorrect matches for generic types, such as from List<String> to String
+        if (source.contains(typePattern)) return false;
+
+        // Matching complicated cases with substitutions, such as List<String> to List<$1$>
+        if (!SSRUtils.matchType(source, typePattern, project).isEmpty()) return true;
+
+        // Match supertypes, such as ArrayList<> to List<>
+        PsiType sourceType = JavaPsiFacade.getElementFactory(project).createTypeFromText(source, null);
+        for (PsiType superType : sourceType.getSuperTypes()) {
+            if (!SSRUtils.matchType(superType.getCanonicalText(), typePattern, project).isEmpty()) return true;
+        }
+        return false;
     }
 }
