@@ -1,6 +1,8 @@
 # Data-Driven Type Migration
 
 [![JB Research](https://jb.gg/badges/research-flat-square.svg)](https://research.jetbrains.org/)
+![pipeline status](https://github.com/JetBrains-Research/data-driven-type-migration/actions/workflows/build.yml/badge.svg)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 
 An IntelliJ IDEA plugin that adjusts the current approach to `Type Migration`
 refactoring for Java using inferred type change rules, which were gathered from popular open-source Java repositories.
