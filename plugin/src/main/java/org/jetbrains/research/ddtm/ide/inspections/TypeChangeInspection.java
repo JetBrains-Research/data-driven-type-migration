@@ -14,6 +14,7 @@ import org.jetbrains.research.ddtm.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class TypeChangeInspection extends AbstractBaseJavaLocalInspectionTool {
@@ -51,12 +52,12 @@ public class TypeChangeInspection extends AbstractBaseJavaLocalInspectionTool {
                 if (statement.getDeclaredElements().length != 1) return;
                 PsiElement decl = statement.getDeclaredElements()[0];
 
-                PsiTypeElement sourceTypeElement = PsiTreeUtil.findChildOfType(decl, PsiTypeElement.class);
+                PsiTypeElement sourceTypeElement = PsiTreeUtil.getChildOfType(decl, PsiTypeElement.class);
                 if (sourceTypeElement == null) return;
 
                 String sourceType = sourceTypeElement.getType().getCanonicalText();
                 if (sourceType.equals(String.class.getCanonicalName())) {
-                    PsiLiteral literal = PsiTreeUtil.findChildOfType(decl, PsiLiteral.class);
+                    PsiLiteral literal = PsiTreeUtil.getChildOfType(decl, PsiLiteral.class);
                     if (literal == null) return;
 
                     String value = (String) literal.getValue();
@@ -64,8 +65,10 @@ public class TypeChangeInspection extends AbstractBaseJavaLocalInspectionTool {
                         final Project project = holder.getProject();
                         final TypeChangeRulesStorage storage = project.getService(TypeChangeRulesStorage.class);
                         final var pattern = storage.findPattern(
-                                String.class.getCanonicalName(), Path.class.getCanonicalName()
-                        ).get();
+                                String.class.getCanonicalName(),
+                                Path.class.getCanonicalName()
+                        ).orElseThrow(NoSuchElementException::new);
+
                         holder.registerProblem(
                                 sourceTypeElement,
                                 DESCRIPTION_TEMPLATE,
