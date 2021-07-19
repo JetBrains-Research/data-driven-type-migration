@@ -15,6 +15,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
+import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
 import java.util.Objects;
@@ -52,7 +53,7 @@ public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction 
                         storage.getPatternsBySourceType(rootType.getCanonicalText()),
                         element,
                         project,
-                        false
+                        InvocationWorkflow.PROACTIVE
                 )
         );
         suggestionsPopup.showInBestPositionFor(editor);

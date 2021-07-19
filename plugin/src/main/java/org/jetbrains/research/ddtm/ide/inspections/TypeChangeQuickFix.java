@@ -10,6 +10,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
+import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.ide.intentions.TypeChangesListPopupStep;
 
@@ -37,7 +38,7 @@ public class TypeChangeQuickFix implements LocalQuickFix {
                         inspectionPatterns,
                         descriptor.getPsiElement(),
                         project,
-                        false
+                        InvocationWorkflow.INSPECTIVE
                 )
         );
         final Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();

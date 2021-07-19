@@ -12,6 +12,7 @@ import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
+import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.ide.migration.TypeChangeProcessor;
 import org.jetbrains.research.ddtm.utils.TypeReference;
 
@@ -61,7 +62,7 @@ public class TypeChangeIntentionTest extends LightJavaCodeInsightFixtureTestCase
         assertTrue("No such pattern with specified types", result.isPresent());
         final var pattern = result.get();
 
-        final var processor = (new TypeChangeProcessor(getProject(), false));
+        final var processor = (new TypeChangeProcessor(getProject(), InvocationWorkflow.PROACTIVE));
         WriteCommandAction.runWriteCommandAction(getProject(), () -> processor.run(element, pattern));
 
         PsiFile psiFile = PsiManager.getInstance(getProject()).findFile(expectedFile);

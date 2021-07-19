@@ -13,6 +13,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
+import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.ide.refactoring.TypeChangeMarker;
 
 import java.util.Collections;
@@ -54,7 +55,7 @@ public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction 
                         Collections.singletonList(pattern.get()),
                         element,
                         project,
-                        true
+                        InvocationWorkflow.REACTIVE
                 )
         );
         suggestionsPopup.showInBestPositionFor(editor);
