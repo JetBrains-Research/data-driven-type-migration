@@ -18,9 +18,11 @@ public class StringUtils {
         return input;
     }
 
+    // Linux or Windows absolute path
+    private static final Pattern systemPathPattern =
+            Pattern.compile("^/|(/[a-zA-Z0-9_.-]+)+$" + "|" + "^([a-zA-Z]:)?(\\\\[a-zA-Z0-9_.-]+)+\\\\?$");
+
     public static boolean isSystemPath(String source) {
-        // Linux or Windows absolute path
-        Pattern pattern = Pattern.compile("^/|(/[a-zA-Z0-9_.-]+)+$" + "|" + "^([a-zA-Z]:)?(\\\\[a-zA-Z0-9_.-]+)+\\\\?$");
-        return source != null && !source.trim().isEmpty() && pattern.matcher(source).matches();
+        return source != null && !source.trim().isEmpty() && systemPathPattern.matcher(source).matches();
     }
 }
