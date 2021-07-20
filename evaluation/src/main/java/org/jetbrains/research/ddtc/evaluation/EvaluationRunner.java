@@ -92,6 +92,8 @@ public class EvaluationRunner implements ApplicationStarter {
             final var typeChangeProcessor = new TypeChangeProcessor(project, false);
             List<Output> outputs = new ArrayList<>();
             for (var root : roots) {
+                if (alreadyAnalyzed.size() == fileOffsets.size())
+                    continue;
                 VfsUtilCore.iterateChildrenRecursively(root, null, javaFile -> {
                     if(alreadyAnalyzed.contains(javaFile.getName()))
                         return true;
@@ -174,6 +176,8 @@ public class EvaluationRunner implements ApplicationStarter {
                 .map(usage -> getAncestors(usage.getElement(), 4, document))
                 .peek(x -> System.out.println("---"))
                 .collect(Collectors.toList());
+
+
         if(root instanceof PsiMethod){
             PsiMethod m = (PsiMethod) root;
             ReturnStatementExtractor rs = new ReturnStatementExtractor();
@@ -204,10 +208,19 @@ public class EvaluationRunner implements ApplicationStarter {
         if (n == 0 || x instanceof PsiClass || x instanceof PsiJavaFile || x instanceof PsiCodeBlock || x instanceof PsiMethod || x instanceof PsiIfStatement)
             return new ArrayList<>();
         else {
-            System.out.println(x.getText());
-            return Stream.concat(Stream.of(ImmutablePair.of(x.getTextRange(),
-                    ImmutablePair.of(x.getText(),document.getLineNumber(x.getTextOffset())))), getAncestors(x.getParent(), n - 1, document).stream())
+            return Stream.concat(getLoc(x, document), getAncestors(x.getParent(), n - 1, document).stream())
                     .collect(Collectors.toList());
+        }
+    }
+
+    @NotNull
+    private static Stream<ImmutablePair<TextRange, ImmutablePair<String, Integer>>> getLoc(PsiElement x, Document document) {
+        try{
+        return Stream.of(ImmutablePair.of(x.getTextRange(),
+                ImmutablePair.of(x.getText(), document.getLineNumber(x.getTextOffset()))));
+        }catch(Exception e){
+            System.out.println("could not get ancestor for " + x.toString());
+            return Stream.empty();
         }
     }
 
