@@ -1,6 +1,8 @@
 # Data-Driven Type Migration
 
 [![JB Research](https://jb.gg/badges/research-flat-square.svg)](https://research.jetbrains.org/)
+![pipeline status](https://github.com/JetBrains-Research/data-driven-type-migration/actions/workflows/build.yml/badge.svg)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 
 An IntelliJ IDEA plugin that adjusts the current approach to `Type Migration`
 refactoring for Java using inferred type change rules, which were gathered from popular open-source Java repositories.
@@ -68,6 +70,15 @@ You can setup the appropriate `Search Scope` for type migration or `Reactive Int
 in the menu of the plugin: `File` - `Settings` - `Tools` - `Data-Driven Type Migration`.
 
 <img src="assets/img/settings.png" alt="Gutter Icon Example" width="400">
+
+### Inspections
+
+The plugin will also try to recommend you some type changes to apply in the form
+of [Code Inspection](https://www.jetbrains.com/help/idea/code-inspection.html). Generally, these suggestions will have
+a `WARNING` level, but just to attract your attention during plugin evaluation. Such hints are mostly of a
+recommendation and training nature.
+
+<img src="assets/img/inspection.gif" alt="Gutter Icon Example" width="600">
 
 ### Currently supported Type Change Patterns*:
 

@@ -77,4 +77,10 @@ public class TypeChangeLogsCollector {
                 .addData("expression_after", rule.getExpressionAfter());
         TypeChangeLogger.log(group, "recovering.intention.applied", data);
     }
+
+    public void inspectionUsed(Project project) {
+        FeatureUsageData data = new FeatureUsageData().addProject(project)
+                .addData("from_inspection", true);
+        TypeChangeLogger.log(group, "inspection.used", data);
+    }
 }

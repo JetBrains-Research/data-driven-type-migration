@@ -41,6 +41,14 @@ type has been changed.
         <!--suppress PluginXmlValidity -->
         <intentionMenuContributor
                 implementation="org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeIntentionContributor"/>
+
+        <localInspection implementationClass="org.jetbrains.research.ddtm.ide.inspections.TypeChangeInspection"
+                         groupName="Type migration"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         displayName="Data-driven type migration hints"
+                         shortName="DDTM"
+                         groupPath="Java"/>
     </extensions>
 
     <projectListeners>

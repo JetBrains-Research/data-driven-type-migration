@@ -2,7 +2,7 @@ package org.jetbrains.research.ddtm.ide.ui;
 
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
-import org.jetbrains.research.ddtm.utils.EditorUtils;
+import org.jetbrains.research.ddtm.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,8 +28,8 @@ public class TypeChangeGutterPopupPanel extends JPanel {
         final var header = new JLabel(DataDrivenTypeMigrationBundle.message("suggested.gutter.popup.header"));
         final var content = new JLabel(DataDrivenTypeMigrationBundle.message(
                 "suggested.gutter.popup.content",
-                EditorUtils.escapeHTML(sourceType),
-                EditorUtils.escapeHTML(targetType))
+                StringUtils.escapeHTML(sourceType),
+                StringUtils.escapeHTML(targetType))
         );
         content.setBorder(JBUI.Borders.empty(15, 30));
         labelsPanel.add(header, BorderLayout.NORTH);

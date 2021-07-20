@@ -39,12 +39,12 @@ public class TypeChangeProcessor {
     private static final Logger LOG = Logger.getInstance(TypeChangeProcessor.class);
 
     private final Project project;
-    private final Boolean isRootTypeAlreadyChanged;
+    private final InvocationWorkflow invocationWorkflow;
     private PsiElement root;
 
-    public TypeChangeProcessor(Project project, Boolean isRootTypeAlreadyChanged) {
+    public TypeChangeProcessor(Project project, InvocationWorkflow invocationWorkflow) {
         this.project = project;
-        this.isRootTypeAlreadyChanged = isRootTypeAlreadyChanged;
+        this.invocationWorkflow = invocationWorkflow;
     }
 
     public void run(PsiElement element, TypeChangePatternDescriptor descriptor) {
@@ -92,30 +92,24 @@ public class TypeChangeProcessor {
                 });
             }
 
-            if (isRootTypeAlreadyChanged) {
-                TypeChangeLogsCollector.getInstance().refactoringIntentionApplied(
-                        project,
-                        descriptor.getSourceType(),
-                        descriptor.getTargetType(),
-                        root,
-                        typeChangesCollector.getUpdatedUsages().size(),
-                        typeChangesCollector.getSuspiciousUsages().size(),
-                        typeChangesCollector.getFailedUsages().size(),
-                        InvocationWorkflow.REACTIVE
-                );
+            if (invocationWorkflow.equals(InvocationWorkflow.REACTIVE)) {
                 disableRefactoring(element);
-            } else {
-                TypeChangeLogsCollector.getInstance().refactoringIntentionApplied(
-                        project,
-                        descriptor.getSourceType(),
-                        descriptor.getTargetType(),
-                        root,
-                        typeChangesCollector.getUpdatedUsages().size(),
-                        typeChangesCollector.getSuspiciousUsages().size(),
-                        typeChangesCollector.getFailedUsages().size(),
-                        InvocationWorkflow.PROACTIVE
-                );
             }
+
+            if (invocationWorkflow.equals(InvocationWorkflow.INSPECTIVE)) {
+                TypeChangeLogsCollector.getInstance().inspectionUsed(project);
+            }
+
+            TypeChangeLogsCollector.getInstance().refactoringIntentionApplied(
+                    project,
+                    descriptor.getSourceType(),
+                    descriptor.getTargetType(),
+                    root,
+                    typeChangesCollector.getUpdatedUsages().size(),
+                    typeChangesCollector.getSuspiciousUsages().size(),
+                    typeChangesCollector.getFailedUsages().size(),
+                    invocationWorkflow
+            );
             state.isInternalTypeChangeInProgress = false;
         } catch (Exception e) {
             LOG.error(e);
@@ -147,7 +141,7 @@ public class TypeChangeProcessor {
         this.root = root;
 
         // In case of suggested refactoring intention
-        if (isRootTypeAlreadyChanged) {
+        if (invocationWorkflow.equals(InvocationWorkflow.REACTIVE)) {
             final PsiType currentRootType = Objects.requireNonNull(PsiRelatedUtils.getExpectedType(root));
             final String recoveredRootType = descriptor.resolveSourceType(currentRootType, project);
             final PsiTypeElement recoveredRootTypeElement = PsiElementFactory.getInstance(project)

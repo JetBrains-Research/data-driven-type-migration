@@ -15,6 +15,7 @@ import org.apache.commons.cli.*;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
+import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.data.enums.SupportedSearchScope;
 import org.jetbrains.research.ddtm.ide.migration.TypeChangeProcessor;
 import org.jetbrains.research.ddtm.ide.migration.collectors.RequiredImportsCollector;
@@ -87,7 +88,7 @@ public class EvaluationRunner implements ApplicationStarter {
                                     final PsiElement context = psi.findElementAt(caretOffset);
                                     final var storage = project.getService(TypeChangeRulesStorage.class);
                                     final var descriptor = storage.findPattern(sourceType, targetType).get();
-                                    final var typeChangeProcessor = new TypeChangeProcessor(project, false);
+                                    final var typeChangeProcessor = new TypeChangeProcessor(project, InvocationWorkflow.PROACTIVE);
                                     final var builtInProcessor = typeChangeProcessor.createBuiltInTypeMigrationProcessor(context, descriptor);
                                     if (builtInProcessor == null) return;
 

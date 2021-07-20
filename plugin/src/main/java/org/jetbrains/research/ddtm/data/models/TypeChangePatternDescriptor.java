@@ -16,11 +16,18 @@ public class TypeChangePatternDescriptor {
     @SerializedName("To")
     private String targetType;
 
+    @SerializedName("Inspect")
+    private boolean inspect;
+
     @SerializedName("Kind")
     private String kind;
 
     @SerializedName("Rules")
     private List<TypeChangeRuleDescriptor> rules;
+
+    public boolean shouldInspect() {
+        return inspect;
+    }
 
     public String getTargetType() {
         return targetType;

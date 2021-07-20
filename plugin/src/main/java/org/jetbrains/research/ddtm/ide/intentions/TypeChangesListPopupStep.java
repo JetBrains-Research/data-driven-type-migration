@@ -8,13 +8,14 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
+import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.ide.migration.TypeChangeProcessor;
 
 import java.util.List;
 
 public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatternDescriptor> {
-    private final Boolean isRootTypeAlreadyChanged;
+    private final InvocationWorkflow invocationWorkflow;
     private final Project project;
     private final PsiElement context;
     private TypeChangePatternDescriptor selectedPatternDescriptor = null;
@@ -23,11 +24,11 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
                                     List<TypeChangePatternDescriptor> rulesDescriptors,
                                     PsiElement context,
                                     Project project,
-                                    Boolean isRootTypeAlreadyChanged) {
+                                    InvocationWorkflow invocationWorkflow) {
         super(caption, rulesDescriptors);
         this.context = context;
         this.project = project;
-        this.isRootTypeAlreadyChanged = isRootTypeAlreadyChanged;
+        this.invocationWorkflow = invocationWorkflow;
     }
 
     @Override
@@ -44,7 +45,7 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
     @Override
     public @Nullable Runnable getFinalRunnable() {
         return () -> {
-            final var processor = new TypeChangeProcessor(project, isRootTypeAlreadyChanged);
+            final var processor = new TypeChangeProcessor(project, invocationWorkflow);
             WriteCommandAction.writeCommandAction(project)
                     .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + selectedPatternDescriptor.toString())
                     .withGlobalUndo()
