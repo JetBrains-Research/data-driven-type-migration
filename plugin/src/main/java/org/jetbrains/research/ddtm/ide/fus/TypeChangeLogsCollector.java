@@ -6,7 +6,6 @@ import com.intellij.internal.statistic.eventLog.FeatureUsageData;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
-import org.jetbrains.research.ddtm.data.models.TypeChangeRuleDescriptor;
 
 import java.util.concurrent.TimeUnit;
 
@@ -51,10 +50,6 @@ public class TypeChangeLogsCollector {
         TypeChangeLogger.log(group, "rename.performed", data);
     }
 
-    public void gutterIconClicked(Project project) {
-        TypeChangeLogger.log(group, "gutter.icon.clicked");
-    }
-
     public void refactoringIntentionApplied(Project project, String sourceType, String targetType, PsiElement root,
                                             int usagesUpdated, int suspiciousUsagesFound, int usagesFailed,
                                             InvocationWorkflow workflow) {
@@ -69,14 +64,15 @@ public class TypeChangeLogsCollector {
         TypeChangeLogger.log(group, "refactoring.intention.applied", data);
     }
 
-    public void recoveringIntentionApplied(Project project, TypeChangeRuleDescriptor rule) {
-        FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("source_return_type", rule.getReturnType().getSourceType())
-                .addData("target_return_type", rule.getReturnType().getTargetType());
-        TypeChangeLogger.log(group, "recovering.intention.applied", data);
+    public void gutterIconClicked() {
+        TypeChangeLogger.log(group, "gutter.icon.clicked");
     }
 
-    public void inspectionUsed(Project project) {
+    public void recoveringIntentionApplied() {
+        TypeChangeLogger.log(group, "recovering.intention.applied");
+    }
+
+    public void inspectionUsed() {
         TypeChangeLogger.log(group, "inspection.used");
     }
 }

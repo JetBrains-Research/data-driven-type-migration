@@ -73,4 +73,4 @@ fabric.properties
 .gradle/
 build/
 .idea/
-logging.json
+logging-*.json

@@ -97,7 +97,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
         try {
             psiFile = psiDocumentManager.getPsiFile(document);
         } catch (Throwable e) {
-            LOG.error(e);
+            LOG.warn(e);
         }
         if (psiFile == null || PsiRelatedUtils.shouldIgnoreFile(psiFile)) return;
 

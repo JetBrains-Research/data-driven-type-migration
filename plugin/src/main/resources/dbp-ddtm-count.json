@@ -30,7 +30,7 @@
               {
                 "path": "source_type",
                 "value": [
-                  "{string}"
+                  "{enum#type_patterns}"
                 ],
                 "column": {
                   "index": 0,
@@ -41,7 +41,7 @@
               {
                 "path": "target_type",
                 "value": [
-                  "{string}"
+                  "{enum#type_patterns}"
                 ],
                 "column": {
                   "index": 1,
@@ -97,12 +97,13 @@
                 "path": "invocation_workflow",
                 "value": [
                   "proactive",
-                  "reactive"
+                  "reactive",
+                  "inspecting"
                 ],
                 "column": {
                   "index": 6,
                   "title": "Invocation workflow",
-                  "description": "The way of intention invocation: proactive (as general Code Intention) or reactive (as Suggested Refactoring)."
+                  "description": "The way of intention invocation: proactive (as general Code Intention), reactive (as Suggested Refactoring) or as inspection."
                 }
               }
             ]
@@ -119,30 +120,6 @@
             "notes": [
               "FUS-651",
               "FUS-652"
-            ],
-            "data": [
-              {
-                "path": "source_return_type",
-                "value": [
-                  "{util#class_name}"
-                ],
-                "column": {
-                  "index": 0,
-                  "title": "Source return type",
-                  "description": "The initial return type of the suspicious expression, that was not migrated automatically."
-                }
-              },
-              {
-                "path": "target_return_type",
-                "value": [
-                  "{util#class_name}"
-                ],
-                "column": {
-                  "index": 1,
-                  "title": "Target return  type",
-                  "description": "The final return type of the suspicious expression, that was not migrated automatically."
-                }
-              }
             ]
           }
         ]
@@ -217,7 +194,7 @@
               {
                 "path": "source_type",
                 "value": [
-                  "{string}"
+                  "{enum#type_patterns}"
                 ],
                 "column": {
                   "index": 0,
@@ -228,7 +205,7 @@
               {
                 "path": "target_type",
                 "value": [
-                  "{string}"
+                  "{enum#type_patterns}"
                 ],
                 "column": {
                   "index": 1,

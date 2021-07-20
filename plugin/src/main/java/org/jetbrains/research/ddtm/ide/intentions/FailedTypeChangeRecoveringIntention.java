@@ -51,7 +51,7 @@ public class FailedTypeChangeRecoveringIntention extends PsiElementBaseIntention
                 PsiRelatedUtils.getHighestParentOfType(element, PsiExpression.class),
                 typeEvaluator
         );
-        TypeChangeLogsCollector.getInstance().recoveringIntentionApplied(project, rule);
+        TypeChangeLogsCollector.getInstance().recoveringIntentionApplied();
     }
 
     @Override
