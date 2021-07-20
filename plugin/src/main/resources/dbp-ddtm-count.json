@@ -1,0 +1,245 @@
+{
+  "id": "dbp.ddtm.count",
+  "title": "Data-Driven Type Migration plugin usage",
+  "description": "Records the usages of the Data-Driven Type Migration plugin.",
+  "recorder": "DBP",
+  "type": "counter",
+  "products": [
+    "IU",
+    "IC"
+  ],
+  "baselines": {
+    "primary": {
+      "event": "registered"
+    }
+  },
+  "schema": {
+    "tiger": [
+      {
+        "event": "refactoring.intention.applied",
+        "title": "Intention applied",
+        "description": "The type change intention was applied.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ],
+            "data": [
+              {
+                "path": "source_type",
+                "value": [
+                  "{string}"
+                ],
+                "column": {
+                  "index": 0,
+                  "title": "Source type",
+                  "description": "The fully qualified name of the source type, affected by refactoring."
+                }
+              },
+              {
+                "path": "target_type",
+                "value": [
+                  "{string}"
+                ],
+                "column": {
+                  "index": 1,
+                  "title": "Target type",
+                  "description": "The fully qualified name of the target type, introduced by refactoring."
+                }
+              },
+              {
+                "path": "migration_root",
+                "value": [
+                  "{util#class_name}"
+                ],
+                "column": {
+                  "index": 2,
+                  "title": "Migration root",
+                  "description": "The fully qualified classname of the migration root PSI element."
+                }
+              },
+              {
+                "path": "usages_updated",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 3,
+                  "title": "Usages updated",
+                  "description": "The total number of successfully updated usages after type migration."
+                }
+              },
+              {
+                "path": "suspicious_usages_found",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 4,
+                  "title": "Suspicious usages found",
+                  "description": "The total number of usages that can be potentially updated, but changing the return type of the corresponding expression."
+                }
+              },
+              {
+                "path": "usages_failed",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 5,
+                  "title": "Usages failed",
+                  "description": "The total number of failed-to-migrate usages."
+                }
+              },
+              {
+                "path": "invocation_workflow",
+                "value": [
+                  "proactive",
+                  "reactive"
+                ],
+                "column": {
+                  "index": 6,
+                  "title": "Invocation workflow",
+                  "description": "The way of intention invocation: proactive (as general Code Intention) or reactive (as Suggested Refactoring)."
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "event": "recovering.intention.applied",
+        "title": "Recovering intention applied",
+        "description": "The recovering intention was applied.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ],
+            "data": [
+              {
+                "path": "source_return_type",
+                "value": [
+                  "{util#class_name}"
+                ],
+                "column": {
+                  "index": 0,
+                  "title": "Source return type",
+                  "description": "The initial return type of the suspicious expression, that was not migrated automatically."
+                }
+              },
+              {
+                "path": "target_return_type",
+                "value": [
+                  "{util#class_name}"
+                ],
+                "column": {
+                  "index": 1,
+                  "title": "Target return  type",
+                  "description": "The final return type of the suspicious expression, that was not migrated automatically."
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "event": "gutter.icon.clicked",
+        "title": "Gutter icon clicked",
+        "description": "The migration was launched after the user clicked on the icon on the gutter.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ]
+          }
+        ]
+      },
+      {
+        "event": "inspection.used",
+        "title": "Inspection was used",
+        "description": "The migration was launched after the user noticed a warning produced by inspection.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ]
+          }
+        ]
+      },
+      {
+        "event": "rename.performed",
+        "title": "Rename Refactoring performed",
+        "description": "The built-in Rename Refactoring was performed.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ],
+            "data": [
+              {
+                "path": "element_canonical_name",
+                "value": [
+                  "{util#class_name}"
+                ],
+                "column": {
+                  "index": 0,
+                  "title": "Element canonical name",
+                  "description": "The fully qualified name of the class of the renamed PSI element."
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "event": "migration.undone",
+        "title": "Type Migration undone",
+        "description": "Indicates that previously applied data-driven type migration refactoring was undone by the developer.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ],
+            "data": [
+              {
+                "path": "source_type",
+                "value": [
+                  "{string}"
+                ],
+                "column": {
+                  "index": 0,
+                  "title": "Source type",
+                  "description": "The fully qualified name of the source type, affected by refactoring."
+                }
+              },
+              {
+                "path": "target_type",
+                "value": [
+                  "{string}"
+                ],
+                "column": {
+                  "index": 1,
+                  "title": "Target type",
+                  "description": "The fully qualified name of the target type, introduced by refactoring."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupActivity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.Config;
+import org.jetbrains.research.ddtm.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ddtm.ide.refactoring.TypeChangeSuggestedRefactoringState;
 import org.jetbrains.research.ddtm.ide.refactoring.listeners.AfterTypeChangeCaretListener;
 import org.jetbrains.research.ddtm.ide.refactoring.listeners.TypeChangeDocumentListener;
@@ -41,6 +42,7 @@ public class TypeChangeRefactoringProvider {
         @Override
         public void runActivity(@NotNull Project project) {
             if (!ApplicationManager.getApplication().isUnitTestMode()) {
+                TypeChangeLogsCollector.getInstance(); // logging baseline
 
                 EditorFactory.getInstance().getEventMulticaster().addDocumentListener(
                         ProjectDisposeAwareDocumentListener.create(project, new TypeChangeDocumentListener(project)),

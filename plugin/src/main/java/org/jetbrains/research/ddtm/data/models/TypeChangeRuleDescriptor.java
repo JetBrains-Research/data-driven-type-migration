@@ -13,7 +13,7 @@ public class TypeChangeRuleDescriptor {
     private String requiredImports;
 
     @SerializedName("ReturnType")
-    private TypeChangeDescriptor returnType;
+    private TypeChange returnType;
 
     public String getExpressionAfter() {
         return expressionAfter;
@@ -23,7 +23,7 @@ public class TypeChangeRuleDescriptor {
         return expressionBefore;
     }
 
-    public TypeChangeDescriptor getReturnType() {
+    public TypeChange getReturnType() {
         return returnType;
     }
 

@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("UnstableApiUsage")
 public class TypeChangeLogsCollector {
     private static final Integer LOG_DELAY_MIN = 24 * 60;
-    private static final Integer LOG_INITIAL_DELAY_MIN = 11;
+    private static final Integer LOG_INITIAL_DELAY_MIN = 5;
     // TODO: approve group id
     private static final EventLogGroup group = new EventLogGroup("dbp.ddtm.count", TypeChangeLogger.version);
     private static TypeChangeLogsCollector instance;
@@ -52,9 +52,7 @@ public class TypeChangeLogsCollector {
     }
 
     public void gutterIconClicked(Project project) {
-        FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("gutter_icon_clicked", true);
-        TypeChangeLogger.log(group, "gutter.icon.clicked", data);
+        TypeChangeLogger.log(group, "gutter.icon.clicked");
     }
 
     public void refactoringIntentionApplied(Project project, String sourceType, String targetType, PsiElement root,
@@ -73,14 +71,12 @@ public class TypeChangeLogsCollector {
 
     public void recoveringIntentionApplied(Project project, TypeChangeRuleDescriptor rule) {
         FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("expression_before", rule.getExpressionBefore())
-                .addData("expression_after", rule.getExpressionAfter());
+                .addData("source_return_type", rule.getReturnType().getSourceType())
+                .addData("target_return_type", rule.getReturnType().getTargetType());
         TypeChangeLogger.log(group, "recovering.intention.applied", data);
     }
 
     public void inspectionUsed(Project project) {
-        FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("from_inspection", true);
-        TypeChangeLogger.log(group, "inspection.used", data);
+        TypeChangeLogger.log(group, "inspection.used");
     }
 }
