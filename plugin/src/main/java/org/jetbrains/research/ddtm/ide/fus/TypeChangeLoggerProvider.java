@@ -15,6 +15,7 @@ public class TypeChangeLoggerProvider extends StatisticsEventLoggerProvider {
     @Override
     public boolean isRecordEnabled() {
         return !ApplicationManager.getApplication().isUnitTestMode() &&
+                !ApplicationManager.getApplication().isHeadlessEnvironment() &&
                 Registry.is("feature.usage.event.log.collect.and.upload") &&
                 StatisticsUploadAssistant.isCollectAllowed();
     }

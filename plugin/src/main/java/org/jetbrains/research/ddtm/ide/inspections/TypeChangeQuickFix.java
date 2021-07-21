@@ -38,7 +38,7 @@ public class TypeChangeQuickFix implements LocalQuickFix {
                         inspectionPatterns,
                         descriptor.getPsiElement(),
                         project,
-                        InvocationWorkflow.INSPECTIVE
+                        InvocationWorkflow.INSPECTING
                 )
         );
         final Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();

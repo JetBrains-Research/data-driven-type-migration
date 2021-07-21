@@ -93,14 +93,15 @@ public class TypeChangeDocumentListener implements DocumentListener {
 
     private void documentChangedAndCommitted(DocumentEvent event) {
         final Document document = event.getDocument();
+        if (project.isDisposed() || PsiDocumentManager.getInstance(project).isDocumentBlockedByPsi(document)) return;
+
         PsiFile psiFile = null;
         try {
             psiFile = psiDocumentManager.getPsiFile(document);
         } catch (Throwable e) {
-            LOG.error(e);
+            LOG.warn(e);
         }
         if (psiFile == null || PsiRelatedUtils.shouldIgnoreFile(psiFile)) return;
-
 
         final int offset = event.getOffset();
         PsiElement newElement = psiFile.findElementAt(offset);

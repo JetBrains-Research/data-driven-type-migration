@@ -1,5 +1,6 @@
 package org.jetbrains.research.ddtm.utils;
 
+import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -71,7 +72,8 @@ public class PsiRelatedUtils {
     }
 
     public static Boolean shouldIgnoreFile(PsiFile file) {
-        return !file.isPhysical() || file instanceof PsiBinaryFile || file instanceof PsiCodeFragment;
+        return !file.isPhysical() || file instanceof PsiBinaryFile || file instanceof PsiCodeFragment
+                || !(file.getFileType().equals(JavaFileType.INSTANCE));
     }
 
     public static Boolean hasRootInside(PsiElement context, String currentRootName) {

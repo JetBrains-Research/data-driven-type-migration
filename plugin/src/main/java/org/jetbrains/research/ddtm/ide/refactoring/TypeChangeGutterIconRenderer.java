@@ -104,7 +104,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
     private void doRefactoring() {
         final var data = SuggestedRefactoringData.getInstance();
         final var processor = new TypeChangeProcessor(data.project, InvocationWorkflow.REACTIVE);
-        TypeChangeLogsCollector.getInstance().gutterIconClicked(data.project);
+        TypeChangeLogsCollector.getInstance().gutterIconClicked();
         WriteCommandAction.writeCommandAction(data.project)
                 .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + data.pattern.toString())
                 .withGlobalUndo()

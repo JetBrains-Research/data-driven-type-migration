@@ -18,9 +18,10 @@ public class TypeChangesInfoCollector extends SwitchableCollector {
     private static TypeChangesInfoCollector collector = null;
     private TypeEvaluator typeEvaluator;
 
-    private List<SmartPsiElementPointer<PsiElement>> updatedUsages = new ArrayList<>();
-    private List<SmartPsiElementPointer<PsiElement>> failedUsages = new ArrayList<>();
-    private Map<SmartPsiElementPointer<PsiElement>, TypeChangeRuleDescriptor> failedUsageToCorrespondingRule = new HashMap<>();
+    private final List<SmartPsiElementPointer<PsiElement>> updatedUsages = new ArrayList<>();
+    private final List<SmartPsiElementPointer<PsiElement>> failedUsages = new ArrayList<>();
+    private final Map<SmartPsiElementPointer<PsiElement>, TypeChangeRuleDescriptor> failedUsageToCorrespondingRule = new HashMap<>();
+    private final Set<TypeChangeRuleDescriptor> usedRules = new HashSet<>();
 
     public static TypeChangesInfoCollector getInstance() {
         if (collector == null) {
@@ -37,10 +38,20 @@ public class TypeChangesInfoCollector extends SwitchableCollector {
         return failedUsages;
     }
 
+    public Set<TypeChangeRuleDescriptor> getUsedRules() {
+        return usedRules;
+    }
+
     public List<SmartPsiElementPointer<PsiElement>> getSuspiciousUsages() {
         return failedUsages.stream()
-                .filter(usage -> failedUsageToCorrespondingRule.containsKey(usage))
+                .filter(failedUsageToCorrespondingRule::containsKey)
                 .collect(Collectors.toList());
+    }
+
+    public void addUsedRule(TypeChangeRuleDescriptor rule) {
+        if (shouldCollect) {
+            usedRules.add(rule);
+        }
     }
 
     public void addFailedUsage(PsiElement element) {
@@ -90,9 +101,10 @@ public class TypeChangesInfoCollector extends SwitchableCollector {
      * </p>
      */
     public void clear() {
-        failedUsages = new ArrayList<>();
-        updatedUsages = new ArrayList<>();
-        failedUsageToCorrespondingRule = new HashMap<>();
+        failedUsages.clear();
+        updatedUsages.clear();
+        failedUsageToCorrespondingRule.clear();
+        usedRules.clear();
         shouldCollect = true;
     }
 

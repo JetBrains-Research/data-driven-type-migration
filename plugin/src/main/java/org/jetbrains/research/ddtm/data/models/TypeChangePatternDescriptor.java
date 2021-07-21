@@ -10,6 +10,9 @@ import org.jetbrains.research.ddtm.ide.migration.structuralsearch.SSRUtils;
 import java.util.List;
 
 public class TypeChangePatternDescriptor {
+    @SerializedName("ID")
+    private int id;
+
     @SerializedName("From")
     private String sourceType;
 
@@ -27,6 +30,10 @@ public class TypeChangePatternDescriptor {
 
     public boolean shouldInspect() {
         return inspect;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTargetType() {

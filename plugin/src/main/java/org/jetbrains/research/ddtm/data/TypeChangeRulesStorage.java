@@ -6,6 +6,7 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
+import org.jetbrains.research.ddtm.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.ddtm.data.specifications.SourceTypeSpecification;
 import org.jetbrains.research.ddtm.data.specifications.TargetTypeSpecification;
 
@@ -75,6 +76,12 @@ public final class TypeChangeRulesStorage {
         return patterns.stream()
                 .filter(new SourceTypeSpecification(sourceType, project))
                 .collect(Collectors.toList());
+    }
+
+    public Optional<TypeChangePatternDescriptor> findPatternByRule(TypeChangeRuleDescriptor rule) {
+        return patterns.stream()
+                .filter(pattern -> pattern.getRules().contains(rule))
+                .findFirst();
     }
 
     public List<TypeChangePatternDescriptor> getPatternsByTargetType(String targetType) {

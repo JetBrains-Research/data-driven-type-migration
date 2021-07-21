@@ -12,6 +12,8 @@ import com.intellij.refactoring.typeMigration.TypeConversionDescriptor;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
+import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
+import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.ddtm.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ddtm.ide.migration.collectors.TypeChangesInfoCollector;
@@ -51,7 +53,9 @@ public class FailedTypeChangeRecoveringIntention extends PsiElementBaseIntention
                 PsiRelatedUtils.getHighestParentOfType(element, PsiExpression.class),
                 typeEvaluator
         );
-        TypeChangeLogsCollector.getInstance().recoveringIntentionApplied(project, rule);
+        final var storage = project.getService(TypeChangeRulesStorage.class);
+        final int patternId = storage.findPatternByRule(rule).map(TypeChangePatternDescriptor::getId).orElse(-1);
+        TypeChangeLogsCollector.getInstance().recoveringIntentionApplied(project, patternId);
     }
 
     @Override

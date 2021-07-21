@@ -9,6 +9,14 @@
         "After": "$1$.resolve($2$)"
       },
       {
+        "Before": "new File($1$+\"/\"+$2$)",
+        "After": "$1$.resolve($2$)"
+      },
+      {
+        "Before": "new File($1$+\"\\\\\"+$2$)",
+        "After": "$1$.resolve($2$)"
+      },
+      {
         "Before": "new File($2$, $3$)",
         "After": "Path.of($2$, $3$)"
       },
@@ -20,6 +28,11 @@
       {
         "Before": "$1$.exists()",
         "After": "Files.exists($1$)",
+        "RequiredImports": "java.nio.file.Files"
+      },
+      {
+        "Before": "!$1$.exists()",
+        "After": "Files.notExists($1$)",
         "RequiredImports": "java.nio.file.Files"
       },
       {
@@ -45,13 +58,49 @@
         "After": "$1$.toAbsolutePath().toString()"
       },
       {
+        "Before": "$1$.getCanonicalPath()",
+        "After": "$1$.toRealPath().toString()"
+      },
+      {
+        "Before": "$1$.getPath()",
+        "After": "$1$.toString()"
+      },
+      {
+        "Before": "$1$.getParentFile()",
+        "After": "$1$.getParent().toFile()"
+      },
+      {
+        "Before": "$1$.getCanonicalFile()",
+        "After": "$1$.toRealPath()"
+      },
+      {
         "Before": "$1$.canWrite()",
         "After": "Files.isWritable($1$)",
         "RequiredImports": "java.nio.file.Files"
       },
       {
+        "Before": "new FileInputStream($1$)",
+        "After": "Files.newInputStream($1$)",
+        "RequiredImports": "java.nio.file.Files"
+      },
+      {
+        "Before": "new FileOutputStream($1$)",
+        "After": "Files.newOutputStream($1$)",
+        "RequiredImports": "java.nio.file.Files"
+      },
+      {
+        "Before": "new FileOutputStream(new File($1$,$2$))",
+        "After": "Files.newOutputStream($1$.resolve($2$))",
+        "RequiredImports": "java.nio.file.Files"
+      },
+      {
         "Before": "$1$.delete()",
         "After": "Files.delete($1$)",
+        "RequiredImports": "java.nio.file.Files"
+      },
+      {
+        "Before": "$1$.length()",
+        "After": "Files.size($1$)",
         "RequiredImports": "java.nio.file.Files"
       },
       {
@@ -72,7 +121,8 @@
         "Before": "$1$.toPath()",
         "After": "$1$"
       }
-    ]
+    ],
+    "ID": 1
   },
   {
     "From": "java.lang.String",
@@ -91,7 +141,8 @@
         "Before": "$1$",
         "After": "$1$.pattern()"
       }
-    ]
+    ],
+    "ID": 2
   },
   {
     "From": "java.util.List<$1$>",
@@ -162,10 +213,37 @@
         "After": "$2$.collect(Collectors.toSet())"
       },
       {
+        "Before": "$2$.collect(toImmutableList())",
+        "After": "$2$.collect(toImmutableSet())",
+        "RequiredImports": "com.google.common.collect.ImmutableSet"
+      },
+      {
         "Before": "$1$",
         "After": "new HashSet<>($1$)"
       }
-    ]
+    ],
+    "ID": 3
+  },
+  {
+    "From": "java.util.List<$1$>",
+    "To": "java.util.Deque<$1$>",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "new ArrayList<$2$>($3$)",
+        "After": "new ArrayDeque<$2$>($3$)",
+        "RequiredImports": "java.util.ArrayDeque"
+      },
+      {
+        "Before": "$1$.remove(0)",
+        "After": "$1$.removeFirst()"
+      },
+      {
+        "Before": "$1$.add($2$)",
+        "After": "$1$.addLast($2$)"
+      }
+    ],
+    "ID": 4
   },
   {
     "From": "java.lang.String",
@@ -176,7 +254,28 @@
         "Before": "Charset.forName($1$)",
         "After": "$1$"
       }
-    ]
+    ],
+    "ID": 5
+  },
+  {
+    "From": "java.lang.String",
+    "To": "java.net.URL",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "$1$",
+        "After": "$1$.toString()"
+      },
+      {
+        "Before": "new URL($1$)",
+        "After": "$1$"
+      },
+      {
+        "Before": "$2$",
+        "After": "new URL($2$)"
+      }
+    ],
+    "ID": 6
   },
   {
     "From": "java.lang.String",
@@ -188,10 +287,31 @@
         "After": "$1$.toString()"
       },
       {
+        "Before": "$1$",
+        "After": "$1$.toASCIIString()"
+      },
+      {
+        "Before": "$1$",
+        "After": "$1$.getSchemeSpecificPart()"
+      },
+      {
+        "Before": "$2$",
+        "After": "URI.create($2$)"
+      },
+      {
+        "Before": "$1$",
+        "After": "$1$.getScheme()"
+      },
+      {
         "Before": "new URL($1$)",
         "After": "$1$.toURL()"
+      },
+      {
+        "Before": "$2$.toPath()",
+        "After": "$2$.toURI()"
       }
-    ]
+    ],
+    "ID": 7
   },
   {
     "From": "java.util.concurrent.Callable<$1$>",
@@ -202,7 +322,8 @@
         "Before": "$1$.call()",
         "After": "$1$.get()"
       }
-    ]
+    ],
+    "ID": 8
   },
   {
     "From": "java.util.Map<java.lang.String, java.lang.String>",
@@ -213,7 +334,8 @@
         "Before": "$1$.get()",
         "After": "$1$.getProperty()"
       }
-    ]
+    ],
+    "ID": 9
   },
   {
     "From": "java.lang.String",
@@ -228,7 +350,8 @@
         "Before": "$2$",
         "After": "UUID.fromString($2$)"
       }
-    ]
+    ],
+    "ID": 10
   },
   {
     "From": "$1$",
@@ -258,8 +381,94 @@
       {
         "Before": "Optional.ofNullable($1$)",
         "After": "$1$"
+      },
+      {
+        "Before": "return null",
+        "After": "return Optional.empty()"
+      },
+      {
+        "Before": "$2$.$3$($1$)",
+        "After": "$1$.map($2$::$3$)"
       }
-    ]
+    ],
+    "ID": 11
+  },
+  {
+    "From": "java.util.Optional<$1$>",
+    "To": "$1$",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "$1$.isPresent()",
+        "After": "$1$ != null"
+      },
+      {
+        "Before": "$1$.get()",
+        "After": "$1$"
+      },
+      {
+        "Before": "$1$.orElse($2$)",
+        "After": "$1$"
+      },
+      {
+        "Before": "Optional.ofNullable($2$)",
+        "After": "$2$"
+      },
+      {
+        "Before": "$1$.isEmpty()",
+        "After": "$1$ == null"
+      },
+      {
+        "Before": "$1$",
+        "After": "Optional.of($1$)"
+      },
+      {
+        "Before": "$1$",
+        "After": "Optional.ofNullable($1$)"
+      },
+      {
+        "Before": "return Optional.empty()",
+        "After": "return null"
+      },
+      {
+        "Before": "$1$.map($2$::$3$)",
+        "After": "$2$.$3$($1$)"
+      }
+    ],
+    "ID": 12
+  },
+  {
+    "From": "$1$",
+    "To": "java.util.List<$1$>",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "$2$",
+        "After": "Collections.singletonList($1$)",
+        "RequiredImports": "java.util.Collections"
+      },
+      {
+        "Before": "$1$",
+        "After": "$1$.get(0)"
+      },
+      {
+        "Before": "$1$=$2$",
+        "After": "$1$.add($2$)"
+      },
+      {
+        "Before": "$1$==null",
+        "After": "$1$.isEmpty()"
+      },
+      {
+        "Before": "$1$!=null",
+        "After": "!$1$.isEmpty()"
+      },
+      {
+        "Before": "Arrays.stream($1$)",
+        "After": "!$1$.stream()"
+      }
+    ],
+    "ID": 13
   },
   {
     "From": "java.lang.String",
@@ -272,6 +481,10 @@
         "RequiredImports": "java.nio.file.Paths"
       },
       {
+        "Before": "Paths.get($1$)",
+        "After": "$1$"
+      },
+      {
         "Before": "$1$",
         "After": "$1$.toString()"
       },
@@ -279,7 +492,8 @@
         "Before": "new File($1$)",
         "After": "$1$.toFile()"
       }
-    ]
+    ],
+    "ID": 14
   },
   {
     "From": "int",
@@ -288,7 +502,8 @@
     "Rules": [
       {
         "Before": "$2$",
-        "After": "(long)$2$"
+        "After": "Math.toIntExact($2$)",
+        "ReqiredImports": "java.lang.Math"
       },
       {
         "Before": "Integer.parseInt($2$)",
@@ -305,8 +520,33 @@
       {
         "Before": "new AtomicInteger($1$)",
         "After": "new AtomicLong($1$)"
+      },
+      {
+        "Before": "$2$.intValue()",
+        "After": "$2$.longValue()"
+      },
+      {
+        "Before": "$2$.readInt()",
+        "After": "$2$.readLong()"
       }
-    ]
+    ],
+    "ID": 15
+  },
+  {
+    "From": "long",
+    "To": "java.math.BigInteger",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "BigInteger.valueOf($1$)",
+        "After": "$1$"
+      },
+      {
+        "Before": "$2$",
+        "After": "BigInteger.valueOf($2$)"
+      }
+    ],
+    "ID": 16
   },
   {
     "From": "java.util.Date",
@@ -317,7 +557,8 @@
         "Before": "$1$.getTime()",
         "After": "$1$.getEpochMilli()"
       }
-    ]
+    ],
+    "ID": 17
   },
   {
     "From": "java.util.Date",
@@ -336,7 +577,24 @@
         "Before": "$1$.after($2$)",
         "After": "$1$.isAfter($2$)"
       }
-    ]
+    ],
+    "ID": 18
+  },
+  {
+    "From": "long",
+    "To": "java.time.Duration",
+    "Kind": "Reactive",
+    "Rules": [
+      {
+        "Before": "$1$",
+        "After": "$1$.toMillis()"
+      },
+      {
+        "Before": "$2$",
+        "After": "Duration.ofMillis($2$)"
+      }
+    ],
+    "ID": 19
   },
   {
     "From": "java.util.function.Function<java.lang.Integer,java.lang.Integer>",
@@ -348,7 +606,177 @@
         "Before": "$1$.apply($2$)",
         "After": "$1$.applyAsInt($2$)"
       }
-    ]
+    ],
+    "ID": 20
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Double,java.lang.Integer>",
+    "To": "java.util.function.DoubleToIntFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsInt($2$)"
+      }
+    ],
+    "ID": 21
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Long,java.lang.Integer>",
+    "To": "java.util.function.LongToIntFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsInt($2$)"
+      }
+    ],
+    "ID": 22
+  },
+  {
+    "From": "java.util.function.Function<$1$,java.lang.Integer>",
+    "To": "java.util.function.ToIntFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsInt($2$)"
+      }
+    ],
+    "ID": 23
+  },
+  {
+    "From": "java.util.function.BiFunction<java.lang.Integer,java.lang.Integer,java.lang.Integer>",
+    "To": "java.util.function.IntBinaryOperator",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsInt($2$)"
+      }
+    ],
+    "ID": 24
+  },
+  {
+    "From": "java.util.function.BiFunction<$1$,$2$,java.lang.Integer>",
+    "To": "java.util.function.ToIntBiFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsInt($2$)"
+      }
+    ],
+    "ID": 25
+  },
+  {
+    "From": "java.util.function.BiFunction<$1$,$2$,java.lang.Long>",
+    "To": "java.util.function.ToLongBiFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsLong($2$)"
+      }
+    ],
+    "ID": 26
+  },
+  {
+    "From": "java.util.function.BiFunction<$1$,$2$,java.lang.Double>",
+    "To": "java.util.function.ToDoubleBiFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsDouble($2$)"
+      }
+    ],
+    "ID": 27
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Long,java.lang.Long>",
+    "To": "java.util.function.LongUnaryOperator",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsLong($2$)"
+      }
+    ],
+    "ID": 28
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Integer,java.lang.Long>",
+    "To": "java.util.function.IntToLongFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsLong($2$)"
+      }
+    ],
+    "ID": 29
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Double,java.lang.Long>",
+    "To": "java.util.function.DoubleToLongFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsLong($2$)"
+      }
+    ],
+    "ID": 30
+  },
+  {
+    "From": "java.util.function.Function<$1$,java.lang.Long>",
+    "To": "java.util.function.ToLongFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsLong($2$)"
+      }
+    ],
+    "ID": 31
+  },
+  {
+    "From": "java.util.function.BiFunction<java.lang.Long,java.lang.Long,java.lang.Long>",
+    "To": "java.util.function.LongBinaryOperator",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsLong($2$)"
+      }
+    ],
+    "ID": 32
+  },
+  {
+    "From": "java.util.function.BiFunction<java.lang.Double,java.lang.Double,java.lang.Double>",
+    "To": "java.util.function.DoubleBinaryOperator",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsDouble($2$)"
+      }
+    ],
+    "ID": 33
   },
   {
     "From": "java.util.function.Function<java.lang.Double,java.lang.Double>",
@@ -360,7 +788,86 @@
         "Before": "$1$.apply($2$)",
         "After": "$1$.applyAsDouble($2$)"
       }
-    ]
+    ],
+    "ID": 34
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Integer,java.lang.Double>",
+    "To": "java.util.function.IntToDoubleFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsDouble($2$)"
+      }
+    ],
+    "ID": 35
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Long,java.lang.Double>",
+    "To": "java.util.function.LongToDoubleFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsDouble($2$)"
+      }
+    ],
+    "ID": 36
+  },
+  {
+    "From": "java.util.function.Function<$1$,java.lang.Double>",
+    "To": "java.util.function.ToDoubleFunction",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.applyAsDouble($2$)"
+      }
+    ],
+    "ID": 37
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Long,java.lang.Boolean>",
+    "To": "java.util.function.LongPredicate",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.test($2$)"
+      }
+    ],
+    "ID": 38
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Integer,java.lang.Boolean>",
+    "To": "java.util.function.IntPredicate",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.test($2$)"
+      }
+    ],
+    "ID": 39
+  },
+  {
+    "From": "java.util.function.Function<java.lang.Double,java.lang.Boolean>",
+    "To": "java.util.function.DoublePredicate",
+    "Inspect": true,
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.apply($2$)",
+        "After": "$1$.test($2$)"
+      }
+    ],
+    "ID": 40
   },
   {
     "From": "java.util.function.Function<$1$,java.lang.Boolean>",
@@ -372,7 +879,8 @@
         "Before": "$1$.apply($2$)",
         "After": "$1$.test($2$)"
       }
-    ]
+    ],
+    "ID": 41
   },
   {
     "From": "java.util.function.Supplier<java.lang.Integer>",
@@ -381,9 +889,124 @@
     "Inspect": true,
     "Rules": [
       {
-        "Before": "$1$.get($2$)",
-        "After": "$1$.getAsInt($2$)"
+        "Before": "$1$.get()",
+        "After": "$1$.getAsInt()"
       }
-    ]
+    ],
+    "ID": 42
+  },
+  {
+    "From": "java.util.function.Supplier<java.lang.Long>",
+    "To": "java.util.function.LongSupplier",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [
+      {
+        "Before": "$1$.get()",
+        "After": "$1$.getAsInt()"
+      }
+    ],
+    "ID": 43
+  },
+  {
+    "From": "java.util.function.Supplier<java.lang.Double>",
+    "To": "java.util.function.DoubleSupplier",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [
+      {
+        "Before": "$1$.get()",
+        "After": "$1$.getAsDouble()"
+      }
+    ],
+    "ID": 44
+  },
+  {
+    "From": "java.util.function.Supplier<java.lang.Boolean>",
+    "To": "java.util.function.BooleanSupplier",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [
+      {
+        "Before": "$1$.get()",
+        "After": "$1$.getAsBoolean()"
+      }
+    ],
+    "ID": 45
+  },
+  {
+    "From": "java.util.Optional<java.lang.Integer>",
+    "To": "java.util.function.OptionalInt",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [
+      {
+        "Before": "Optional.of($2$)",
+        "After": "OptionalInt.of($2$)"
+      },
+      {
+        "Before": "Optional.ofNullable($2$)",
+        "After": "OptionalInt.ofNullable($2$)"
+      },
+      {
+        "Before": "Optional.empty($2$)",
+        "After": "OptionalInt.empty($2$)"
+      },
+      {
+        "Before": "$1$.get()",
+        "After": "$1$.getAsInt()"
+      }
+    ],
+    "ID": 46
+  },
+  {
+    "From": "java.util.Optional<java.lang.Long>",
+    "To": "java.util.function.OptionalLong",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [
+      {
+        "Before": "Optional.of($2$)",
+        "After": "OptionalLong.of($2$)"
+      },
+      {
+        "Before": "Optional.ofNullable($2$)",
+        "After": "OptionalLong.ofNullable($2$)"
+      },
+      {
+        "Before": "Optional.empty($2$)",
+        "After": "OptionalLong.empty($2$)"
+      },
+      {
+        "Before": "$1$.get()",
+        "After": "$1$.getAsLong()"
+      }
+    ],
+    "ID": 47
+  },
+  {
+    "From": "java.util.Optional<java.lang.Double>",
+    "To": "java.util.function.OptionalDouble",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [
+      {
+        "Before": "Optional.of($2$)",
+        "After": "OptionalDouble.of($2$)"
+      },
+      {
+        "Before": "Optional.ofNullable($2$)",
+        "After": "OptionalDouble.ofNullable($2$)"
+      },
+      {
+        "Before": "Optional.empty($2$)",
+        "After": "OptionalDouble.empty($2$)"
+      },
+      {
+        "Before": "$1$.get()",
+        "After": "$1$.getAsDouble()"
+      }
+    ],
+    "ID": 48
   }
 ]

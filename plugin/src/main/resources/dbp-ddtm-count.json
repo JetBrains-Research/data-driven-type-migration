@@ -1,0 +1,210 @@
+{
+  "id": "dbp.ddtm.count",
+  "title": "Data-Driven Type Migration plugin usage",
+  "description": "Records the usages of the Data-Driven Type Migration plugin.",
+  "recorder": "DBP",
+  "type": "counter",
+  "products": [
+    "IU",
+    "IC"
+  ],
+  "baselines": {
+    "primary": {
+      "event": "registered"
+    }
+  },
+  "schema": {
+    "tiger": [
+      {
+        "event": "refactoring.intention.applied",
+        "title": "Intention applied",
+        "description": "The type change intention was applied.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ],
+            "data": [
+              {
+                "path": "type_change_id",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 0,
+                  "title": "Type Change ID",
+                  "description": "The ID of the applied Type Change refactoring."
+                }
+              },
+              {
+                "path": "migration_root",
+                "value": [
+                  "{util#class_name}"
+                ],
+                "column": {
+                  "index": 1,
+                  "title": "Migration root",
+                  "description": "The fully qualified classname of the PSI element corresponding to the migration root."
+                }
+              },
+              {
+                "path": "unique_rules_used",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 2,
+                  "title": "Unique rules used",
+                  "description": "The total number of unique rewrite rules which were used for type migration."
+                }
+              },
+              {
+                "path": "usages_updated",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 3,
+                  "title": "Usages updated",
+                  "description": "The total number of successfully updated usages after type migration."
+                }
+              },
+              {
+                "path": "suspicious_usages_found",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 4,
+                  "title": "Suspicious usages found",
+                  "description": "The total number of usages that could be potentially updated but shouldn't, since they are changing the return type of the corresponding expression."
+                }
+              },
+              {
+                "path": "usages_failed",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 5,
+                  "title": "Usages failed",
+                  "description": "The total number of failed-to-migrate usages."
+                }
+              },
+              {
+                "path": "invocation_workflow",
+                "value": [
+                  "proactive",
+                  "reactive",
+                  "inspecting"
+                ],
+                "column": {
+                  "index": 6,
+                  "title": "Invocation workflow",
+                  "description": "The way of intention invocation: proactive (as general Code Intention), reactive (as Suggested Refactoring) or as inspection."
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "event": "recovering.intention.applied",
+        "title": "Recovering intention applied",
+        "description": "The recovering intention was applied.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ],
+            "data": [
+              {
+                "path": "type_change_id",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 0,
+                  "title": "Type Change ID",
+                  "description": "The ID of the applied Type Change refactoring."
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "event": "gutter.icon.clicked",
+        "title": "Gutter icon clicked",
+        "description": "The migration was launched after the user clicked on the icon on the gutter.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ]
+          }
+        ]
+      },
+      {
+        "event": "rename.performed",
+        "title": "Rename Refactoring performed",
+        "description": "The built-in Rename Refactoring was performed.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ],
+            "data": [
+              {
+                "path": "element_canonical_name",
+                "value": [
+                  "{util#class_name}"
+                ],
+                "column": {
+                  "index": 0,
+                  "title": "Element canonical name",
+                  "description": "The fully qualified name of the class of the renamed PSI element."
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "event": "migration.undone",
+        "title": "Type Migration undone",
+        "description": "Indicates that previously applied data-driven type migration refactoring was undone by the developer.",
+        "revisions": [
+          {
+            "version": "1",
+            "notes": [
+              "FUS-651",
+              "FUS-652"
+            ],
+            "data": [
+              {
+                "path": "type_change_id",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 0,
+                  "title": "Type Change ID",
+                  "description": "The ID of the applied Type Change refactoring."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

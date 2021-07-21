@@ -6,14 +6,13 @@ import com.intellij.internal.statistic.eventLog.FeatureUsageData;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
-import org.jetbrains.research.ddtm.data.models.TypeChangeRuleDescriptor;
 
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("UnstableApiUsage")
 public class TypeChangeLogsCollector {
     private static final Integer LOG_DELAY_MIN = 24 * 60;
-    private static final Integer LOG_INITIAL_DELAY_MIN = 11;
+    private static final Integer LOG_INITIAL_DELAY_MIN = 5;
     // TODO: approve group id
     private static final EventLogGroup group = new EventLogGroup("dbp.ddtm.count", TypeChangeLogger.version);
     private static TypeChangeLogsCollector instance;
@@ -38,10 +37,9 @@ public class TypeChangeLogsCollector {
         TypeChangeLogger.log(group, "registered");
     }
 
-    public void migrationUndone(Project project, String sourceType, String targetType) {
+    public void migrationUndone(Project project, int typeChangeId) {
         FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("source_type", sourceType)
-                .addData("target_type", targetType);
+                .addData("type_change_id", typeChangeId);
         TypeChangeLogger.log(group, "migration.undone", data);
     }
 
@@ -51,36 +49,27 @@ public class TypeChangeLogsCollector {
         TypeChangeLogger.log(group, "rename.performed", data);
     }
 
-    public void gutterIconClicked(Project project) {
-        FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("gutter_icon_clicked", true);
-        TypeChangeLogger.log(group, "gutter.icon.clicked", data);
-    }
-
-    public void refactoringIntentionApplied(Project project, String sourceType, String targetType, PsiElement root,
+    public void refactoringIntentionApplied(Project project, int typeChangeId, PsiElement root, int uniqueRulesUsed,
                                             int usagesUpdated, int suspiciousUsagesFound, int usagesFailed,
                                             InvocationWorkflow workflow) {
         FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("source_type", sourceType)
-                .addData("target_type", targetType)
+                .addData("type_change_id", typeChangeId)
                 .addData("migration_root", root.getClass().getName())
+                .addData("unique_rules_used", uniqueRulesUsed)
                 .addData("usages_updated", usagesUpdated)
                 .addData("suspicious_usages_found", suspiciousUsagesFound)
-                .addData("usages_failed", usagesFailed)
+                .addData("usages_failed", usagesFailed - suspiciousUsagesFound) // because every suspicious is also failed
                 .addData("invocation_workflow", workflow.name().toLowerCase());
         TypeChangeLogger.log(group, "refactoring.intention.applied", data);
     }
 
-    public void recoveringIntentionApplied(Project project, TypeChangeRuleDescriptor rule) {
-        FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("expression_before", rule.getExpressionBefore())
-                .addData("expression_after", rule.getExpressionAfter());
-        TypeChangeLogger.log(group, "recovering.intention.applied", data);
+    public void gutterIconClicked() {
+        TypeChangeLogger.log(group, "gutter.icon.clicked");
     }
 
-    public void inspectionUsed(Project project) {
+    public void recoveringIntentionApplied(Project project, int typeChangeId) {
         FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("from_inspection", true);
-        TypeChangeLogger.log(group, "inspection.used", data);
+                .addData("type_change_id", typeChangeId);
+        TypeChangeLogger.log(group, "recovering.intention.applied", data);
     }
 }

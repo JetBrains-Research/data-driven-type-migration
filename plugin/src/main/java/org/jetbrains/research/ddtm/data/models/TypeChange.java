@@ -2,7 +2,7 @@ package org.jetbrains.research.ddtm.data.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class TypeChangeDescriptor {
+public class TypeChange {
     @SerializedName("Before")
     private String sourceType;
 

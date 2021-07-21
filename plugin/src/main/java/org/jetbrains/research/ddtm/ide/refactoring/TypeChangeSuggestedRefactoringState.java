@@ -16,7 +16,7 @@ public class TypeChangeSuggestedRefactoringState {
     public final List<TypeChangeMarker> completedTypeChanges;
 
     public volatile boolean refactoringEnabled;
-    public boolean isInternalTypeChangeInProgress = false;
+    public volatile boolean isInternalTypeChangeInProgress = false;
 
     public TypeChangeSuggestedRefactoringState() {
         this.refactoringEnabled = false;
