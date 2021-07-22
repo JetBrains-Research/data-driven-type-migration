@@ -13,6 +13,14 @@
       "event": "registered"
     }
   },
+  "authors": [
+    {
+      "name": "Oleg Smirnov"
+    },
+    {
+      "name": "Zarina Kurbatova"
+    }
+  ],
   "schema": {
     "tiger": [
       {

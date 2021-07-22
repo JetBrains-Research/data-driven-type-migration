@@ -383,12 +383,16 @@
         "After": "$1$"
       },
       {
-        "Before": "return null",
-        "After": "return Optional.empty()"
+        "Before": "null",
+        "After": "Optional.empty()"
       },
       {
         "Before": "$2$.$3$($1$)",
-        "After": "$1$.map($2$::$3$)"
+        "After": "$1$.map($2$::$3$)",
+        "ReturnType": {
+          "Before": "$1$",
+          "After": "java.util.Optional<$1$>"
+        }
       }
     ],
     "ID": 11
@@ -411,6 +415,10 @@
         "After": "$1$"
       },
       {
+        "Before": "Optional.of($2$)",
+        "After": "$2$"
+      },
+      {
         "Before": "Optional.ofNullable($2$)",
         "After": "$2$"
       },
@@ -427,12 +435,16 @@
         "After": "Optional.ofNullable($1$)"
       },
       {
-        "Before": "return Optional.empty()",
-        "After": "return null"
+        "Before": "Optional.empty()",
+        "After": "null"
       },
       {
         "Before": "$1$.map($2$::$3$)",
-        "After": "$2$.$3$($1$)"
+        "After": "$2$.$3$($1$)",
+        "ReturnType": {
+          "Before": "java.util.Optional<$1$>",
+          "After": "$1$"
+        }
       }
     ],
     "ID": 12
