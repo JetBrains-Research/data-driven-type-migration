@@ -93,7 +93,7 @@ public class TypeChangeDocumentListener implements DocumentListener {
 
     private void documentChangedAndCommitted(DocumentEvent event) {
         final Document document = event.getDocument();
-        if (project.isDisposed() || PsiDocumentManager.getInstance(project).isDocumentBlockedByPsi(document)) return;
+        if (project.isDisposed()) return;
 
         PsiFile psiFile = null;
         try {
