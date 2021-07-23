@@ -456,7 +456,7 @@
     "Rules": [
       {
         "Before": "$2$",
-        "After": "Collections.singletonList($1$)",
+        "After": "Collections.singletonList($2$)",
         "RequiredImports": "java.util.Collections"
       },
       {
@@ -464,20 +464,20 @@
         "After": "$1$.get(0)"
       },
       {
-        "Before": "$1$=$2$",
+        "Before": "$1$ = $2$",
         "After": "$1$.add($2$)"
       },
       {
-        "Before": "$1$==null",
+        "Before": "$1$ == null",
         "After": "$1$.isEmpty()"
       },
       {
-        "Before": "$1$!=null",
+        "Before": "$1$ != null",
         "After": "!$1$.isEmpty()"
       },
       {
         "Before": "Arrays.stream($1$)",
-        "After": "!$1$.stream()"
+        "After": "$1$.stream()"
       }
     ],
     "ID": 13
@@ -567,7 +567,7 @@
     "Rules": [
       {
         "Before": "$1$.getTime()",
-        "After": "$1$.getEpochMilli()"
+        "After": "$1$.getEpochSecond()"
       }
     ],
     "ID": 17
@@ -579,7 +579,11 @@
     "Rules": [
       {
         "Before": "$1$.toInstant()",
-        "After": "$1$.atStartOfDay()"
+        "After": "$1$.atStartOfDay()",
+        "ReturnType": {
+          "Before": "java.time.Instant",
+          "After": "java.time.LocalDateTime"
+        }
       },
       {
         "Before": "$1$.before($2$)",
@@ -667,8 +671,8 @@
     "Kind": "Proactive",
     "Rules": [
       {
-        "Before": "$1$.apply($2$)",
-        "After": "$1$.applyAsInt($2$)"
+        "Before": "$1$.apply($2$, $3$)",
+        "After": "$1$.applyAsInt($2$, $3$)"
       }
     ],
     "ID": 24
@@ -680,8 +684,8 @@
     "Kind": "Proactive",
     "Rules": [
       {
-        "Before": "$1$.apply($2$)",
-        "After": "$1$.applyAsInt($2$)"
+        "Before": "$1$.apply($2$, $3$)",
+        "After": "$1$.applyAsInt($2$, $3$)"
       }
     ],
     "ID": 25
@@ -693,8 +697,8 @@
     "Kind": "Proactive",
     "Rules": [
       {
-        "Before": "$1$.apply($2$)",
-        "After": "$1$.applyAsLong($2$)"
+        "Before": "$1$.apply($2$, $3$)",
+        "After": "$1$.applyAsLong($2$, $3$)"
       }
     ],
     "ID": 26
@@ -706,8 +710,8 @@
     "Kind": "Proactive",
     "Rules": [
       {
-        "Before": "$1$.apply($2$)",
-        "After": "$1$.applyAsDouble($2$)"
+        "Before": "$1$.apply($2$, $3$)",
+        "After": "$1$.applyAsDouble($2$, $3$)"
       }
     ],
     "ID": 27
@@ -771,8 +775,8 @@
     "Kind": "Proactive",
     "Rules": [
       {
-        "Before": "$1$.apply($2$)",
-        "After": "$1$.applyAsLong($2$)"
+        "Before": "$1$.apply($2$, $3$)",
+        "After": "$1$.applyAsLong($2$, $3$)"
       }
     ],
     "ID": 32
@@ -784,8 +788,8 @@
     "Kind": "Proactive",
     "Rules": [
       {
-        "Before": "$1$.apply($2$)",
-        "After": "$1$.applyAsDouble($2$)"
+        "Before": "$1$.apply($2$, $3$)",
+        "After": "$1$.applyAsDouble($2$, $3$)"
       }
     ],
     "ID": 33
@@ -948,7 +952,7 @@
   },
   {
     "From": "java.util.Optional<java.lang.Integer>",
-    "To": "java.util.function.OptionalInt",
+    "To": "java.util.OptionalInt",
     "Kind": "Proactive",
     "Inspect": true,
     "Rules": [
@@ -973,7 +977,7 @@
   },
   {
     "From": "java.util.Optional<java.lang.Long>",
-    "To": "java.util.function.OptionalLong",
+    "To": "java.util.OptionalLong",
     "Kind": "Proactive",
     "Inspect": true,
     "Rules": [
@@ -998,7 +1002,7 @@
   },
   {
     "From": "java.util.Optional<java.lang.Double>",
-    "To": "java.util.function.OptionalDouble",
+    "To": "java.util.OptionalDouble",
     "Kind": "Proactive",
     "Inspect": true,
     "Rules": [
