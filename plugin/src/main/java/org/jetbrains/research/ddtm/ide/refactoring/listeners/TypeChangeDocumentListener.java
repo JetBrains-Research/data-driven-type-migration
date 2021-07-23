@@ -1,6 +1,7 @@
 package org.jetbrains.research.ddtm.ide.refactoring.listeners;
 
 import com.intellij.openapi.command.undo.UndoManager;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.RangeMarker;
@@ -20,7 +21,8 @@ import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactorin
 import org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState;
 import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
-public class TypeChangeDocumentListener implements DocumentListener {
+@Service
+public final class TypeChangeDocumentListener implements DocumentListener {
     private static final Logger LOG = Logger.getInstance(TypeChangeDocumentListener.class);
 
     private final Project project;

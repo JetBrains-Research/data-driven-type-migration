@@ -9,6 +9,7 @@ import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.ddtm.data.specifications.SourceTypeSpecification;
 import org.jetbrains.research.ddtm.data.specifications.TargetTypeSpecification;
+import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -92,8 +93,9 @@ public final class TypeChangeRulesStorage {
 
     public Optional<TypeChangePatternDescriptor> findPattern(String sourceType, String targetType) {
         return patterns.stream()
-                .filter(new SourceTypeSpecification(sourceType, project).and(new TargetTypeSpecification(targetType, project)))
-                .findFirst();
+                .filter(new SourceTypeSpecification(sourceType, project)
+                        .and(new TargetTypeSpecification(targetType, project)))
+                .max(Comparator.comparing(pattern -> PsiRelatedUtils.splitByTokens(pattern.toString()).length));
     }
 
     private String getResourceFileAsString(String fileName) throws IOException {

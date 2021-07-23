@@ -19,7 +19,8 @@ At first, clone this repository and open the root folder.
 
 - Run `./gradlew :plugin:buildPlugin`
 - Check out `./plugin/build/distributions/plugin-*.zip`
-- Install the plugin in your **IntelliJ IDEA 2020.1** via `File` - `Settings` - `Plugins` - `Install Plugin from Disk...`
+- Install the plugin in your **IntelliJ IDEA 2021.1** via `File` - `Settings` - `Plugins`
+  - `Install Plugin from Disk...`
 
 **Quick IDE launch for evaluation:**
 
