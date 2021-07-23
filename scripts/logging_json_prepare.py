@@ -28,5 +28,16 @@ def add_ids():
         json.dump(data, file)
 
 
+def extract_types_for_readme_table():
+    with open(PATH_TO_TYPE_CHANGE_PATTERNS, "r") as file:
+        data = json.load(file)
+    for pattern in data:
+        source_type, target_type = pattern["From"], pattern["To"]
+        row = f'| `{source_type}` | `{target_type}` |'
+        row = row.replace("$1$", ":[type]").replace("$2$", ":[type2]").replace("3$", ":[type3]")
+        row = row.replace("java.lang.", "")
+        print(row)
+
+
 if __name__ == '__main__':
     add_ids()
