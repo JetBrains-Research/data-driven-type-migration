@@ -102,12 +102,11 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
             }
             // Collect required imports for this rule
             if (bestMatchedRule.getRequiredImports() != null) {
-                RequiredImportsCollector.getInstance().addRequiredImport(
-                        bestMatchedRule.getRequiredImports()
-                );
+                RequiredImportsCollector.getInstance().addRequiredImport(bestMatchedRule.getRequiredImports());
             }
             // Will be successfully updated with a rule
             collector.addUpdatedUsage(context);
+            collector.addUsedRule(bestMatchedRule);
             return new HeuristicTypeConversionDescriptor(
                     bestMatchedRule.getExpressionBefore(),
                     bestMatchedRule.getExpressionAfter(),

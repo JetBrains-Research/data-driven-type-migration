@@ -96,15 +96,11 @@ public class TypeChangeProcessor {
                 disableRefactoring(element);
             }
 
-            if (invocationWorkflow.equals(InvocationWorkflow.INSPECTING)) {
-                TypeChangeLogsCollector.getInstance().inspectionUsed();
-            }
-
             TypeChangeLogsCollector.getInstance().refactoringIntentionApplied(
                     project,
-                    descriptor.getSourceType(),
-                    descriptor.getTargetType(),
+                    descriptor.getId(),
                     root,
+                    typeChangesCollector.getUsedRules().size(),
                     typeChangesCollector.getUpdatedUsages().size(),
                     typeChangesCollector.getSuspiciousUsages().size(),
                     typeChangesCollector.getFailedUsages().size(),

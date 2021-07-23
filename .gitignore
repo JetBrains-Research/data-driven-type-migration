@@ -74,3 +74,4 @@ fabric.properties
 build/
 .idea/
 logging-*.json
+*.iml

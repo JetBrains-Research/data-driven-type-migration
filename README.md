@@ -19,7 +19,8 @@ At first, clone this repository and open the root folder.
 
 - Run `./gradlew :plugin:buildPlugin`
 - Check out `./plugin/build/distributions/plugin-*.zip`
-- Install the plugin in your **IntelliJ IDEA 2020.1** via `File` - `Settings` - `Plugins` - `Install Plugin from Disk...`
+- Install the plugin in your **IntelliJ IDEA 2021.1** via `File` - `Settings` - `Plugins`
+  - `Install Plugin from Disk...`
 
 **Quick IDE launch for evaluation:**
 
@@ -86,19 +87,51 @@ recommendation and training nature.
 
 | Source Type | Target Type |
 | --- | --- |
-|`java.io.File` | `java.nio.file.Path` |
+| `java.io.File` | `java.nio.file.Path` |
+| `java.util.List<:[type]>` | `java.util.Set<:[type]>` |
+| `java.util.List<:[type]>` | `java.util.Deque<:[type]>` |
 | `String` | `java.util.regex.Pattern` |
 | `String` | `java.nio.charset.Charset` |
-| `String` | `java.net.URI` |
+| `String` | `java.net.URL` |
 | `String` | `java.util.UUID` |
+| `String` | `java.net.URI` |
 | `String` | `java.nio.file.Path` |
+| `java.util.concurrent.Callable<:[type]>` | `java.util.function.Supplier<:[type]>` |
+| `java.util.Map<String, String>` | `java.util.Properties` |
+| `:[type]` | `java.util.Optional<:[type]>` |
+| `java.util.Optional<:[type]>` | `:[type]` |
+| `java.util.Optional<Integer>` | `java.util.OptionalInt` |
+| `java.util.Optional<Long>` | `java.util.OptionalLong` |
+| `java.util.Optional<Double>` | `java.util.OptionalDouble` |
+| `:[type]` | `java.util.List<:[type]>` |
+| `int` | `long` |
+| `long` | `java.math.BigInteger` |
+| `long` | `java.time.Duration` |
 | `java.util.Date` | `java.time.Instant` |
 | `java.util.Date` | `java.time.LocalDate` |
-| `int` | `long` |
-| `java.util.List<:[type]>` | `java.util.Set<:[type]>` |
+| `java.util.function.Function<Integer, Integer>` | `java.util.function.IntUnaryOperator` |
+| `java.util.function.Function<Double, Integer>` | `java.util.function.DoubleToIntFunction` |
+| `java.util.function.Function<Long, Integer>` | `java.util.function.LongToIntFunction` |
+| `java.util.function.Function<:[type], Integer>` | `java.util.function.ToIntFunction` |
+| `java.util.function.BiFunction<Integer, Integer, Integer>` | `java.util.function.IntBinaryOperator` |
+| `java.util.function.BiFunction<:[type], :[type2], Integer>` | `java.util.function.ToIntBiFunction` |
+| `java.util.function.BiFunction<:[type], :[type2], Long>` | `java.util.function.ToLongBiFunction` |
+| `java.util.function.BiFunction<:[type], :[type2], Double>` | `java.util.function.ToDoubleBiFunction` |
+| `java.util.function.Function<Long, Long>` | `java.util.function.LongUnaryOperator` |
+| `java.util.function.Function<Integer, Long>` | `java.util.function.IntToLongFunction` |
+| `java.util.function.Function<Double, Long>` | `java.util.function.DoubleToLongFunction` |
+| `java.util.function.Function<:[type], Long>` | `java.util.function.ToLongFunction` |
+| `java.util.function.BiFunction<Long, Long, Long>` | `java.util.function.LongBinaryOperator` |
+| `java.util.function.BiFunction<Double, Double, Double>` | `java.util.function.DoubleBinaryOperator` |
 | `java.util.function.Function<Double, Double>` | `java.util.function.DoubleUnaryOperator` |
+| `java.util.function.Function<Integer, Double>` | `java.util.function.IntToDoubleFunction` |
+| `java.util.function.Function<Long, Double>` | `java.util.function.LongToDoubleFunction` |
+| `java.util.function.Function<:[type], Double>` | `java.util.function.ToDoubleFunction` |
+| `java.util.function.Function<Long, Boolean>` | `java.util.function.LongPredicate` |
+| `java.util.function.Function<Integer, Boolean>` | `java.util.function.IntPredicate` |
+| `java.util.function.Function<Double, Boolean>` | `java.util.function.DoublePredicate` |
 | `java.util.function.Function<:[type], Boolean>` | `java.util.function.Predicate<:[type]>` |
 | `java.util.function.Supplier<Integer>` | `java.util.function.IntSupplier` |
-| `java.util.function.Function<Integer, Integer>` | `java.util.function.IntUnaryOperator` |
-| `java.util.concurrent.Callable<:[type]>` | `java.util.function.Supplier<:[type]>` |
-| `:[type]` | `java.util.Optional<:[type]>` |
+| `java.util.function.Supplier<Long>` | `java.util.function.LongSupplier` |
+| `java.util.function.Supplier<Double>` | `java.util.function.DoubleSupplier` |
+| `java.util.function.Supplier<Boolean>` | `java.util.function.BooleanSupplier` |

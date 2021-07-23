@@ -37,10 +37,9 @@ public class TypeChangeLogsCollector {
         TypeChangeLogger.log(group, "registered");
     }
 
-    public void migrationUndone(Project project, String sourceType, String targetType) {
+    public void migrationUndone(Project project, int typeChangeId) {
         FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("source_type", sourceType)
-                .addData("target_type", targetType);
+                .addData("type_change_id", typeChangeId);
         TypeChangeLogger.log(group, "migration.undone", data);
     }
 
@@ -50,16 +49,16 @@ public class TypeChangeLogsCollector {
         TypeChangeLogger.log(group, "rename.performed", data);
     }
 
-    public void refactoringIntentionApplied(Project project, String sourceType, String targetType, PsiElement root,
+    public void refactoringIntentionApplied(Project project, int typeChangeId, PsiElement root, int uniqueRulesUsed,
                                             int usagesUpdated, int suspiciousUsagesFound, int usagesFailed,
                                             InvocationWorkflow workflow) {
         FeatureUsageData data = new FeatureUsageData().addProject(project)
-                .addData("source_type", sourceType)
-                .addData("target_type", targetType)
+                .addData("type_change_id", typeChangeId)
                 .addData("migration_root", root.getClass().getName())
+                .addData("unique_rules_used", uniqueRulesUsed)
                 .addData("usages_updated", usagesUpdated)
                 .addData("suspicious_usages_found", suspiciousUsagesFound)
-                .addData("usages_failed", usagesFailed)
+                .addData("usages_failed", usagesFailed - suspiciousUsagesFound) // because every suspicious is also failed
                 .addData("invocation_workflow", workflow.name().toLowerCase());
         TypeChangeLogger.log(group, "refactoring.intention.applied", data);
     }
@@ -68,11 +67,9 @@ public class TypeChangeLogsCollector {
         TypeChangeLogger.log(group, "gutter.icon.clicked");
     }
 
-    public void recoveringIntentionApplied() {
-        TypeChangeLogger.log(group, "recovering.intention.applied");
-    }
-
-    public void inspectionUsed() {
-        TypeChangeLogger.log(group, "inspection.used");
+    public void recoveringIntentionApplied(Project project, int typeChangeId) {
+        FeatureUsageData data = new FeatureUsageData().addProject(project)
+                .addData("type_change_id", typeChangeId);
+        TypeChangeLogger.log(group, "recovering.intention.applied", data);
     }
 }

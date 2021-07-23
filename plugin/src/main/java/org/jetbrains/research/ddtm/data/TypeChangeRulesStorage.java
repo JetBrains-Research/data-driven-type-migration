@@ -6,8 +6,10 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
+import org.jetbrains.research.ddtm.data.models.TypeChangeRuleDescriptor;
 import org.jetbrains.research.ddtm.data.specifications.SourceTypeSpecification;
 import org.jetbrains.research.ddtm.data.specifications.TargetTypeSpecification;
+import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -77,6 +79,12 @@ public final class TypeChangeRulesStorage {
                 .collect(Collectors.toList());
     }
 
+    public Optional<TypeChangePatternDescriptor> findPatternByRule(TypeChangeRuleDescriptor rule) {
+        return patterns.stream()
+                .filter(pattern -> pattern.getRules().contains(rule))
+                .findFirst();
+    }
+
     public List<TypeChangePatternDescriptor> getPatternsByTargetType(String targetType) {
         return patterns.stream()
                 .filter(new TargetTypeSpecification(targetType, project))
@@ -85,8 +93,9 @@ public final class TypeChangeRulesStorage {
 
     public Optional<TypeChangePatternDescriptor> findPattern(String sourceType, String targetType) {
         return patterns.stream()
-                .filter(new SourceTypeSpecification(sourceType, project).and(new TargetTypeSpecification(targetType, project)))
-                .findFirst();
+                .filter(new SourceTypeSpecification(sourceType, project)
+                        .and(new TargetTypeSpecification(targetType, project)))
+                .max(Comparator.comparing(pattern -> PsiRelatedUtils.splitByTokens(pattern.toString()).length));
     }
 
     private String getResourceFileAsString(String fileName) throws IOException {

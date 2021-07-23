@@ -13,6 +13,14 @@
       "event": "registered"
     }
   },
+  "authors": [
+    {
+      "name": "Oleg Smirnov"
+    },
+    {
+      "name": "Zarina Kurbatova"
+    }
+  ],
   "schema": {
     "tiger": [
       {
@@ -28,25 +36,14 @@
             ],
             "data": [
               {
-                "path": "source_type",
+                "path": "type_change_id",
                 "value": [
-                  "{enum#type_patterns}"
+                  "{regexp#integer}"
                 ],
                 "column": {
                   "index": 0,
-                  "title": "Source type",
-                  "description": "The fully qualified name of the source type, affected by refactoring."
-                }
-              },
-              {
-                "path": "target_type",
-                "value": [
-                  "{enum#type_patterns}"
-                ],
-                "column": {
-                  "index": 1,
-                  "title": "Target type",
-                  "description": "The fully qualified name of the target type, introduced by refactoring."
+                  "title": "Type Change ID",
+                  "description": "The ID of the applied Type Change refactoring."
                 }
               },
               {
@@ -55,9 +52,20 @@
                   "{util#class_name}"
                 ],
                 "column": {
-                  "index": 2,
+                  "index": 1,
                   "title": "Migration root",
-                  "description": "The fully qualified classname of the migration root PSI element."
+                  "description": "The fully qualified classname of the PSI element corresponding to the migration root."
+                }
+              },
+              {
+                "path": "unique_rules_used",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 2,
+                  "title": "Unique rules used",
+                  "description": "The total number of unique rewrite rules which were used for type migration."
                 }
               },
               {
@@ -79,7 +87,7 @@
                 "column": {
                   "index": 4,
                   "title": "Suspicious usages found",
-                  "description": "The total number of usages that can be potentially updated, but changing the return type of the corresponding expression."
+                  "description": "The total number of usages that could be potentially updated but shouldn't, since they are changing the return type of the corresponding expression."
                 }
               },
               {
@@ -120,6 +128,19 @@
             "notes": [
               "FUS-651",
               "FUS-652"
+            ],
+            "data": [
+              {
+                "path": "type_change_id",
+                "value": [
+                  "{regexp#integer}"
+                ],
+                "column": {
+                  "index": 0,
+                  "title": "Type Change ID",
+                  "description": "The ID of the applied Type Change refactoring."
+                }
+              }
             ]
           }
         ]
@@ -128,20 +149,6 @@
         "event": "gutter.icon.clicked",
         "title": "Gutter icon clicked",
         "description": "The migration was launched after the user clicked on the icon on the gutter.",
-        "revisions": [
-          {
-            "version": "1",
-            "notes": [
-              "FUS-651",
-              "FUS-652"
-            ]
-          }
-        ]
-      },
-      {
-        "event": "inspection.used",
-        "title": "Inspection was used",
-        "description": "The migration was launched after the user noticed a warning produced by inspection.",
         "revisions": [
           {
             "version": "1",
@@ -192,25 +199,14 @@
             ],
             "data": [
               {
-                "path": "source_type",
+                "path": "type_change_id",
                 "value": [
-                  "{enum#type_patterns}"
+                  "{regexp#integer}"
                 ],
                 "column": {
                   "index": 0,
-                  "title": "Source type",
-                  "description": "The fully qualified name of the source type, affected by refactoring."
-                }
-              },
-              {
-                "path": "target_type",
-                "value": [
-                  "{enum#type_patterns}"
-                ],
-                "column": {
-                  "index": 1,
-                  "title": "Target type",
-                  "description": "The fully qualified name of the target type, introduced by refactoring."
+                  "title": "Type Change ID",
+                  "description": "The ID of the applied Type Change refactoring."
                 }
               }
             ]

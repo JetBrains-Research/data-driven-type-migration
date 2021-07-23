@@ -45,7 +45,7 @@ public class TypeChangeRefactoringProvider {
                 TypeChangeLogsCollector.getInstance(); // logging baseline
 
                 EditorFactory.getInstance().getEventMulticaster().addDocumentListener(
-                        ProjectDisposeAwareDocumentListener.create(project, new TypeChangeDocumentListener(project)),
+                        ProjectDisposeAwareDocumentListener.create(project, project.getService(TypeChangeDocumentListener.class)),
                         project
                 );
 

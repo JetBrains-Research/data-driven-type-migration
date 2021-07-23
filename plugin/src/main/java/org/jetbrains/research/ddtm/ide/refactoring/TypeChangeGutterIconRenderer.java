@@ -10,6 +10,7 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.Balloon;
@@ -105,10 +106,13 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
         final var data = SuggestedRefactoringData.getInstance();
         final var processor = new TypeChangeProcessor(data.project, InvocationWorkflow.REACTIVE);
         TypeChangeLogsCollector.getInstance().gutterIconClicked();
-        WriteCommandAction.writeCommandAction(data.project)
-                .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + data.pattern.toString())
-                .withGlobalUndo()
-                .run(() -> processor.run(data.context, data.pattern));
+        ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
+            ProgressManager.getInstance().getProgressIndicator().setIndeterminate(true);
+            WriteCommandAction.writeCommandAction(data.project)
+                    .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + data.pattern.toString())
+                    .withGlobalUndo()
+                    .run(() -> processor.run(data.context, data.pattern));
+        }, DataDrivenTypeMigrationBundle.message("intention.family.name"), false, data.project);
     }
 
     private BalloonCallback createAndShowBalloon(JComponent content, Editor editor, Runnable doRefactoring) {
