@@ -170,6 +170,11 @@
         "RequiredImports": "java.util.HashSet"
       },
       {
+        "Before": "new ArrayList<>($2$)",
+        "After": "new HashSet<>($2$)",
+        "RequiredImports": "java.util.HashSet"
+      },
+      {
         "Before": "new ArrayList<$2$>($3$)",
         "After": "new HashSet<$2$>($3$)",
         "RequiredImports": "java.util.HashSet"

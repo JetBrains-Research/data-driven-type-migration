@@ -1,21 +1,16 @@
 package org.jetbrains.research.ddtm.utils;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public class StringUtils {
-    private static final Map<Pattern, String> ESCAPE_HTML_REPLACEMENTS = Map.of(
-            Pattern.compile("&"), "&amp;",
-            Pattern.compile("<"), "&lt;",
-            Pattern.compile(">"), "&gt;"
-    );
-
-    // Upgraded version of https://stackoverflow.com/a/30940100
-    public static String escapeHTML(String input) {
-        for (var entry : ESCAPE_HTML_REPLACEMENTS.entrySet()) {
-            input = entry.getKey().matcher(input).replaceAll(entry.getValue());
+    public static String escapeSSRTemplates(String input) {
+        String[] genericTypes = {"T", "U", "V", "S", "K"};
+        for (int i = 1; i <= 5; ++i) {
+            input = input.replace(String.format("$%d$", i), genericTypes[i - 1]);
         }
-        return input;
+        return input.replace("java.lang.", "")
+                .replace(", ", ",")
+                .replace(",", ", ");
     }
 
     // Linux or Windows absolute path

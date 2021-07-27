@@ -12,6 +12,7 @@ import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.ide.migration.TypeChangeProcessor;
+import org.jetbrains.research.ddtm.utils.StringUtils;
 
 import java.util.List;
 
@@ -40,7 +41,11 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
 
     @Override
     public @NotNull String getTextFor(TypeChangePatternDescriptor value) {
-        return DataDrivenTypeMigrationBundle.message("intention.list.item.text", value.getSourceType(), value.getTargetType());
+        return DataDrivenTypeMigrationBundle.message(
+                "intention.list.item.text",
+                StringUtils.escapeSSRTemplates(value.getSourceType()),
+                StringUtils.escapeSSRTemplates(value.getTargetType())
+        );
     }
 
     @Override

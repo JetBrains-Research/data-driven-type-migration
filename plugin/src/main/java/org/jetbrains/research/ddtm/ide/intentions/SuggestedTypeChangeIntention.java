@@ -34,7 +34,7 @@ public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction 
 
     @Override
     public @IntentionName @NotNull String getText() {
-        return this.getFamilyName();
+        return DataDrivenTypeMigrationBundle.message("intention.suggested.text");
     }
 
     @Override
