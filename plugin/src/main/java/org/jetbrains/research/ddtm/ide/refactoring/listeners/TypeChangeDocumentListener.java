@@ -1,5 +1,7 @@
 package org.jetbrains.research.ddtm.ide.refactoring.listeners;
 
+import com.intellij.ide.DataManager;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.command.undo.UndoManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.diagnostic.Logger;
@@ -21,16 +23,17 @@ import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactorin
 import org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState;
 import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 @Service
 public final class TypeChangeDocumentListener implements DocumentListener {
     private static final Logger LOG = Logger.getInstance(TypeChangeDocumentListener.class);
 
     private final Project project;
-    private final PsiDocumentManager psiDocumentManager;
 
     public TypeChangeDocumentListener(Project project) {
         this.project = project;
-        this.psiDocumentManager = PsiDocumentManager.getInstance(project);
     }
 
     @Override
@@ -41,9 +44,10 @@ public final class TypeChangeDocumentListener implements DocumentListener {
         if (state.isInternalTypeChangeInProgress) return;
 
         final var document = event.getDocument();
+        final var psiDocumentManager = PsiDocumentManager.getInstance(project);
         if (!psiDocumentManager.isCommitted(document) || psiDocumentManager.isDocumentBlockedByPsi(document)) return;
 
-        var psiFile = psiDocumentManager.getCachedPsiFile(document);
+        var psiFile = PsiDocumentManager.getInstance(project).getCachedPsiFile(document);
         if (psiFile == null || PsiRelatedUtils.shouldIgnoreFile(psiFile)) return;
 
         final int offset = event.getOffset();
@@ -83,23 +87,33 @@ public final class TypeChangeDocumentListener implements DocumentListener {
         if (state.isInternalTypeChangeInProgress) return;
         final var document = event.getDocument();
 
-        psiDocumentManager.performForCommittedDocument(document, new Runnable() {
+        PsiDocumentManager.getInstance(project).performForCommittedDocument(document, new Runnable() {
             final DocumentEvent e = event;
 
             @Override
             public void run() {
-                documentChangedAndCommitted(e);
+                try {
+                    documentChangedAndCommitted(e);
+                } catch (ExecutionException | TimeoutException executionException) {
+                    LOG.warn(executionException);
+                }
             }
         });
     }
 
-    private void documentChangedAndCommitted(DocumentEvent event) {
-        final Document document = event.getDocument();
-        if (project.isDisposed()) return;
+    private void documentChangedAndCommitted(DocumentEvent event) throws ExecutionException, TimeoutException {
+        // FIXME: if I keep a reference to the Project in the field, then it throws an exception "Light files should have only one PSI"
+        // But the similar approach is working in Suggested Refactoring...
+        final var dataContext = DataManager.getInstance().getDataContextFromFocusAsync().blockingGet(500);
+        if (dataContext == null) return;
 
+        final var project = dataContext.getData(PlatformDataKeys.PROJECT);
+        if (project == null || project.isDisposed()) return;
+
+        final Document document = event.getDocument();
         PsiFile psiFile = null;
         try {
-            psiFile = psiDocumentManager.getPsiFile(document);
+            psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
         } catch (Throwable e) {
             LOG.warn(e);
         }
