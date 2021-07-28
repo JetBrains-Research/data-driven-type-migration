@@ -75,3 +75,5 @@ build/
 .idea/
 logging-*.json
 *.iml
+
+scripts/data/TypeChangeSummary.html
