@@ -15,6 +15,8 @@
     <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="DDTM Notification Group" displayType="BALLOON"/>
+
         <applicationService serviceImplementation="org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState"/>
 
         <applicationConfigurable parentId="tools"

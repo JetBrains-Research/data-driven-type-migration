@@ -1,5 +1,7 @@
 package org.jetbrains.research.ddtm.ide.migration;
 
+import com.intellij.notification.NotificationGroupManager;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -95,6 +97,15 @@ public class TypeChangeProcessor {
             if (invocationWorkflow.equals(InvocationWorkflow.REACTIVE)) {
                 disableRefactoring(element);
             }
+
+            final String notificationContent = DataDrivenTypeMigrationBundle.message(
+                    "notification.balloon.content",
+                    typeChangesCollector.getUpdatedUsages().size(),
+                    typeChangesCollector.getFailedUsages().size()
+            );
+            NotificationGroupManager.getInstance().getNotificationGroup("DDTM Notification Group")
+                    .createNotification(notificationContent, NotificationType.INFORMATION)
+                    .notify(project);
 
             TypeChangeLogsCollector.getInstance().refactoringIntentionApplied(
                     project,
