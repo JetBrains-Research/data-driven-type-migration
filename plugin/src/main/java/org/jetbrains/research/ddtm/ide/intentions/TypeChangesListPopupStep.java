@@ -14,7 +14,9 @@ import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.ide.migration.TypeChangeProcessor;
 import org.jetbrains.research.ddtm.utils.StringUtils;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatternDescriptor> {
     private final InvocationWorkflow invocationWorkflow;
@@ -27,7 +29,10 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
                                     PsiElement context,
                                     Project project,
                                     InvocationWorkflow invocationWorkflow) {
-        super(caption, rulesDescriptors);
+        super(caption, rulesDescriptors.stream()
+                .sorted(Comparator.comparing(TypeChangePatternDescriptor::getRank).reversed())
+                .collect(Collectors.toList())
+        );
         this.context = context;
         this.project = project;
         this.invocationWorkflow = invocationWorkflow;

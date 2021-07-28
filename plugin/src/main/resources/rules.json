@@ -122,7 +122,8 @@
         "After": "$1$"
       }
     ],
-    "ID": 1
+    "ID": 1,
+    "Rank": 73
   },
   {
     "From": "java.lang.String",
@@ -142,7 +143,8 @@
         "After": "$1$.pattern()"
       }
     ],
-    "ID": 2
+    "ID": 2,
+    "Rank": 16
   },
   {
     "From": "java.util.List<$1$>",
@@ -227,7 +229,8 @@
         "After": "new HashSet<>($1$)"
       }
     ],
-    "ID": 3
+    "ID": 3,
+    "Rank": 206
   },
   {
     "From": "java.util.List<$1$>",
@@ -248,7 +251,8 @@
         "After": "$1$.addLast($2$)"
       }
     ],
-    "ID": 4
+    "ID": 4,
+    "Rank": 11
   },
   {
     "From": "java.lang.String",
@@ -260,7 +264,8 @@
         "After": "$1$"
       }
     ],
-    "ID": 5
+    "ID": 5,
+    "Rank": 13
   },
   {
     "From": "java.lang.String",
@@ -280,7 +285,8 @@
         "After": "new URL($2$)"
       }
     ],
-    "ID": 6
+    "ID": 6,
+    "Rank": 12
   },
   {
     "From": "java.lang.String",
@@ -316,7 +322,8 @@
         "After": "$2$.toURI()"
       }
     ],
-    "ID": 7
+    "ID": 7,
+    "Rank": 29
   },
   {
     "From": "java.util.concurrent.Callable<$1$>",
@@ -356,7 +363,8 @@
         "After": "UUID.fromString($2$)"
       }
     ],
-    "ID": 10
+    "ID": 10,
+    "Rank": 14
   },
   {
     "From": "$1$",
@@ -400,7 +408,8 @@
         }
       }
     ],
-    "ID": 11
+    "ID": 11,
+    "Rank": 355
   },
   {
     "From": "java.util.Optional<$1$>",
@@ -485,7 +494,8 @@
         "After": "$1$.stream()"
       }
     ],
-    "ID": 13
+    "ID": 13,
+    "Rank": 261
   },
   {
     "From": "java.lang.String",
@@ -510,7 +520,8 @@
         "After": "$1$.toFile()"
       }
     ],
-    "ID": 14
+    "ID": 14,
+    "Rank": 43
   },
   {
     "From": "int",
@@ -547,7 +558,8 @@
         "After": "$2$.readLong()"
       }
     ],
-    "ID": 15
+    "ID": 15,
+    "Rank": 288
   },
   {
     "From": "long",
@@ -563,7 +575,8 @@
         "After": "BigInteger.valueOf($2$)"
       }
     ],
-    "ID": 16
+    "ID": 16,
+    "Rank": 2
   },
   {
     "From": "java.util.Date",
@@ -575,7 +588,8 @@
         "After": "$1$.getEpochSecond()"
       }
     ],
-    "ID": 17
+    "ID": 17,
+    "Rank": 7
   },
   {
     "From": "java.util.Date",
@@ -599,7 +613,8 @@
         "After": "$1$.isAfter($2$)"
       }
     ],
-    "ID": 18
+    "ID": 18,
+    "Rank": 6
   },
   {
     "From": "long",
@@ -615,7 +630,8 @@
         "After": "Duration.ofMillis($2$)"
       }
     ],
-    "ID": 19
+    "ID": 19,
+    "Rank": 19
   },
   {
     "From": "java.util.function.Function<java.lang.Integer,java.lang.Integer>",
@@ -901,7 +917,8 @@
         "After": "$1$.test($2$)"
       }
     ],
-    "ID": 41
+    "ID": 41,
+    "Rank": 5
   },
   {
     "From": "java.util.function.Supplier<java.lang.Integer>",
@@ -914,7 +931,8 @@
         "After": "$1$.getAsInt()"
       }
     ],
-    "ID": 42
+    "ID": 42,
+    "Rank": 2
   },
   {
     "From": "java.util.function.Supplier<java.lang.Long>",
@@ -978,7 +996,8 @@
         "After": "$1$.getAsInt()"
       }
     ],
-    "ID": 46
+    "ID": 46,
+    "Rank": 3
   },
   {
     "From": "java.util.Optional<java.lang.Long>",

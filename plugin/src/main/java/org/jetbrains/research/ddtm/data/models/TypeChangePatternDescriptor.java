@@ -25,6 +25,9 @@ public class TypeChangePatternDescriptor {
     @SerializedName("Kind")
     private String kind;
 
+    @SerializedName("Rank")
+    private Integer rank;
+
     @SerializedName("Rules")
     private List<TypeChangeRuleDescriptor> rules;
 
@@ -34,6 +37,10 @@ public class TypeChangePatternDescriptor {
 
     public int getId() {
         return id;
+    }
+
+    public Integer getRank() {
+        return (rank == null) ? 0 : rank;
     }
 
     public String getTargetType() {
