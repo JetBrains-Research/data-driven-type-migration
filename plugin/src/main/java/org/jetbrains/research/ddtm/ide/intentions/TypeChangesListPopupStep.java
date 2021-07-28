@@ -6,22 +6,26 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.ide.migration.TypeChangeProcessor;
+import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 import org.jetbrains.research.ddtm.utils.StringUtils;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatternDescriptor> {
     private final InvocationWorkflow invocationWorkflow;
     private final Project project;
     private final PsiElement context;
+    private final PsiType sourceType;
     private TypeChangePatternDescriptor selectedPatternDescriptor = null;
 
     public TypeChangesListPopupStep(String caption,
@@ -33,6 +37,7 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
                 .sorted(Comparator.comparing(TypeChangePatternDescriptor::getRank).reversed())
                 .collect(Collectors.toList())
         );
+        this.sourceType = Objects.requireNonNull(PsiRelatedUtils.getClosestPsiTypeElement(context)).getType();
         this.context = context;
         this.project = project;
         this.invocationWorkflow = invocationWorkflow;
@@ -48,8 +53,7 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
     public @NotNull String getTextFor(TypeChangePatternDescriptor value) {
         return DataDrivenTypeMigrationBundle.message(
                 "intention.list.item.text",
-                StringUtils.escapeSSRTemplates(value.getSourceType()),
-                StringUtils.escapeSSRTemplates(value.getTargetType())
+                StringUtils.escapeSSRTemplates(value.resolveTargetType(sourceType, project))
         );
     }
 
