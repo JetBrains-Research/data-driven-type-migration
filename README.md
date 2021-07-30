@@ -81,29 +81,27 @@ recommendation and training nature.
 
 <img src="assets/img/inspection.gif" alt="Gutter Icon Example" width="600">
 
-### Currently supported Type Change Patterns*:
-
-**Examples are provided with [comby](https://comby.dev/) template syntax*
+### Currently supported type-change patterns:
 
 | Source Type | Target Type |
 | --- | --- |
 | `java.io.File` | `java.nio.file.Path` |
-| `java.util.List<:[type]>` | `java.util.Set<:[type]>` |
-| `java.util.List<:[type]>` | `java.util.Deque<:[type]>` |
+| `java.util.List<T>` | `java.util.Set<T>` |
+| `java.util.List<T>` | `java.util.Deque<T>` |
 | `String` | `java.util.regex.Pattern` |
 | `String` | `java.nio.charset.Charset` |
 | `String` | `java.net.URL` |
 | `String` | `java.util.UUID` |
 | `String` | `java.net.URI` |
 | `String` | `java.nio.file.Path` |
-| `java.util.concurrent.Callable<:[type]>` | `java.util.function.Supplier<:[type]>` |
+| `java.util.concurrent.Callable<T>` | `java.util.function.Supplier<T>` |
 | `java.util.Map<String, String>` | `java.util.Properties` |
-| `:[type]` | `java.util.Optional<:[type]>` |
-| `java.util.Optional<:[type]>` | `:[type]` |
+| `T` | `java.util.Optional<T>` |
+| `java.util.Optional<T>` | `T` |
 | `java.util.Optional<Integer>` | `java.util.OptionalInt` |
 | `java.util.Optional<Long>` | `java.util.OptionalLong` |
 | `java.util.Optional<Double>` | `java.util.OptionalDouble` |
-| `:[type]` | `java.util.List<:[type]>` |
+| `T` | `java.util.List<T>` |
 | `int` | `long` |
 | `long` | `java.math.BigInteger` |
 | `long` | `java.time.Duration` |
@@ -112,25 +110,25 @@ recommendation and training nature.
 | `java.util.function.Function<Integer, Integer>` | `java.util.function.IntUnaryOperator` |
 | `java.util.function.Function<Double, Integer>` | `java.util.function.DoubleToIntFunction` |
 | `java.util.function.Function<Long, Integer>` | `java.util.function.LongToIntFunction` |
-| `java.util.function.Function<:[type], Integer>` | `java.util.function.ToIntFunction` |
+| `java.util.function.Function<T, Integer>` | `java.util.function.ToIntFunction` |
 | `java.util.function.BiFunction<Integer, Integer, Integer>` | `java.util.function.IntBinaryOperator` |
-| `java.util.function.BiFunction<:[type], :[type2], Integer>` | `java.util.function.ToIntBiFunction` |
-| `java.util.function.BiFunction<:[type], :[type2], Long>` | `java.util.function.ToLongBiFunction` |
-| `java.util.function.BiFunction<:[type], :[type2], Double>` | `java.util.function.ToDoubleBiFunction` |
+| `java.util.function.BiFunction<A, B, Integer>` | `java.util.function.ToIntBiFunction` |
+| `java.util.function.BiFunction<A, B, Long>` | `java.util.function.ToLongBiFunction` |
+| `java.util.function.BiFunction<A, B, Double>` | `java.util.function.ToDoubleBiFunction` |
 | `java.util.function.Function<Long, Long>` | `java.util.function.LongUnaryOperator` |
 | `java.util.function.Function<Integer, Long>` | `java.util.function.IntToLongFunction` |
 | `java.util.function.Function<Double, Long>` | `java.util.function.DoubleToLongFunction` |
-| `java.util.function.Function<:[type], Long>` | `java.util.function.ToLongFunction` |
+| `java.util.function.Function<T, Long>` | `java.util.function.ToLongFunction` |
 | `java.util.function.BiFunction<Long, Long, Long>` | `java.util.function.LongBinaryOperator` |
 | `java.util.function.BiFunction<Double, Double, Double>` | `java.util.function.DoubleBinaryOperator` |
 | `java.util.function.Function<Double, Double>` | `java.util.function.DoubleUnaryOperator` |
 | `java.util.function.Function<Integer, Double>` | `java.util.function.IntToDoubleFunction` |
 | `java.util.function.Function<Long, Double>` | `java.util.function.LongToDoubleFunction` |
-| `java.util.function.Function<:[type], Double>` | `java.util.function.ToDoubleFunction` |
+| `java.util.function.Function<T, Double>` | `java.util.function.ToDoubleFunction` |
 | `java.util.function.Function<Long, Boolean>` | `java.util.function.LongPredicate` |
 | `java.util.function.Function<Integer, Boolean>` | `java.util.function.IntPredicate` |
 | `java.util.function.Function<Double, Boolean>` | `java.util.function.DoublePredicate` |
-| `java.util.function.Function<:[type], Boolean>` | `java.util.function.Predicate<:[type]>` |
+| `java.util.function.Function<T, Boolean>` | `java.util.function.Predicate<T>` |
 | `java.util.function.Supplier<Integer>` | `java.util.function.IntSupplier` |
 | `java.util.function.Supplier<Long>` | `java.util.function.LongSupplier` |
 | `java.util.function.Supplier<Double>` | `java.util.function.DoubleSupplier` |
