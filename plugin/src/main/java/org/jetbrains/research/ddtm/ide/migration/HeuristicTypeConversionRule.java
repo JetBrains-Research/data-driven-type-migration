@@ -51,7 +51,7 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
 
         while (parentsPassed < Config.MAX_PARENTS_TO_LIFT_UP) {
             // It means that we didn't lift up too much
-            if (currentContext instanceof PsiExpression &&
+            if (currentContext instanceof PsiExpression && !(currentContext instanceof PsiAssignmentExpression) &&
                     PsiTreeUtil.findChildrenOfType(currentContext, PsiReferenceExpression.class).stream()
                             .filter(element -> element.getText().equals(currentRootName)).count() <= 1) {
                 for (var rule : rules) {

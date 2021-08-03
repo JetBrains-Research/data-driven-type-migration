@@ -529,13 +529,17 @@
     "Kind": "Reactive",
     "Rules": [
       {
-        "Before": "$2$",
-        "After": "Math.toIntExact($2$)",
-        "ReqiredImports": "java.lang.Math"
+        "Before": "$1$",
+        "After": "Math.toIntExact($1$)",
+        "RequiredImports": "java.lang.Math"
       },
       {
         "Before": "Integer.parseInt($2$)",
         "After": "Long.parseLong($2$)"
+      },
+      {
+        "Before": "$2$",
+        "After": "(long) $2$"
       },
       {
         "Before": "(int)$2$",
