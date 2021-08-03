@@ -539,7 +539,7 @@
       },
       {
         "Before": "$2$",
-        "After": "(long) $2$"
+        "After": "(long) ($2$)"
       },
       {
         "Before": "(int)$2$",
