@@ -5,7 +5,6 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
@@ -21,9 +20,6 @@ public class TypeChangeInspection extends AbstractBaseJavaLocalInspectionTool {
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
-            @NonNls
-            private final String DESCRIPTION_TEMPLATE = DataDrivenTypeMigrationBundle.message("inspection.problem.descriptor");
-
             @Override
             public void visitTypeElement(PsiTypeElement type) {
                 super.visitTypeElement(type);
@@ -37,7 +33,7 @@ public class TypeChangeInspection extends AbstractBaseJavaLocalInspectionTool {
                 if (!inspectionPatterns.isEmpty()) {
                     holder.registerProblem(
                             type,
-                            DESCRIPTION_TEMPLATE,
+                            DataDrivenTypeMigrationBundle.message("inspection.problem.descriptor", sourceType),
                             new TypeChangeQuickFix(
                                     inspectionPatterns,
                                     DataDrivenTypeMigrationBundle.message("inspection.simple.family.name")
@@ -71,7 +67,7 @@ public class TypeChangeInspection extends AbstractBaseJavaLocalInspectionTool {
 
                         holder.registerProblem(
                                 sourceTypeElement,
-                                DESCRIPTION_TEMPLATE,
+                                DataDrivenTypeMigrationBundle.message("inspection.problem.descriptor", sourceType),
                                 new TypeChangeQuickFix(
                                         List.of(pattern),
                                         DataDrivenTypeMigrationBundle.message("inspection.smart.string.to.path")
