@@ -73,7 +73,7 @@ public class HeuristicTypeConversionRule extends TypeConversionRule {
 
                         // Heuristic to prevent matching elements different from requested context
                         final String match = matches.get(0).getMatch().getText();
-                        if (!match.contains(context.getText())) {
+                        if (member == null && !match.contains(context.getText())) {
                             continue;
                         }
 
