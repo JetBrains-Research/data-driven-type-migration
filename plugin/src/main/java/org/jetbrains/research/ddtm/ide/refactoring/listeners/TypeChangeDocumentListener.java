@@ -126,18 +126,13 @@ public final class TypeChangeDocumentListener implements DocumentListener {
         final PsiTypeElement newTypeElement = PsiRelatedUtils.getClosestPsiTypeElement(newElement);
         if (newTypeElement == null) return;
         final String fqTargetType = newTypeElement.getType().getCanonicalText();
-        final String fqTargetTypeWithoutGenerics =
-                fqTargetType.contains("<")
-                        ? fqTargetType.substring(0, fqTargetType.indexOf('<'))
-                        : fqTargetType;
-        final String shortenedTargetType = fqTargetTypeWithoutGenerics.substring(fqTargetTypeWithoutGenerics.lastIndexOf('.') + 1);
 
         final var storage = project.getService(TypeChangeRulesStorage.class);
-        if (storage.hasTargetType(fqTargetType) && newElement.getText().equals(shortenedTargetType)) {
-            processTargetTypeChangeEvent(newElement, fqTargetType, document);
+        if (storage.hasTargetType(fqTargetType)) {
+            processTargetTypeChangeEvent(newTypeElement, fqTargetType, document);
 
             final var updater = project.getService(ReactiveTypeChangeAvailabilityUpdater.class);
-            updater.updateAllHighlighters(event.getDocument(), newElement.getTextRange().getEndOffset());
+            updater.updateAllHighlighters(event.getDocument(), newTypeElement.getTextRange().getEndOffset());
         }
     }
 
@@ -152,10 +147,10 @@ public final class TypeChangeDocumentListener implements DocumentListener {
         state.uncompletedTypeChanges.put(rangeMarker, sourceType);
     }
 
-    private void processTargetTypeChangeEvent(PsiElement newElement, String targetType, Document document) {
+    private void processTargetTypeChangeEvent(PsiTypeElement newTypeElement, String targetType, Document document) {
         final var newRange = TextRange.from(
-                newElement.getTextOffset(),
-                newElement.getTextLength() + 1
+                newTypeElement.getTextOffset(),
+                newTypeElement.getTextLength() + 1
         );
         final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
 
