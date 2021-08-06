@@ -4,10 +4,10 @@
 ![pipeline status](https://github.com/JetBrains-Research/data-driven-type-migration/actions/workflows/build.yml/badge.svg)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
 
-An IntelliJ IDEA plugin that adapts the current approach of `Type Migration` refactoring for Java to use custom structural-replace templates that express the adaptatioins required to perform the type change. 
-We inferred these type change rules by mining 250 popular open-source Java repositories.
-In general, it helps to automate the process of updating the data-flow dependent references of a program element, which
-type has been changed.
+An IntelliJ IDEA plugin that adapts the current approach of `Type Migration` refactoring for Java to use custom
+structural-replace templates that express the adaptations required to perform the type change. We inferred these type
+change rules by mining 250 popular open-source Java repositories. In general, it helps to automate the process of
+updating the data-flow dependent references of a program element, which type has been changed.
 
 The plugin is compatible with **IntelliJ IDEA 2021.1** and can be built from sources.
 
