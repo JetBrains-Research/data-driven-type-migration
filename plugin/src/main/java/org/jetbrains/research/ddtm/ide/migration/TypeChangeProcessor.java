@@ -3,9 +3,12 @@ package org.jetbrains.research.ddtm.ide.migration;
 import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.ThrowableComputable;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -54,17 +57,28 @@ public class TypeChangeProcessor {
             final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
             state.isInternalTypeChangeInProgress = true;
 
-            final TypeMigrationProcessor builtInProcessor = createBuiltInTypeMigrationProcessor(element, descriptor);
+            final TypeMigrationProcessor builtInProcessor = WriteCommandAction.writeCommandAction(project)
+                    .withGroupId(DataDrivenTypeMigrationBundle.message("group.id"))
+                    .compute((ThrowableComputable<TypeMigrationProcessor, Throwable>) () ->
+                            createBuiltInTypeMigrationProcessor(element, descriptor)
+                    );
             if (builtInProcessor == null) return;
 
             final TypeChangesInfoCollector typeChangesCollector = TypeChangesInfoCollector.getInstance();
             final var requiredImportsCollector = RequiredImportsCollector.getInstance();
             typeChangesCollector.clear();
             requiredImportsCollector.clear();
-            final UsageInfo[] usages = builtInProcessor.findUsages();
+            final UsageInfo[] usages = ReadAction.compute(builtInProcessor::findUsages);
 
-            builtInProcessor.performRefactoring(usages);
-            addAndOptimizeImports(project, usages);
+            ApplicationManager.getApplication().invokeLater(() ->
+                    WriteCommandAction.writeCommandAction(project)
+                            .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + descriptor.toString())
+                            .withGroupId(DataDrivenTypeMigrationBundle.message("group.id"))
+                            .run(() -> {
+                                builtInProcessor.performRefactoring(usages);
+                                addAndOptimizeImports(project, usages);
+                            }), project.getDisposed()
+            );
 
             if (typeChangesCollector.hasFailedTypeChanges()) {
                 typeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
@@ -95,7 +109,7 @@ public class TypeChangeProcessor {
             }
 
             if (invocationWorkflow.equals(InvocationWorkflow.REACTIVE)) {
-                disableRefactoring(element);
+                WriteCommandAction.runWriteCommandAction(project, () -> disableRefactoring(element));
             }
 
             final String notificationContent = DataDrivenTypeMigrationBundle.message(
@@ -118,8 +132,8 @@ public class TypeChangeProcessor {
                     invocationWorkflow
             );
             state.isInternalTypeChangeInProgress = false;
-        } catch (Exception e) {
-            LOG.error(e);
+        } catch (Throwable throwable) {
+            LOG.error(throwable);
         }
     }
 

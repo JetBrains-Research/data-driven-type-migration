@@ -1,6 +1,5 @@
 package org.jetbrains.research.ddtm.ide.intentions;
 
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.PopupStep;
@@ -63,10 +62,7 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
             final var processor = new TypeChangeProcessor(project, invocationWorkflow);
             ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
                 ProgressManager.getInstance().getProgressIndicator().setIndeterminate(true);
-                WriteCommandAction.writeCommandAction(project)
-                        .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + selectedPatternDescriptor.toString())
-                        .withGlobalUndo()
-                        .run(() -> processor.run(context, selectedPatternDescriptor));
+                processor.run(context, selectedPatternDescriptor);
             }, DataDrivenTypeMigrationBundle.message("intention.family.name"), false, project);
         };
     }

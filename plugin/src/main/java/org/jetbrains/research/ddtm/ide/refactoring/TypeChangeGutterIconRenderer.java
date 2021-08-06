@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.CustomShortcutSet;
 import com.intellij.openapi.application.impl.LaterInvocator;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
@@ -109,10 +108,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
         TypeChangeLogsCollector.getInstance().gutterIconClicked();
         ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
             ProgressManager.getInstance().getProgressIndicator().setIndeterminate(true);
-            WriteCommandAction.writeCommandAction(data.project)
-                    .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + data.pattern.toString())
-                    .withGlobalUndo()
-                    .run(() -> processor.run(data.context, data.pattern));
+            processor.run(data.context, data.pattern);
         }, DataDrivenTypeMigrationBundle.message("intention.family.name"), false, data.project);
     }
 
