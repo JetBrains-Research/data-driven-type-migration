@@ -6,17 +6,13 @@ import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
-import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
+import org.jetbrains.research.ddtm.ide.refactoring.TypeChangeGutterIconRenderer;
 import org.jetbrains.research.ddtm.ide.refactoring.TypeChangeMarker;
-
-import java.util.Collections;
 
 public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction implements PriorityAction {
     private final String sourceType;
@@ -49,16 +45,18 @@ public class SuggestedTypeChangeIntention extends PsiElementBaseIntentionAction 
         final var pattern = storage.findPattern(sourceType, targetType);
         if (pattern.isEmpty()) return;
 
-        ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
-                new TypeChangesListPopupStep(
-                        DataDrivenTypeMigrationBundle.message("intention.list.caption"),
-                        Collections.singletonList(pattern.get()),
-                        element,
-                        project,
-                        InvocationWorkflow.REACTIVE
-                )
-        );
-        suggestionsPopup.showInBestPositionFor(editor);
+        (new TypeChangeGutterIconRenderer(element.getTextOffset())).showRefactoringOpportunity(project, editor);
+
+//        ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
+//                new TypeChangesListPopupStep(
+//                        DataDrivenTypeMigrationBundle.message("intention.list.caption"),
+//                        Collections.singletonList(pattern.get()),
+//                        element,
+//                        project,
+//                        InvocationWorkflow.REACTIVE
+//                )
+//        );
+//        suggestionsPopup.showInBestPositionFor(editor);
     }
 
     @Override

@@ -30,6 +30,7 @@ import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.ide.fus.TypeChangeLogsCollector;
 import org.jetbrains.research.ddtm.ide.migration.TypeChangeProcessor;
 import org.jetbrains.research.ddtm.ide.refactoring.services.TypeChangeRefactoringProvider;
+import org.jetbrains.research.ddtm.ide.settings.TypeChangeSettingsState;
 import org.jetbrains.research.ddtm.ide.ui.TypeChangeGutterPopupPanel;
 
 import javax.swing.*;
@@ -74,7 +75,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
         };
     }
 
-    private void showRefactoringOpportunity(Project project, Editor editor) {
+    public void showRefactoringOpportunity(Project project, Editor editor) {
         final var state = TypeChangeRefactoringProvider.getInstance(project).getState();
         final var optionalTypeChangeMarker = state.getCompletedTypeChangeForOffset(offset);
         if (optionalTypeChangeMarker.isEmpty()) return;
@@ -115,9 +116,9 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
         }, DataDrivenTypeMigrationBundle.message("intention.family.name"), false, data.project);
     }
 
-    private BalloonCallback createAndShowBalloon(JComponent content, Editor editor, Runnable doRefactoring) {
+    private BalloonCallback createAndShowBalloon(TypeChangeGutterPopupPanel panel, Editor editor, Runnable doRefactoring) {
         final var builder = JBPopupFactory.getInstance()
-                .createDialogBalloonBuilder(content, null)
+                .createDialogBalloonBuilder(panel, null)
                 .setRequestFocus(true)
                 .setHideOnClickOutside(true)
                 .setCloseButtonEnabled(false)
@@ -133,6 +134,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
 
         Runnable hideBalloonAndRefactor = () -> {
             balloon.hide(true);
+            TypeChangeSettingsState.getInstance().searchScope = panel.getSearchScopeOption();
             doRefactoring.run();
         };
 
@@ -154,14 +156,14 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
             public void actionPerformed(@NotNull AnActionEvent e) {
                 hideBalloonAndRefactor.run();
             }
-        }.registerCustomShortcutSet(CustomShortcutSet.fromString("ENTER"), content, balloon);
+        }.registerCustomShortcutSet(CustomShortcutSet.fromString("ENTER"), panel, balloon);
 
         new DumbAwareAction() {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
                 balloon.hide(false);
             }
-        }.registerCustomShortcutSet(CustomShortcutSet.fromString("ESCAPE"), content, balloon);
+        }.registerCustomShortcutSet(CustomShortcutSet.fromString("ESCAPE"), panel, balloon);
 
         LaterInvocator.enterModal(balloon);
         Disposer.register(balloon, () -> LaterInvocator.leaveModal(balloon));
