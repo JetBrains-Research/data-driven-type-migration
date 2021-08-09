@@ -70,15 +70,13 @@ public class TypeChangeProcessor {
             requiredImportsCollector.clear();
             final UsageInfo[] usages = ReadAction.compute(builtInProcessor::findUsages);
 
-            ApplicationManager.getApplication().invokeLater(() ->
-                    WriteCommandAction.writeCommandAction(project)
-                            .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + descriptor.toString())
-                            .withGroupId(DataDrivenTypeMigrationBundle.message("group.id"))
-                            .run(() -> {
-                                builtInProcessor.performRefactoring(usages);
-                                addAndOptimizeImports(project, usages);
-                            }), project.getDisposed()
-            );
+            WriteCommandAction.writeCommandAction(project)
+                    .withName(DataDrivenTypeMigrationBundle.message("group.id") + ": " + descriptor.toString())
+                    .withGroupId(DataDrivenTypeMigrationBundle.message("group.id"))
+                    .run(() -> {
+                        builtInProcessor.performRefactoring(usages);
+                        addAndOptimizeImports(project, usages);
+                    });
 
             if (typeChangesCollector.hasFailedTypeChanges()) {
                 typeChangesCollector.setTypeEvaluator(builtInProcessor.getLabeler().getTypeEvaluator());
