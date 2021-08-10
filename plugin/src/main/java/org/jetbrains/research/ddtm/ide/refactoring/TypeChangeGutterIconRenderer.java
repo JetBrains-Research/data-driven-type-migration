@@ -93,7 +93,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
         data.context = newElement;
         data.pattern = pattern.get();
 
-        final var popup = new TypeChangeGutterPopupPanel(pattern.get().getSourceType(), pattern.get().getTargetType());
+        final var popup = new TypeChangeGutterPopupPanel(typeChangeMarker.sourceType, typeChangeMarker.targetType);
         final BalloonCallback callback = createAndShowBalloon(
                 popup,
                 editor,

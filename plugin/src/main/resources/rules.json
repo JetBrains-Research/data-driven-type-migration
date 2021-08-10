@@ -225,8 +225,8 @@
         "RequiredImports": "com.google.common.collect.ImmutableSet"
       },
       {
-        "Before": "$1$",
-        "After": "new HashSet<>($1$)"
+        "Before": "$2$",
+        "After": "new HashSet<>($2$)"
       }
     ],
     "ID": 3,
