@@ -8,8 +8,9 @@ plugins {
 
 intellij {
     type = "IC"
-    version = "2021.1"
+    version = "2021.2"
     setPlugins("java", "git4idea")
+    intellij.updateSinceUntilBuild = false
 }
 
 dependencies {

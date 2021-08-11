@@ -16,6 +16,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiTypeElement;
+import com.intellij.util.SlowOperations;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ddtm.ide.refactoring.ReactiveTypeChangeAvailabilityUpdater;
@@ -93,8 +94,8 @@ public final class TypeChangeDocumentListener implements DocumentListener {
             @Override
             public void run() {
                 try {
-                    documentChangedAndCommitted(e);
-                } catch (ExecutionException | TimeoutException executionException) {
+                    SlowOperations.allowSlowOperations(() -> documentChangedAndCommitted(e));
+                } catch (Exception executionException) {
                     LOG.warn(executionException);
                 }
             }

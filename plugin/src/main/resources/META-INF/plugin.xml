@@ -2,6 +2,7 @@
     <id>org.jetbrains.research.java-types-migration</id>
     <name>Data-Driven Type Migration</name>
     <vendor>JetBrains Research</vendor>
+    <idea-version since-build="211.7628.21"/>
 
     <description><![CDATA[
     An IntelliJ IDEA plugin that adapts the current approach of Type Migration refactoring for Java to use custom structural-replace templates that express the adaptatioins required to perform the type change. We inferred these type change rules by mining 250 popular open-source Java repositories.
