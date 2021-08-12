@@ -3,16 +3,12 @@ package org.jetbrains.research.ddtm.ide.inspections;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.util.IntentionFamilyName;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.ui.popup.ListPopup;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
-import org.jetbrains.research.ddtm.ide.ui.TypeChangesListPopupStep;
+import org.jetbrains.research.ddtm.ide.refactoring.TypeChangeDialog;
 
 import java.util.List;
 
@@ -32,17 +28,11 @@ public class TypeChangeQuickFix implements LocalQuickFix {
 
     @Override
     public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
-        ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
-                new TypeChangesListPopupStep(
-                        DataDrivenTypeMigrationBundle.message("intention.list.caption"),
-                        inspectionPatterns,
-                        descriptor.getPsiElement(),
-                        project,
-                        InvocationWorkflow.INSPECTING
-                )
-        );
-        final Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-        if (editor == null) return;
-        suggestionsPopup.showInBestPositionFor(editor);
+        ApplicationManager.getApplication().invokeLater(() -> {
+            final var dialog = new TypeChangeDialog(
+                    inspectionPatterns, InvocationWorkflow.PROACTIVE, descriptor.getPsiElement(), project
+            );
+            dialog.showAndGet();
+        });
     }
 }
