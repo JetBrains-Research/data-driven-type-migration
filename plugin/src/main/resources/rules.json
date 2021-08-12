@@ -1155,7 +1155,7 @@
   },
   {
     "From": "com.google.common.base.Optional<java.lang.Integer>",
-    "To": "java.util.function.OptionalInt",
+    "To": "java.util.OptionalInt",
     "Kind": "Proactive",
     "Inspect": true,
     "Rules": [
@@ -1196,7 +1196,7 @@
   },
   {
     "From": "com.google.common.base.Optional<java.lang.Long>",
-    "To": "java.util.function.OptionalLong",
+    "To": "java.util.OptionalLong",
     "Kind": "Proactive",
     "Inspect": true,
     "Rules": [
@@ -1237,7 +1237,7 @@
   },
   {
     "From": "com.google.common.base.Optional<java.lang.Double>",
-    "To": "java.util.function.OptionalDouble",
+    "To": "java.util.OptionalDouble",
     "Kind": "Proactive",
     "Inspect": true,
     "Rules": [
