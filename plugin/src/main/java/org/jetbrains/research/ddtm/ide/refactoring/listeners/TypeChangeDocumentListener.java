@@ -70,13 +70,12 @@ public final class TypeChangeDocumentListener implements DocumentListener {
         String sourceType;
         try {
             sourceType = oldTypeElement.getType().getCanonicalText();
+            final var storage = project.getService(TypeChangeRulesStorage.class);
+            if (storage.hasSourceType(sourceType)) {
+                processSourceTypeChangeEvent(oldElement, sourceType, document);
+            }
         } catch (IndexNotReadyException e) {
-            return;
-        }
-
-        final var storage = project.getService(TypeChangeRulesStorage.class);
-        if (storage.hasSourceType(sourceType)) {
-            processSourceTypeChangeEvent(oldElement, sourceType, document);
+            LOG.warn(e);
         }
     }
 
