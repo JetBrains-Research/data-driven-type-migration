@@ -49,7 +49,7 @@ public class TypeChangeClassicModePanel extends JPanel {
                 )
                 .addComponentFillVertically(new JPanel(), 0)
                 .addLabeledComponent(
-                        new JBLabel(DataDrivenTypeMigrationBundle.message("suggested.gutter.popup.scope.combobox.label")),
+                        new JBLabel(DataDrivenTypeMigrationBundle.message("settings.scope.combobox.label")),
                         searchScopeOptionsComboBox,
                         5,
                         true
