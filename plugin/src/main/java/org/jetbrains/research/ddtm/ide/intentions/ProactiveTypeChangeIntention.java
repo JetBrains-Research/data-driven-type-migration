@@ -11,6 +11,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
 import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.SlowOperations;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
@@ -50,7 +51,7 @@ public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction 
 
         ApplicationManager.getApplication().invokeLater(() -> {
             final var dialog = new TypeChangeDialog(
-                    storage.getPatternsBySourceType(rootType.getCanonicalText()),
+                    SlowOperations.allowSlowOperations(() -> storage.getPatternsBySourceType(rootType.getCanonicalText())),
                     InvocationWorkflow.PROACTIVE, element, project
             );
             dialog.showAndGet();

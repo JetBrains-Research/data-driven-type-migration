@@ -998,6 +998,10 @@
       {
         "Before": "$1$.get()",
         "After": "$1$.getAsInt()"
+      },
+      {
+        "Before": "$1$.map($2$->$3$)",
+        "After": "$1$.stream().boxed().map($2$->$3$).findFirst()"
       }
     ],
     "ID": 46,
@@ -1024,6 +1028,10 @@
       {
         "Before": "$1$.get()",
         "After": "$1$.getAsLong()"
+      },
+      {
+        "Before": "$1$.map($2$->$3$)",
+        "After": "$1$.stream().boxed().map($2$->$3$).findFirst()"
       }
     ],
     "ID": 47
@@ -1043,14 +1051,229 @@
         "After": "OptionalDouble.ofNullable($2$)"
       },
       {
-        "Before": "Optional.empty($2$)",
-        "After": "OptionalDouble.empty($2$)"
+        "Before": "Optional.empty()",
+        "After": "OptionalDouble.empty()"
       },
       {
         "Before": "$1$.get()",
         "After": "$1$.getAsDouble()"
+      },
+      {
+        "Before": "$1$.map($2$->$3$)",
+        "After": "$1$.stream().boxed().map($2$->$3$).findFirst()"
       }
     ],
     "ID": 48
+  },
+  {
+    "From": "com.google.common.base.Optional<$1$>",
+    "To": "java.util.Optional<$1$>",
+    "Kind": "Proactive",
+    "Rules": [
+      {
+        "Before": "$1$.orNull()",
+        "After": "$1$.orElse(null)"
+      },
+      {
+        "Before": "$1$.transform($2$->$3$)",
+        "After": "$1$.map($2$->$3$)"
+      },
+      {
+        "Before": "Optional.absent()",
+        "After": "Optional.empty()"
+      },
+      {
+        "Before": "$1$.fromNullable($2$)",
+        "After": "$1$.ofNullable($2$)"
+      },
+      {
+        "Before": "$1$.or($2$)",
+        "After": "$1$.orElse($2$)"
+      },
+      {
+        "Before": "$1$.or($2$->$3$)",
+        "After": "$1$.orElseGet($2$->$3$)"
+      },
+      {
+        "Before": "!$1$.isPresent()",
+        "After": "$1$.isAbsent()"
+      }
+    ],
+    "ID": 49
+  },
+  {
+    "From": "com.google.common.base.Function<$1$,$2$>",
+    "To": "java.util.function.Function<$1$,$2$>",
+    "Kind": "Proactive",
+    "Rules": [],
+    "ID": 50
+  },
+  {
+    "From": "com.google.common.base.Function<java.lang.Long,$2$>",
+    "To": "java.util.function.LongFunction<$2$>",
+    "Kind": "Proactive",
+    "Rules": [],
+    "ID": 51
+  },
+  {
+    "From": "com.google.common.base.Predicate<$1$>",
+    "To": "java.util.function.Predicate<$1$>",
+    "Kind": "Proactive",
+    "Rules": [],
+    "ID": 52
+  },
+  {
+    "From": "com.google.common.base.Supplier<$1$>",
+    "To": "java.util.function.Supplier<$1$>",
+    "Kind": "Proactive",
+    "Rules": [],
+    "ID": 53
+  },
+  {
+    "From": "java.util.function.Consumer<java.lang.Integer>",
+    "To": "java.util.function.IntConsumer",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [],
+    "ID": 54
+  },
+  {
+    "From": "java.util.function.Consumer<java.lang.Long>",
+    "To": "java.util.function.LongConsumer",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [],
+    "ID": 55
+  },
+  {
+    "From": "java.util.function.Consumer<java.lang.Double>",
+    "To": "java.util.function.DoubleConsumer",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [],
+    "ID": 56
+  },
+  {
+    "From": "com.google.common.base.Optional<java.lang.Integer>",
+    "To": "java.util.function.OptionalInt",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [
+      {
+        "Before": "Optional.of($2$)",
+        "After": "OptionalInt.of($2$)"
+      },
+      {
+        "Before": "Optional.fromNullable($2$)",
+        "After": "OptionalInt.ofNullable($2$)"
+      },
+      {
+        "Before": "Optional.absent()",
+        "After": "OptionalInt.empty()"
+      },
+      {
+        "Before": "$1$.get()",
+        "After": "$1$.getAsInt()"
+      },
+      {
+        "Before": "$1$.transform($2$->$3$)",
+        "After": "$1$.stream().boxed().map($2$->$3$).findFirst()"
+      },
+      {
+        "Before": "!$1$.isPresent()",
+        "After": "$1$.isAbsent()"
+      },
+      {
+        "Before": "$1$.or($2$)",
+        "After": "$1$.orElse($2$)"
+      },
+      {
+        "Before": "$1$.or($2$->$3$)",
+        "After": "$1$.orElseGet($2$->$3$)"
+      }
+    ],
+    "ID": 57
+  },
+  {
+    "From": "com.google.common.base.Optional<java.lang.Long>",
+    "To": "java.util.function.OptionalLong",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [
+      {
+        "Before": "Optional.of($2$)",
+        "After": "OptionalLong.of($2$)"
+      },
+      {
+        "Before": "Optional.fromNullable($2$)",
+        "After": "OptionalLong.ofNullable($2$)"
+      },
+      {
+        "Before": "Optional.absent()",
+        "After": "OptionalLong.empty()"
+      },
+      {
+        "Before": "$1$.get()",
+        "After": "$1$.getAsLong()"
+      },
+      {
+        "Before": "$1$.transform($2$->$3$)",
+        "After": "$1$.stream().boxed().map($2$->$3$).findFirst()"
+      },
+      {
+        "Before": "!$1$.isPresent()",
+        "After": "$1$.isAbsent()"
+      },
+      {
+        "Before": "$1$.or($2$)",
+        "After": "$1$.orElse($2$)"
+      },
+      {
+        "Before": "$1$.or($2$->$3$)",
+        "After": "$1$.orElseGet($2$->$3$)"
+      }
+    ],
+    "ID": 58
+  },
+  {
+    "From": "com.google.common.base.Optional<java.lang.Double>",
+    "To": "java.util.function.OptionalDouble",
+    "Kind": "Proactive",
+    "Inspect": true,
+    "Rules": [
+      {
+        "Before": "Optional.of($2$)",
+        "After": "OptionalDouble.of($2$)"
+      },
+      {
+        "Before": "Optional.fromNullable($2$)",
+        "After": "OptionalDouble.ofNullable($2$)"
+      },
+      {
+        "Before": "Optional.absent()",
+        "After": "OptionalDouble.empty()"
+      },
+      {
+        "Before": "$1$.get()",
+        "After": "$1$.getAsDouble()"
+      },
+      {
+        "Before": "$1$.transform($2$->$3$)",
+        "After": "$1$.stream().boxed().map($2$->$3$).findFirst()"
+      },
+      {
+        "Before": "!$1$.isPresent()",
+        "After": "$1$.isAbsent()"
+      },
+      {
+        "Before": "$1$.or($2$)",
+        "After": "$1$.orElse($2$)"
+      },
+      {
+        "Before": "$1$.or($2$->$3$)",
+        "After": "$1$.orElseGet($2$->$3$)"
+      }
+    ],
+    "ID": 59
   }
 ]
