@@ -4,10 +4,9 @@ import com.intellij.codeInsight.intention.PriorityAction;
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
@@ -16,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
 import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
+import org.jetbrains.research.ddtm.ide.refactoring.TypeChangeDialog;
 import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
 import java.util.Objects;
@@ -47,16 +47,14 @@ public class ProactiveTypeChangeIntention extends PsiElementBaseIntentionAction 
             throws IncorrectOperationException {
         PsiType rootType = Objects.requireNonNull(PsiRelatedUtils.getHighestParentOfType(element, PsiTypeElement.class)).getType();
         final var storage = project.getService(TypeChangeRulesStorage.class);
-        ListPopup suggestionsPopup = JBPopupFactory.getInstance().createListPopup(
-                new TypeChangesListPopupStep(
-                        DataDrivenTypeMigrationBundle.message("intention.list.caption"),
-                        storage.getPatternsBySourceType(rootType.getCanonicalText()),
-                        element,
-                        project,
-                        InvocationWorkflow.PROACTIVE
-                )
-        );
-        suggestionsPopup.showInBestPositionFor(editor);
+
+        ApplicationManager.getApplication().invokeLater(() -> {
+            final var dialog = new TypeChangeDialog(
+                    storage.getPatternsBySourceType(rootType.getCanonicalText()),
+                    InvocationWorkflow.PROACTIVE, element, project
+            );
+            dialog.showAndGet();
+        });
     }
 
     @Override

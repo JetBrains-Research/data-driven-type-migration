@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
 import org.jetbrains.research.ddtm.data.enums.InvocationWorkflow;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
-import org.jetbrains.research.ddtm.ide.intentions.TypeChangesListPopupStep;
+import org.jetbrains.research.ddtm.ide.ui.TypeChangesListPopupStep;
 
 import java.util.List;
 
