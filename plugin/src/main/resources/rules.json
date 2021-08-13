@@ -333,6 +333,10 @@
       {
         "Before": "$1$.call()",
         "After": "$1$.get()"
+      },
+      {
+        "Before": "$1$::call",
+        "After": "$1$::get"
       }
     ],
     "ID": 8
@@ -933,6 +937,10 @@
       {
         "Before": "$1$.get()",
         "After": "$1$.getAsInt()"
+      },
+      {
+        "Before": "$1$::get",
+        "After": "$1$::getAsInt"
       }
     ],
     "ID": 42,
@@ -946,7 +954,11 @@
     "Rules": [
       {
         "Before": "$1$.get()",
-        "After": "$1$.getAsInt()"
+        "After": "$1$.getAsLong()"
+      },
+      {
+        "Before": "$1$::get",
+        "After": "$1$::getAsLong"
       }
     ],
     "ID": 43
@@ -960,6 +972,10 @@
       {
         "Before": "$1$.get()",
         "After": "$1$.getAsDouble()"
+      },
+      {
+        "Before": "$1$::get",
+        "After": "$1$::getAsDouble"
       }
     ],
     "ID": 44
@@ -973,6 +989,10 @@
       {
         "Before": "$1$.get()",
         "After": "$1$.getAsBoolean()"
+      },
+      {
+        "Before": "$1$::get",
+        "After": "$1$::getAsBoolean"
       }
     ],
     "ID": 45
@@ -998,6 +1018,10 @@
       {
         "Before": "$1$.get()",
         "After": "$1$.getAsInt()"
+      },
+      {
+        "Before": "$1$::get",
+        "After": "$1$::getAsInt"
       },
       {
         "Before": "$1$.map($2$->$3$)",
@@ -1030,6 +1054,10 @@
         "After": "$1$.getAsLong()"
       },
       {
+        "Before": "$1$::get",
+        "After": "$1$::getAsLong"
+      },
+      {
         "Before": "$1$.map($2$->$3$)",
         "After": "$1$.stream().boxed().map($2$->$3$).findFirst()"
       }
@@ -1057,6 +1085,10 @@
       {
         "Before": "$1$.get()",
         "After": "$1$.getAsDouble()"
+      },
+      {
+        "Before": "$1$::get",
+        "After": "$1$::getAsDouble"
       },
       {
         "Before": "$1$.map($2$->$3$)",
@@ -1176,6 +1208,10 @@
         "After": "$1$.getAsInt()"
       },
       {
+        "Before": "$1$::get",
+        "After": "$1$::getAsInt"
+      },
+      {
         "Before": "$1$.transform($2$->$3$)",
         "After": "$1$.stream().boxed().map($2$->$3$).findFirst()"
       },
@@ -1217,6 +1253,10 @@
         "After": "$1$.getAsLong()"
       },
       {
+        "Before": "$1$::get",
+        "After": "$1$::getAsLong"
+      },
+      {
         "Before": "$1$.transform($2$->$3$)",
         "After": "$1$.stream().boxed().map($2$->$3$).findFirst()"
       },
@@ -1256,6 +1296,10 @@
       {
         "Before": "$1$.get()",
         "After": "$1$.getAsDouble()"
+      },
+      {
+        "Before": "$1$::get",
+        "After": "$1$::getAsDouble"
       },
       {
         "Before": "$1$.transform($2$->$3$)",

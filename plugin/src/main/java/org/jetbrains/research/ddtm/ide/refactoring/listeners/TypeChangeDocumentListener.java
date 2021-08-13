@@ -16,6 +16,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiTypeElement;
+import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.SlowOperations;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.data.TypeChangeRulesStorage;
@@ -74,7 +75,7 @@ public final class TypeChangeDocumentListener implements DocumentListener {
             if (storage.hasSourceType(sourceType)) {
                 processSourceTypeChangeEvent(oldElement, sourceType, document);
             }
-        } catch (IndexNotReadyException e) {
+        } catch (IndexNotReadyException | IncorrectOperationException e) {
             LOG.warn(e);
         }
     }
