@@ -1136,6 +1136,7 @@
   {
     "From": "com.google.common.base.Function<$1$,$2$>",
     "To": "java.util.function.Function<$1$,$2$>",
+    "Inspect": true,
     "Kind": "Proactive",
     "Rules": [],
     "ID": 50
@@ -1143,6 +1144,7 @@
   {
     "From": "com.google.common.base.Function<java.lang.Long,$2$>",
     "To": "java.util.function.LongFunction<$2$>",
+    "Inspect": true,
     "Kind": "Proactive",
     "Rules": [],
     "ID": 51
@@ -1150,6 +1152,7 @@
   {
     "From": "com.google.common.base.Predicate<$1$>",
     "To": "java.util.function.Predicate<$1$>",
+    "Inspect": true,
     "Kind": "Proactive",
     "Rules": [],
     "ID": 52
@@ -1157,6 +1160,7 @@
   {
     "From": "com.google.common.base.Supplier<$1$>",
     "To": "java.util.function.Supplier<$1$>",
+    "Inspect": true,
     "Kind": "Proactive",
     "Rules": [],
     "ID": 53

@@ -81,4 +81,22 @@ public class PsiRelatedUtils {
                 PsiTreeUtil.findChildrenOfType(context, PsiReferenceExpression.class).stream()
                         .anyMatch(element -> element.getText().equals(currentRootName));
     }
+
+    public static PsiElement getContainingStatement(final PsiElement root) {
+        final PsiStatement statement = PsiTreeUtil.getParentOfType(root, PsiStatement.class);
+        PsiExpression condition = getContainingCondition(root, statement);
+        if (condition != null) return condition;
+        final PsiField field = PsiTreeUtil.getParentOfType(root, PsiField.class);
+        return statement != null ? statement : field != null ? field : root;
+    }
+
+    public static PsiExpression getContainingCondition(PsiElement root, PsiStatement statement) {
+        PsiExpression condition = null;
+        if (statement instanceof PsiConditionalLoopStatement) {
+            condition = ((PsiConditionalLoopStatement) statement).getCondition();
+        } else if (statement instanceof PsiIfStatement) {
+            condition = ((PsiIfStatement) statement).getCondition();
+        }
+        return PsiTreeUtil.isAncestor(condition, root, false) ? condition : null;
+    }
 }

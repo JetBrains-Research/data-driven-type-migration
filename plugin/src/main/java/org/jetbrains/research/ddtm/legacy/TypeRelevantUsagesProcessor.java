@@ -2,12 +2,16 @@ package org.jetbrains.research.ddtm.legacy;
 
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiExpression;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.PsiVariable;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
-import com.intellij.psi.util.PsiTreeUtil;
 
 import java.util.*;
+
+import static org.jetbrains.research.ddtm.utils.PsiRelatedUtils.getContainingStatement;
 
 public class TypeRelevantUsagesProcessor {
     private final Project project;
@@ -74,23 +78,5 @@ public class TypeRelevantUsagesProcessor {
                 ref.accept(new TypeRelevantUsagesVisitor(this));
             }
         }
-    }
-
-    private static PsiElement getContainingStatement(final PsiElement root) {
-        final PsiStatement statement = PsiTreeUtil.getParentOfType(root, PsiStatement.class);
-        PsiExpression condition = getContainingCondition(root, statement);
-        if (condition != null) return condition;
-        final PsiField field = PsiTreeUtil.getParentOfType(root, PsiField.class);
-        return statement != null ? statement : field != null ? field : root;
-    }
-
-    private static PsiExpression getContainingCondition(PsiElement root, PsiStatement statement) {
-        PsiExpression condition = null;
-        if (statement instanceof PsiConditionalLoopStatement) {
-            condition = ((PsiConditionalLoopStatement) statement).getCondition();
-        } else if (statement instanceof PsiIfStatement) {
-            condition = ((PsiIfStatement) statement).getCondition();
-        }
-        return PsiTreeUtil.isAncestor(condition, root, false) ? condition : null;
     }
 }

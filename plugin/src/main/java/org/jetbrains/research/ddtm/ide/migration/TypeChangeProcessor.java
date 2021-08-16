@@ -208,8 +208,11 @@ public class TypeChangeProcessor {
                 if (importClass == null) continue;
                 javaCodeStyleManager.addImport((PsiJavaFile) file, importClass);
             }
-            javaCodeStyleManager.optimizeImports(file);
-            javaCodeStyleManager.shortenClassReferences(file);
+        }
+        for (var usage : usages) {
+            final PsiElement element = usage.getElement();
+            if (element == null) continue;
+            javaCodeStyleManager.shortenClassReferences(PsiRelatedUtils.getContainingStatement(element));
         }
     }
 
