@@ -55,7 +55,7 @@ public class TypeChangeDialog extends DialogWrapper {
         ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
             ProgressManager.getInstance().getProgressIndicator().setIndeterminate(true);
             processor.run(context, panel.getSelectedPatternDescriptor());
-        }, DataDrivenTypeMigrationBundle.message("intention.family.name"), false, project);
+        }, DataDrivenTypeMigrationBundle.message("intention.family.name"), true, project);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.ThrowableComputable;
 import com.intellij.openapi.wm.ToolWindow;
@@ -130,6 +131,8 @@ public class TypeChangeProcessor {
                     invocationWorkflow
             );
             state.isInternalTypeChangeInProgress = false;
+        } catch (ProcessCanceledException ex) {
+            throw ex;
         } catch (Throwable throwable) {
             LOG.error(throwable);
         }

@@ -109,7 +109,7 @@ public class TypeChangeGutterIconRenderer extends GutterIconRenderer {
         ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
             ProgressManager.getInstance().getProgressIndicator().setIndeterminate(true);
             processor.run(data.context, data.pattern);
-        }, DataDrivenTypeMigrationBundle.message("intention.family.name"), false, data.project);
+        }, DataDrivenTypeMigrationBundle.message("intention.family.name"), true, data.project);
     }
 
     private BalloonCallback createAndShowBalloon(TypeChangeGutterPopupPanel panel, Editor editor, Runnable doRefactoring) {

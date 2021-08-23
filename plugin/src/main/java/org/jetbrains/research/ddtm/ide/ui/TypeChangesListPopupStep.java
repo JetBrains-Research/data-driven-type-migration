@@ -63,7 +63,7 @@ public class TypeChangesListPopupStep extends BaseListPopupStep<TypeChangePatter
             ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
                 ProgressManager.getInstance().getProgressIndicator().setIndeterminate(true);
                 processor.run(context, selectedPatternDescriptor);
-            }, DataDrivenTypeMigrationBundle.message("intention.family.name"), false, project);
+            }, DataDrivenTypeMigrationBundle.message("intention.family.name"), true, project);
         };
     }
 }
