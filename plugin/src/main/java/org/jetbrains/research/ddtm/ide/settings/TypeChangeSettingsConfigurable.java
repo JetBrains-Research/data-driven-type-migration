@@ -4,6 +4,7 @@ import com.intellij.openapi.options.Configurable;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
+import org.jetbrains.research.ddtm.data.TypeChangeRulesProvider;
 
 import javax.swing.*;
 
@@ -34,22 +35,28 @@ public class TypeChangeSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         TypeChangeSettingsState settings = TypeChangeSettingsState.getInstance();
+        TypeChangeRulesProvider rulesProvider = TypeChangeRulesProvider.getInstance();
         return !settingsComponent.getSearchScopeOption().equals(settings.searchScope)
-                || settingsComponent.getDisableIntentionTimeout() != settings.disableIntentionTimeout;
+                || settingsComponent.getDisableIntentionTimeout() != settings.disableIntentionTimeout
+                || !settingsComponent.getEditorJson().equals(rulesProvider.getStateJson());
     }
 
     @Override
     public void apply() {
         TypeChangeSettingsState settings = TypeChangeSettingsState.getInstance();
+        TypeChangeRulesProvider rulesProvider = TypeChangeRulesProvider.getInstance();
         settings.searchScope = settingsComponent.getSearchScopeOption();
         settings.disableIntentionTimeout = settingsComponent.getDisableIntentionTimeout();
+        rulesProvider.loadStateFromJson(settingsComponent.getEditorJson());
     }
 
     @Override
     public void reset() {
         TypeChangeSettingsState settings = TypeChangeSettingsState.getInstance();
+        TypeChangeRulesProvider rulesProvider = TypeChangeRulesProvider.getInstance();
         settingsComponent.setSearchScopeOption(settings.searchScope);
         settingsComponent.setDisableIntentionTimeout(settings.disableIntentionTimeout);
+        settingsComponent.setEditorJson(rulesProvider.getStateJson());
     }
 
     @Override

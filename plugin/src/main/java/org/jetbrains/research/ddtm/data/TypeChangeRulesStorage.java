@@ -1,9 +1,6 @@
 package org.jetbrains.research.ddtm.data;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 import com.intellij.openapi.components.Service;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.research.ddtm.data.models.TypeChangePatternDescriptor;
 import org.jetbrains.research.ddtm.data.models.TypeChangeRuleDescriptor;
@@ -11,44 +8,25 @@ import org.jetbrains.research.ddtm.data.specifications.SourceTypeSpecification;
 import org.jetbrains.research.ddtm.data.specifications.TargetTypeSpecification;
 import org.jetbrains.research.ddtm.utils.PsiRelatedUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * A DAO object for querying patterns, also a project service.
+ */
 @Service
 public final class TypeChangeRulesStorage {
-    private static final Logger LOG = Logger.getInstance(TypeChangeRulesStorage.class);
-
     private final Project project;
     private final Set<String> sourceTypesCache = new HashSet<>();
     private final Set<String> targetTypesCache = new HashSet<>();
-    private List<TypeChangePatternDescriptor> patterns;
-    private List<TypeChangePatternDescriptor> inspectionPatterns;
 
     public TypeChangeRulesStorage(Project project) {
         this.project = project;
-        String json;
-        try {
-            json = getResourceFileAsString("/rules.json");
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<TypeChangePatternDescriptor>>() {
-            }.getType();
-
-            this.patterns = gson.fromJson(json, type);
-            this.inspectionPatterns = Objects.requireNonNull(patterns).stream()
-                    .filter(TypeChangePatternDescriptor::shouldInspect)
-                    .collect(Collectors.toList());
-            initCache();
-        } catch (IOException e) {
-            LOG.error(e);
-        }
+        initCache();
     }
 
     private void initCache() {
+        final var patterns = TypeChangeRulesProvider.getInstance().getState().patterns;
         for (var pattern : patterns) {
             sourceTypesCache.add(pattern.getSourceType());
             targetTypesCache.add(pattern.getTargetType());
@@ -66,45 +44,41 @@ public final class TypeChangeRulesStorage {
     }
 
     public List<TypeChangePatternDescriptor> getPatterns() {
-        return patterns;
+        return TypeChangeRulesProvider.getInstance().getState().patterns;
     }
 
     public List<TypeChangePatternDescriptor> getInspectionPatterns() {
-        return inspectionPatterns;
+        return TypeChangeRulesProvider.getInstance().getState().patterns.stream()
+                .filter(TypeChangePatternDescriptor::shouldInspect)
+                .collect(Collectors.toList());
     }
 
     public List<TypeChangePatternDescriptor> getPatternsBySourceType(String sourceType) {
+        final var patterns = TypeChangeRulesProvider.getInstance().getState().patterns;
         return patterns.stream()
                 .filter(new SourceTypeSpecification(sourceType, project))
                 .collect(Collectors.toList());
     }
 
     public Optional<TypeChangePatternDescriptor> findPatternByRule(TypeChangeRuleDescriptor rule) {
+        final var patterns = TypeChangeRulesProvider.getInstance().getState().patterns;
         return patterns.stream()
                 .filter(pattern -> pattern.getRules().contains(rule))
                 .findFirst();
     }
 
     public List<TypeChangePatternDescriptor> getPatternsByTargetType(String targetType) {
+        final var patterns = TypeChangeRulesProvider.getInstance().getState().patterns;
         return patterns.stream()
                 .filter(new TargetTypeSpecification(targetType, project))
                 .collect(Collectors.toList());
     }
 
     public Optional<TypeChangePatternDescriptor> findPattern(String sourceType, String targetType) {
+        final var patterns = TypeChangeRulesProvider.getInstance().getState().patterns;
         return patterns.stream()
                 .filter(new SourceTypeSpecification(sourceType, project)
                         .and(new TargetTypeSpecification(targetType, project)))
                 .max(Comparator.comparing(pattern -> PsiRelatedUtils.splitByTokens(pattern.toString()).length));
-    }
-
-    private String getResourceFileAsString(String fileName) throws IOException {
-        try (InputStream stream = TypeChangeRulesStorage.class.getResourceAsStream(fileName)) {
-            if (stream == null) return null;
-            try (InputStreamReader isr = new InputStreamReader(stream);
-                 BufferedReader reader = new BufferedReader(isr)) {
-                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-            }
-        }
     }
 }

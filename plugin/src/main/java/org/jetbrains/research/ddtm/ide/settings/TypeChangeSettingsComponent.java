@@ -3,10 +3,12 @@ package org.jetbrains.research.ddtm.ide.settings;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.JBIntSpinner;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBTextArea;
 import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.research.ddtm.Config;
 import org.jetbrains.research.ddtm.DataDrivenTypeMigrationBundle;
+import org.jetbrains.research.ddtm.data.TypeChangeRulesProvider;
 import org.jetbrains.research.ddtm.data.enums.SupportedSearchScope;
 
 import javax.swing.*;
@@ -17,6 +19,8 @@ public class TypeChangeSettingsComponent {
             new JBIntSpinner(Config.DISABLE_INTENTION_TIMEOUT_BY_DEFAULT, 1_000, 100_000, 1_000);
     private final ComboBox<String> searchScopeOptionsComboBox =
             new ComboBox<>(DataDrivenTypeMigrationBundle.SEARCH_SCOPE_OPTIONS.values().toArray(String[]::new));
+    private final JBTextArea typeChangeRulesEditor =
+            new JBTextArea(TypeChangeRulesProvider.getInstance().getStateJson(), 100, 200);
 
     public TypeChangeSettingsComponent() {
         panel = FormBuilder.createFormBuilder()
@@ -31,6 +35,12 @@ public class TypeChangeSettingsComponent {
                         searchScopeOptionsComboBox,
                         1,
                         false
+                )
+                .addLabeledComponent(
+                        new JBLabel(DataDrivenTypeMigrationBundle.message("settings.rules.source")),
+                        typeChangeRulesEditor,
+                        1,
+                        true
                 )
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
@@ -58,5 +68,13 @@ public class TypeChangeSettingsComponent {
 
     public void setDisableIntentionTimeout(int timeout) {
         disableIntentionTimeoutIntSpinner.setNumber(timeout);
+    }
+
+    public String getEditorJson() {
+        return typeChangeRulesEditor.getText();
+    }
+
+    public void setEditorJson(String json) {
+        typeChangeRulesEditor.setText(json);
     }
 }
