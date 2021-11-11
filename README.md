@@ -35,7 +35,7 @@ provided by the plugin:
 
 This is a usual code intention that can be invoked from the `Show Context Actions`
 item in the popup menu, when you click on the `Type Element` in your Java code. Then you can choose any of the
-suggested `Type Migration Rules` from the dropdown list, and the plugin will try to update the data-flow dependent
+suggested `Type Migration Rules` from the dropdown list, select the search scope, and the plugin will try to update the data-flow dependent
 references of the selected `Type Element`:
 
 <img src="assets/img/proactive.gif" alt="Proactive Intention Example" width="600">
@@ -61,8 +61,10 @@ manually. After the single type change is performed, you can click on the icon t
 
 ### Settings
 
-You can setup the appropriate `Search Scope` for type migration or `Reactive Intention Disabling Timeout`
+You can configure the default `Search Scope` for type migration or `Reactive Intention Disabling Timeout`
 in the menu of the plugin: `File` - `Settings` - `Tools` - `Data-Driven Type Migration`.
+
+Also, you can always edit any of type change patterns or rewrite rules manually in the Settings menu tab:
 
 <img src="assets/img/settings.png" alt="Gutter Icon Example" width="400">
 
@@ -70,9 +72,9 @@ in the menu of the plugin: `File` - `Settings` - `Tools` - `Data-Driven Type Mig
 
 The plugin will also try to recommend you some type changes to apply in the form
 of [Code Inspection](https://www.jetbrains.com/help/idea/code-inspection.html). Generally, these suggestions will have
-a `WARNING` level, but just to attract your attention during plugin evaluation. Such hints are mostly of a
-recommendation and training nature.
+a `WARNING` level and are based on the recommendations from Effective Java, eliminating the misuses of Java 8 
+functional interfaces and unnecessary boxing.
 
 <img src="assets/img/inspection.gif" alt="Gutter Icon Example" width="600">
 
-**The list of supported type change patterns can be found [here](https://type-change.github.io/patterns.html).**
+**Note: the full list of supported type change patterns can be found [here](https://type-change.github.io/patterns.html).**
