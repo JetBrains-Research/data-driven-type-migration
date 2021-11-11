@@ -46,20 +46,14 @@ type of code intention —
 **Recovering Type Change Intention**. But this one could also change the type of the overall expression or statement in
 your code, so be careful when applying them.
 
-<img src="assets/img/recovering.jpg" alt="Recovering Intention Example" width="900">
+<img src="assets/img/recovering.jpeg" alt="Recovering Intention Example" width="900">
 
 ### Reactive Type Change Intention*
 
 **Experimental feature*
 
 This intention (and corresponding refactoring) is suggested when the user changes some `Type Element` in the Java code
-manually. After the single type change is performed, you can put the caret on the element that was just changed, and
-open the `Show Context Actions`
-menu. If such a type change is supported by the plugin, it will offer you the appropriate type migration rule.
-
-<img src="assets/img/reactive.gif" alt="Reactive Intention Example" width="600">
-
-You can also click on the icon that appears on the gutter, and run the type migration from there:
+manually. After the single type change is performed, you can click on the icon that appears on the gutter, and run the type migration from there:
 
 <img src="assets/img/gutter.gif" alt="Gutter Icon Example" width="700">
 
